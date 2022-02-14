@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://110.40.195.78:3306/kpimgr
+    username: kpimgr
+    password: kpimgr
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 5
+      max-lifetime: 300000
+      idle-timeout: 240000
+    validation-query: SELECT 1
+    test-on-borrow: false
+    test-while-idle: true
+    time-between-eviction-runs-millis: 15000
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+paper:
+  jwt:
+    secret: paperSecret
+    expireMs: 86400000
