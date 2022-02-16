@@ -11,6 +11,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class StaffKpiManagementAppBackApplication {
 
+    public static void main(String[] args) {
+        SpringApplication.run(StaffKpiManagementAppBackApplication.class, args);
+    }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -19,10 +23,6 @@ public class StaffKpiManagementAppBackApplication {
                 registry.addMapping("/**").allowedOrigins("*");
             }
         };
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(StaffKpiManagementAppBackApplication.class, args);
     }
 
 }

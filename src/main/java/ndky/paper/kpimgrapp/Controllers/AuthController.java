@@ -27,15 +27,12 @@ import java.util.stream.Collectors;
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
-
-    @Autowired
-    private AuthMapper authMapper;
-
     @Autowired
     PasswordEncoder passwordEncoder;
-
     @Autowired
     JwtUtils jwtUtils;
+    @Autowired
+    private AuthMapper authMapper;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody Map<String, String> loginRequest) {

@@ -7,12 +7,9 @@ spring:
     hikari:
       minimum-idle: 3
       maximum-pool-size: 5
-      max-lifetime: 300000
-      idle-timeout: 240000
-    validation-query: SELECT 1
-    test-on-borrow: false
-    test-while-idle: true
-    time-between-eviction-runs-millis: 15000
+      idle-timeout: 12500
+      max-lifetime: 150000
+      validation-timeout: 15000
 
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
@@ -20,5 +17,5 @@ mybatis:
 
 paper:
   jwt:
-    secret: paperSecret
+    secret: LingLingsScarletShineInMyHeartForever
     expireMs: 86400000

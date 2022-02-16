@@ -18,13 +18,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
+    private static final Logger logger = Logger.getLogger(AuthenticationTokenFilter.class.getName());
     @Autowired
     private JwtUtils jwtUtils;
-
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
-
-    private static final Logger logger = Logger.getLogger(AuthenticationTokenFilter.class.getName());
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
