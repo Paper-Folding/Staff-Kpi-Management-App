@@ -3,12 +3,14 @@ package ndky.paper.kpimgrapp;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ndky.paper.kpimgrapp.Mappers.AuthMapper;
+import ndky.paper.kpimgrapp.Models.Role;
 import ndky.paper.kpimgrapp.Models.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
@@ -28,7 +30,6 @@ class StaffKpiManagementAppBackApplicationTests {
 
     @Test
     void testMyBatis() {
-        User user = authMapper.selectUserByUserName("aa").get();
-        System.out.println(user);
+        List<Role> roleList = authMapper.selectRoleDetailByUsername("aa");
     }
 }
