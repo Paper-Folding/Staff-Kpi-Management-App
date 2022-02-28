@@ -6,4 +6,9 @@
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>
+    <typeAliases>
+        <typeAlias type="ndky.paper.kpimgrapp.Models.User" alias="User"></typeAlias>
+        <typeAlias type="ndky.paper.kpimgrapp.Models.Role" alias="Role"></typeAlias>
+        <typeAlias type="ndky.paper.kpimgrapp.Models.RoleScope" alias="RoleScope"></typeAlias>
+    </typeAliases>
 </configuration>

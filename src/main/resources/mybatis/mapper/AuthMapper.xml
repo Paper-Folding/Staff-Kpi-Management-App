@@ -10,15 +10,15 @@
           and password = #{password};
     </select>
 
-    <resultMap id="authUser" type="ndky.paper.kpimgrapp.Models.User">
+    <resultMap id="authUser" type="User">
         <id property="id" column="id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
         <!--使用ofType来指定连接的表中的个体类型，比如这里使用了set<Role>，所以ofType要写Role-->
-        <collection property="roles" column="id" ofType="ndky.paper.kpimgrapp.Models.Role" select="selectRoleForUser"/>
+        <collection property="roles" column="id" ofType="Role" select="selectRoleForUser"/>
     </resultMap>
 
-    <select id="selectRoleForUser" resultType="ndky.paper.kpimgrapp.Models.Role">
+    <select id="selectRoleForUser" resultType="Role">
         select a.id, b.name
         from user_roles a,
              role b
@@ -42,14 +42,14 @@
           and a.username = #{username};
     </select>
 
-    <resultMap id="roleDetail" type="ndky.paper.kpimgrapp.Models.Role">
+    <resultMap id="roleDetail" type="Role">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
-        <collection property="role_scope" column="id" ofType="ndky.paper.kpimgrapp.Models.RoleScope"
+        <collection property="role_scope" column="id" ofType="RoleScope"
                     select="selectRoleScopeForRole"/>
     </resultMap>
 
-    <select id="selectRoleScopeForRole" resultType="ndky.paper.kpimgrapp.Models.RoleScope">
+    <select id="selectRoleScopeForRole" resultType="RoleScope">
         select b.operation_id, b.object_id
         from role a,
              role_scope b
@@ -57,7 +57,7 @@
           and a.id = #{id};
     </select>
 
-    <select id="selectRoleScopeByUsername" resultType="ndky.paper.kpimgrapp.Models.RoleScope">
+    <select id="selectRoleScopeByUsername" resultType="RoleScope">
         select d.operation_id, d.object_id
         from authorization a,
              user_roles b,
