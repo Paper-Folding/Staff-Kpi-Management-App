@@ -1,27 +1,27 @@
 package ndky.paper.kpimgrapp.Models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
 
 public class Role {
-    private long id;
+    private Long id;
 
     private String name;
 
-    @JsonIgnore
-    private List<RoleScope> role_scope;
+    private String description;
+
+    private List<RoleScope> roleScopes;
 
     public Role() {
     }
 
-    public Role(long id, String name, List<RoleScope> role_scope) {
+    public Role(Long id, String name, String description, List<RoleScope> roleScopes) {
         this.id = id;
         this.name = name;
-        this.role_scope = role_scope;
+        this.description = description;
+        this.roleScopes = roleScopes;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -37,11 +37,19 @@ public class Role {
         this.name = name;
     }
 
-    public List<RoleScope> getRole_scope() {
-        return role_scope;
+    public String getDescription() {
+        return description;
     }
 
-    public void setRole_scope(List<RoleScope> role_scope) {
-        this.role_scope = role_scope;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<RoleScope> getRoleScopes() {
+        return roleScopes;
+    }
+
+    public void setRoleScopes(List<RoleScope> roleScopes) {
+        this.roleScopes = roleScopes;
     }
 }

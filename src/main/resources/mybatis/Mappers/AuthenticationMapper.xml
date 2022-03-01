@@ -1,21 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="ndky.paper.kpimgrapp.Mappers.AuthMapper">
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ndky.paper.kpimgrapp.Mappers.AuthenticationMapper">
     <select id="existsUser" resultType="Boolean">
-        select (case when count(id) = 1 then true else false end) as result
+        select (if(count(id) = 1, true, false)) as result
         from authorization
-        where username = #{username}
-          and password = #{password};
+        where username = #{username};
     </select>
 
     <resultMap id="authUser" type="User">
-        <id property="id" column="id"/>
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
         <!--使用ofType来指定连接的表中的个体类型，比如这里使用了set<Role>，所以ofType要写Role-->
-        <collection property="roles" column="id" ofType="Role" select="selectRoleForUser"/>
+        <collection property="roles" column="id" ofType="Role" select="selectRoleForUser" />
     </resultMap>
 
     <select id="selectRoleForUser" resultType="Role">
@@ -43,10 +41,9 @@
     </select>
 
     <resultMap id="roleDetail" type="Role">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <collection property="role_scope" column="id" ofType="RoleScope"
-                    select="selectRoleScopeForRole"/>
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole" />
     </resultMap>
 
     <select id="selectRoleScopeForRole" resultType="RoleScope">
@@ -58,7 +55,7 @@
     </select>
 
     <select id="selectRoleScopeByUsername" resultType="RoleScope">
-        select d.operation_id, d.object_id
+        select distinct d.operation_id, d.object_id
         from authorization a,
              user_roles b,
              role c,

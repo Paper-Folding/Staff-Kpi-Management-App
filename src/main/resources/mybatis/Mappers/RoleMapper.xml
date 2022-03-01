@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ndky.paper.kpimgrapp.Mappers.RoleMapper">
+    <select id="existsRoleStrict" resultType="Boolean">
+        select (IF(count(id) = 0, false, true)) as result
+        from role
+        where id = ${roleId}
+          and name = #{name};
+    </select>
+
+    <select id="existsRole" resultType="Boolean">
+        select (IF(count(id) = 0, false, true)) as result
+        from role
+        where name = #{name};
+    </select>
+
+    <resultMap id="roleDetail" type="Role">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="description" column="description" />
+        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole" />
+    </resultMap>
+
+    <select id="selectRole" resultMap="roleDetail">
+        select * from role
+        <where>
+            <if test="id!=null">id = ${id}</if>
+            <if test="name!=null">and name = #{name}</if>
+        </where>
+    </select>
+
+    <select id="selectRoleScopeForRole" resultType="RoleScope">
+        select b.operation_id, b.object_id
+        from role a,
+             role_scope b
+        where a.id = b.role_id
+          and a.id = #{id};
+    </select>
+
+    <select id="selectAllRoles" resultMap="roleDetail">
+        select *
+        from role;
+    </select>
+
+    <insert id="addRole">
+        insert into role(name, description)
+        values (#{name}, #{description});
+    </insert>
+
+    <insert id="addRoleScopesForRole" parameterType="java.util.List">
+        insert into role_scope(role_id, operation_id, object_id) values
+        <foreach collection="roleScopes" item="scope" open="(" close=")" separator="),(">
+            ${roleId}, ${scope.operationId}, ${scope.objectId}
+        </foreach>
+        ;
+    </insert>
+
+    <delete id="deleteRole">
+        delete
+        from role
+        where id = ${id}
+          and name = #{name};
+    </delete>
+
+    <delete id="deleteRoleScopesForRole">
+        delete
+        from role_scope
+        where role_id = ${roleId};
+    </delete>
+
+    <update id="updateRole">
+        update role
+        <set>
+            <if test="name!=null">name = #{name},</if>
+            <if test="description!=null">description = #{description}</if>
+        </set>
+        where id = ${id}
+    </update>
+</mapper>

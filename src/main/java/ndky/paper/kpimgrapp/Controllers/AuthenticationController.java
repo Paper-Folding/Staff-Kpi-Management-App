@@ -1,6 +1,6 @@
 package ndky.paper.kpimgrapp.Controllers;
 
-import ndky.paper.kpimgrapp.Mappers.AuthMapper;
+import ndky.paper.kpimgrapp.Mappers.AuthenticationMapper;
 import ndky.paper.kpimgrapp.Response.JwtResponse;
 import ndky.paper.kpimgrapp.Security.Jwt.JwtUtils;
 import ndky.paper.kpimgrapp.Security.Services.UserDetailsImpl;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthenticationController {
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
@@ -32,7 +32,7 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
     @Autowired
-    private AuthMapper authMapper;
+    private AuthenticationMapper authenticationMapper;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody Map<String, String> loginRequest) {

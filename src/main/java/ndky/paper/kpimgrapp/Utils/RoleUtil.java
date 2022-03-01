@@ -1,6 +1,6 @@
 package ndky.paper.kpimgrapp.Utils;
 
-import ndky.paper.kpimgrapp.Mappers.AuthMapper;
+import ndky.paper.kpimgrapp.Mappers.AuthenticationMapper;
 import ndky.paper.kpimgrapp.Models.RoleScope;
 import ndky.paper.kpimgrapp.Response.AccessDeniedResponse;
 import ndky.paper.kpimgrapp.Security.Jwt.JwtUtils;
@@ -9,25 +9,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Component
 public class RoleUtil {
     @Autowired
-    private AuthMapper authMapper;
+    private AuthenticationMapper authenticationMapper;
 
     @Autowired
     private JwtUtils jwtUtils;
 
     /**
-     * @param username username to check
+     * @param username    username to check
      * @param targetRoles which role scope should be checked existence, can pass multiple, check with "OR"
      * @return true for permission accepted, false for denied
      */
     public boolean checkIfPermissionExists(String username, RoleScope... targetRoles) {
         // 1. 通过用户名获取权限集
-        List<RoleScope> roleScopes = authMapper.selectRoleScopeByUsername(username);
+        List<RoleScope> roleScopes = authenticationMapper.selectRoleScopeByUsername(username);
         // 2. 检查所属权限是否能够访问此接口
         for (RoleScope scope : roleScopes)
             for (RoleScope target : targetRoles)
@@ -36,8 +35,8 @@ public class RoleUtil {
         return false;
     }
 
-    public AuthMapper getAuthMapper() {
-        return authMapper;
+    public AuthenticationMapper getAuthMapper() {
+        return authenticationMapper;
     }
 
     public String getUsernameFromRequest(HttpServletRequest request) {
@@ -45,6 +44,6 @@ public class RoleUtil {
     }
 
     public ResponseEntity<?> getForbiddenResponseEntity(HttpServletRequest request) {
-        return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(new AccessDeniedResponse(request.getServletPath()));
+        return new AccessDeniedResponse(request.getServletPath()).responseEntity();
     }
 }

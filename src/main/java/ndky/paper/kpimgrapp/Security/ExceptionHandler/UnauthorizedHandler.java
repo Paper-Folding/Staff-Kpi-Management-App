@@ -23,7 +23,7 @@ public class UnauthorizedHandler implements AuthenticationEntryPoint {
         logger.log(Level.SEVERE, "Unauthorized error: " + authException.getMessage());
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_OK);
 
         final Map<String, Object> body = new HashMap<>();
         body.put("code", HttpServletResponse.SC_UNAUTHORIZED);

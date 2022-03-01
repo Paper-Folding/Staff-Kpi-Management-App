@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Mapper
-public interface AuthMapper {
-    Boolean existsUser(String username, String password);
+public interface AuthenticationMapper {
+    Boolean existsUser(String username);
 
     Optional<User> selectUserByUserName(String username);
 
