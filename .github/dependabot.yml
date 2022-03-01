@@ -10,3 +10,8 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "back-end"
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    target-branch: "front-end"
