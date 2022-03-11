@@ -1,9 +1,8 @@
-<script setup>
-</script>
-
 <template>
     <router-view />
 </template>
 
-<style>
+<style lang="scss">
+/* import global style sheet here */
+@import "bootstrap";
 </style>
