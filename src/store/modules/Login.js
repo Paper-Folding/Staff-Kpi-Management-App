@@ -12,14 +12,19 @@ const getters = {
 
 const actions = {
     async postLogin({ commit }, postData) {
-        const result = await axios.post(import.meta.env.VITE_API_URL + "/auth/login", {
-            username: postData.username,
-            password: postData.password
-        });
-        if (result.status === 200 && result.data.code === 200)
-            commit('loginSuccess', result.data);
-        else
-            commit('loginFailure', result.data);
+        try {
+            const result = await axios.post(import.meta.env.VITE_API_URL + "/auth/login", {
+                username: postData.username,
+                password: postData.password
+            }, { timeout: 5000 });
+            if (result.status === 200 && result.data.code === 200)
+                commit('loginSuccess', result.data);
+            else
+                commit('loginFailure', result.data);
+        }
+        catch(err){
+            
+        }
     },
     logOff({ commit }) {
         commit("logOff");
@@ -32,6 +37,7 @@ const mutations = {
         state.logined = true;
     },
     loginFailure(state) {
+        debugger;
         jsCookie.remove('loggedUser');
         state.logined = false;
     },

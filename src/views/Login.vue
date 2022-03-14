@@ -98,7 +98,11 @@ export default {
     },
     mounted() {
         document.body.classList.add('login');
+        this.showNotification('Bogo', 'warning', 6000)
+        this.showNotification('I am', 'success', 4000)
+        this.showNotification('Hello', 'failure', 2000)
     },
+    inject: ['showNotification'],
     unmounted() {
         document.body.classList.remove('login');
     },
