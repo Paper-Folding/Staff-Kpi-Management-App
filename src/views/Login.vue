@@ -12,7 +12,7 @@
                             <header class="h1">员工业绩管理系统</header>
                             <p class="description h4">请登录</p>
                             <div class="ms-xl-5 me-xl-5 ps-xl-5 pe-xl-5">
-                                <h5 class="text-danger" v-if="$route.query.msg === 'expired'">登录会话已然过期， 请重新登录~</h5>
+                                <h5 class="text-danger" v-if="$route.query.msg === 'expired'">登录会话不存在或已过期， 请重新登录</h5>
                                 <h5 class="text-danger" v-if="validateFailed">用户名或密码有误，请核对并重试~</h5>
                                 <div class="form-group">
                                     <input type="text" v-model="username" class="form-control" :class="validUsername ? null : 'is-invalid'" placeholder="您的用户名" />
@@ -79,7 +79,6 @@ export default {
             }
 
             this.logging = true;
-            await setTimeout(() => { }, 1000)
             await this.login({
                 username: this.username,
                 password: this.password
@@ -98,11 +97,7 @@ export default {
     },
     mounted() {
         document.body.classList.add('login');
-        this.showNotification('Bogo', 'warning', 6000)
-        this.showNotification('I am', 'success', 4000)
-        this.showNotification('Hello', 'failure', 2000)
     },
-    inject: ['showNotification'],
     unmounted() {
         document.body.classList.remove('login');
     },

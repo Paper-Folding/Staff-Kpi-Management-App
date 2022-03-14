@@ -6,8 +6,7 @@
 /**
  * Notification
  * This is not actually a common vue component. To use this,
- * you need to expose 'show' method with vue provide api,
- * and then call it with inject
+ * you need to expose 'show' method globally.
  */
 import { Toast } from 'bootstrap';
 export default {

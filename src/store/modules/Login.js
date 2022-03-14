@@ -11,7 +11,7 @@ const getters = {
 }
 
 const actions = {
-    async postLogin({ commit }, postData) {
+    async postLogin({ commit, rootState }, postData) {
         try {
             const result = await axios.post(import.meta.env.VITE_API_URL + "/auth/login", {
                 username: postData.username,
@@ -20,10 +20,10 @@ const actions = {
             if (result.status === 200 && result.data.code === 200)
                 commit('loginSuccess', result.data);
             else
-                commit('loginFailure', result.data);
+                commit('loginFailure');
         }
-        catch(err){
-            
+        catch (err) {
+            rootState.notify(err);
         }
     },
     logOff({ commit }) {
@@ -37,7 +37,6 @@ const mutations = {
         state.logined = true;
     },
     loginFailure(state) {
-        debugger;
         jsCookie.remove('loggedUser');
         state.logined = false;
     },
