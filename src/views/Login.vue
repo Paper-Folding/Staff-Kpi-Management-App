@@ -166,7 +166,7 @@ main {
                     }
 
                     &:focus {
-                        border-color: rgba(0, 0, 0, 0.25);
+                        border-color: #000;
                         box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.25);
                     }
 
