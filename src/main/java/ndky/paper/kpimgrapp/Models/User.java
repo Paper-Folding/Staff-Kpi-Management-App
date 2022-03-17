@@ -6,6 +6,8 @@ import java.util.Set;
 public class User {
     private Long id;
 
+    private Long staffInfoId;
+
     private String username;
 
     private String password;
@@ -15,8 +17,9 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String username, String password, Set<Role> roles) {
+    public User(Long id, Long staffInfoId, String username, String password, Set<Role> roles) {
         this.id = id;
+        this.staffInfoId = staffInfoId;
         this.username = username;
         this.password = password;
         this.roles = roles;
@@ -28,6 +31,14 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getStaffInfoId() {
+        return staffInfoId;
+    }
+
+    public void setStaffInfoId(Long staffInfoId) {
+        this.staffInfoId = staffInfoId;
     }
 
     public String getUsername() {

@@ -50,6 +50,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(new JwtResponse(HttpServletResponse.SC_OK,
                 jwt,
                 userDetails.getId(),
+                userDetails.getStaffInfoId(),
                 userDetails.getUsername(),
                 roles));
     }

@@ -6,13 +6,15 @@ public class JwtResponse extends BaseResponse {
     private String token;
     private String type = "Bearer";
     private Long id;
+    private Long staffInfoId;
     private String username;
     private List<String> roles;
 
-    public JwtResponse(int code, String token, Long id, String username, List<String> roles) {
+    public JwtResponse(int code, String token, Long id, Long staffInfoId, String username, List<String> roles) {
         super(code);
         this.token = token;
         this.id = id;
+        this.staffInfoId = staffInfoId;
         this.username = username;
         this.roles = roles;
     }
@@ -39,6 +41,14 @@ public class JwtResponse extends BaseResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getStaffInfoId() {
+        return staffInfoId;
+    }
+
+    public void setStaffInfoId(Long staffInfoId) {
+        this.staffInfoId = staffInfoId;
     }
 
     public String getUsername() {
