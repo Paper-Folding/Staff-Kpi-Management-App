@@ -26,8 +26,8 @@ const actions = {
             rootState.notify(err);
         }
     },
-    logOff({ commit }) {
-        commit("logOff");
+    logoff({ commit }) {
+        commit("logoff");
     }
 }
 
@@ -40,7 +40,7 @@ const mutations = {
         jsCookie.remove('loggedUser');
         state.logined = false;
     },
-    logOff(state) {
+    logoff(state) {
         jsCookie.remove('loggedUser');
         state.logined = false;
     }

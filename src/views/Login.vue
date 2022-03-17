@@ -84,7 +84,9 @@ export default {
                 password: this.password
             });
             if (this.$store.state.Login.logined) {
-                this.$router.push("/dashboard");
+                if (this.remembered) localStorage.setItem("rem", this.username);
+                else localStorage.removeItem("rem");
+                this.$router.push(this.$route.query.redirect == null || this.$route.query.redirect === "" ? "/dashboard" : this.$route.query.redirect);
             } else {
                 this.validateFailed = true;
                 this.logging = false;
@@ -96,7 +98,13 @@ export default {
         this.ifStrUnSafe = str => str === '' || /[' ','\'','"','-',',',';']/.test(str);
     },
     mounted() {
-        document.body.classList.add('login');
+        document.body.classList.add("login");
+        let rem = localStorage.getItem("rem");
+        if (rem) {
+            this.username = rem;
+            this.remembered = true;
+        } else
+            this.remembered = false;
     },
     unmounted() {
         document.body.classList.remove('login');
