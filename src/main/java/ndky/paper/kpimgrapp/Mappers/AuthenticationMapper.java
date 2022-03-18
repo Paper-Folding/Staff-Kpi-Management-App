@@ -16,5 +16,5 @@ public interface AuthenticationMapper {
 
     List<Role> selectRoleDetailByUsername(String username);
 
-    List<RoleScope> selectRoleScopeByUsername(String username);
+    List<RoleScope> selectRoleScopeByUsername(String username, Integer operationId);
 }

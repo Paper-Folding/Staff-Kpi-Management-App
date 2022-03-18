@@ -57,12 +57,15 @@
     <select id="selectRoleScopeByUsername" resultType="RoleScope">
         select distinct d.operation_id, d.object_id
         from authorization a,
-             user_roles b,
-             role c,
-             role_scope d
+        user_roles b,
+        role c,
+        role_scope d
         where a.id = b.authorization_id
-          and b.role_id = c.id
-          and c.id = d.role_id
-          and a.username = #{username}
+        and b.role_id = c.id
+        and c.id = d.role_id
+        and a.username = #{username}
+        <if test="operationId != null">
+            and d.operation_id = ${operationId};
+        </if>
     </select>
 </mapper>

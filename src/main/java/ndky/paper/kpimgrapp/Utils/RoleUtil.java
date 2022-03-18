@@ -26,13 +26,17 @@ public class RoleUtil {
      */
     public boolean checkIfPermissionExists(String username, RoleScope... targetRoles) {
         // 1. 通过用户名获取权限集
-        List<RoleScope> roleScopes = authenticationMapper.selectRoleScopeByUsername(username);
+        List<RoleScope> roleScopes = authenticationMapper.selectRoleScopeByUsername(username, null);
         // 2. 检查所属权限是否能够访问此接口
         for (RoleScope scope : roleScopes)
             for (RoleScope target : targetRoles)
                 if (target.equals(scope))
                     return true;
         return false;
+    }
+
+    public List<RoleScope> getUserRoleScopes(String username, Integer operationId) {
+        return authenticationMapper.selectRoleScopeByUsername(username, operationId);
     }
 
     public AuthenticationMapper getAuthMapper() {

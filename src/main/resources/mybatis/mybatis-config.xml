@@ -10,5 +10,7 @@
         <typeAlias type="ndky.paper.kpimgrapp.Models.User" alias="User"></typeAlias>
         <typeAlias type="ndky.paper.kpimgrapp.Models.Role" alias="Role"></typeAlias>
         <typeAlias type="ndky.paper.kpimgrapp.Models.RoleScope" alias="RoleScope"></typeAlias>
+        <typeAlias type="ndky.paper.kpimgrapp.Models.StaffInfo" alias="StaffInfo"></typeAlias>
+        <typeAlias type="ndky.paper.kpimgrapp.Models.OperationObject" alias="OperationObject"></typeAlias>
     </typeAliases>
 </configuration>

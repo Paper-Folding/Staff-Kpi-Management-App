@@ -10,6 +10,8 @@ spring:
       idle-timeout: 12500
       max-lifetime: 150000
       validation-timeout: 15000
+  jackson:
+    default-property-inclusion: non_null
 
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
