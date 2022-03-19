@@ -7,15 +7,16 @@ public class JwtResponse extends BaseResponse {
     private String type = "Bearer";
     private Long id;
     private Long staffInfoId;
-    private String username;
+    private String username, realName;
     private List<String> roles;
 
-    public JwtResponse(int code, String token, Long id, Long staffInfoId, String username, List<String> roles) {
+    public JwtResponse(int code, String token, Long id, Long staffInfoId, String username, String realName, List<String> roles) {
         super(code);
         this.token = token;
         this.id = id;
         this.staffInfoId = staffInfoId;
         this.username = username;
+        this.realName = realName;
         this.roles = roles;
     }
 
@@ -57,6 +58,14 @@ public class JwtResponse extends BaseResponse {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public List<String> getRoles() {

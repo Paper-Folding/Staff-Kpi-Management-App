@@ -15,18 +15,18 @@ public class UserDetailsImpl implements UserDetails {
 
     private final Long staffInfoId;
 
-    private final String username;
-
+    private final String username, realName;
 
     @JsonIgnore
     private final String password;
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, Long staffInfoId, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, Long staffInfoId, String username, String realName, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.staffInfoId = staffInfoId;
         this.username = username;
+        this.realName = realName;
         this.password = password;
         this.authorities = authorities;
     }
@@ -39,6 +39,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getId(),
                 user.getStaffInfoId(),
                 user.getUsername(),
+                user.getRealName(),
                 user.getPassword(),
                 authorities
         );
@@ -50,6 +51,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public Long getStaffInfoId() {
         return staffInfoId;
+    }
+
+    public String getRealName() {
+        return realName;
     }
 
     @Override

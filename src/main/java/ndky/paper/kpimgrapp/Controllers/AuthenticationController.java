@@ -1,6 +1,5 @@
 package ndky.paper.kpimgrapp.Controllers;
 
-import ndky.paper.kpimgrapp.Mappers.AuthenticationMapper;
 import ndky.paper.kpimgrapp.Response.JwtResponse;
 import ndky.paper.kpimgrapp.Security.Jwt.JwtUtils;
 import ndky.paper.kpimgrapp.Security.Services.UserDetailsImpl;
@@ -31,8 +30,6 @@ public class AuthenticationController {
     PasswordEncoder passwordEncoder;
     @Autowired
     JwtUtils jwtUtils;
-    @Autowired
-    private AuthenticationMapper authenticationMapper;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody Map<String, String> loginRequest) {
@@ -52,6 +49,7 @@ public class AuthenticationController {
                 userDetails.getId(),
                 userDetails.getStaffInfoId(),
                 userDetails.getUsername(),
+                userDetails.getRealName(),
                 roles));
     }
 

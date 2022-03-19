@@ -8,7 +8,7 @@ public class User {
 
     private Long staffInfoId;
 
-    private String username;
+    private String username, realName;
 
     private String password;
 
@@ -17,10 +17,11 @@ public class User {
     public User() {
     }
 
-    public User(Long id, Long staffInfoId, String username, String password, Set<Role> roles) {
+    public User(Long id, Long staffInfoId, String username, String realName, String password, Set<Role> roles) {
         this.id = id;
         this.staffInfoId = staffInfoId;
         this.username = username;
+        this.realName = realName;
         this.password = password;
         this.roles = roles;
     }
@@ -47,6 +48,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public String getPassword() {
