@@ -1,1 +1,1 @@
-## Components inside Transcation folder is current project dependant.
+## Components inside Transcation folder is project dependant.
