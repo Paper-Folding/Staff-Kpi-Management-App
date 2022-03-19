@@ -11,9 +11,16 @@ const routes = [
     },
     {
         path: '/dashboard',
-        name: 'Dashboard',
-        meta: { title: '你好鸭', requiresAuth: true },
-        component: () => import('../views/Dashboard.vue')
+        meta: { requiresAuth: true },
+        component: () => import('../views/Dashboard.vue'),
+        children: [
+            {
+                path: '',
+                name: 'Home',
+                meta: { title: '欢迎您' },
+                component: () => import('../views/Home.vue'),
+            },
+        ]
     }
 ];
 

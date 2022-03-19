@@ -3,11 +3,14 @@ import jsCookie from "js-cookie";
 
 const state = {
     menuContent: [
-        {
-            header: "业绩管理后台",
-            hiddenOnCollapse: true
-        },
+        { header: "业绩管理后台", hiddenOnCollapse: true },
         { title: "主页", icon: "bi-house", href: "/dashboard" },
+        {
+            title: "用户与权限", icon: "bi-people-fill", child: [
+                { title: "用户", icon: "bi-file-person", badge: { element: 'i', class: 'bi-question-circle', help: '轻松管理全站用户信息' } },
+                { title: "角色与权限", icon: "bi-key" ,badge: { element: 'i', class: 'bi-question-circle', help: '定义并管理全站角色及所属权限' } },
+            ]
+        },
         { title: "退出登录", icon: "bi-door-open", logoffBtn: true },
     ]
 }

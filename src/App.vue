@@ -27,6 +27,6 @@ export default {
 <style lang="scss">
 /* import global style sheet here */
 @import "bootstrap";
-@import url("./global.scss");
+@import "./global.scss";
 @import "bootstrap-icons";
 </style>
