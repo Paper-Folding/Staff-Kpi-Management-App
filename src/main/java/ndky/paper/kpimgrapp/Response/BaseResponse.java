@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import javax.servlet.http.HttpServletResponse;
 
 public class BaseResponse {
-    int code;
+    protected int code;
 
     public BaseResponse() {
         this.code = HttpServletResponse.SC_OK;

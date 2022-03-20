@@ -9,7 +9,21 @@
             ${field}
         </foreach>
         from staff_info
-        limit ${from},${length};
+        <where>
+            <if test="staffInfo.no != null">
+                no like '%' #{staffInfo.no} '%'
+            </if>
+            <if test="staffInfo.name != null">
+                and name like '%' #{staffInfo.name} '%'
+            </if>
+            <if test="staffInfo.gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="staffInfo.nation != null">
+                and name like '%' #{staffInfo.nation} '%'
+            </if>
+        </where>
+        limit ${from}, ${length};
     </select>
 
     <select id="selectStaffInfoTotal" resultType="Integer">

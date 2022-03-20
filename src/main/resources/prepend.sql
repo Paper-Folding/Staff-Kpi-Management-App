@@ -25,3 +25,8 @@ where t.table_name = c.table_name
   and t.table_schema = 'kpimgr'
   and t.table_name != 'dict_operation'
   and t.table_name != 'dict_operation_object';
+
+-- Records of role
+INSERT INTO `role` VALUES (1, 'admin', '江湖掌门人');
+INSERT INTO `role` VALUES (2, 'teacher', '教务办老师');
+

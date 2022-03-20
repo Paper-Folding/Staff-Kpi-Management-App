@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.RoleMapper">
     <select id="existsRoleStrict" resultType="Boolean">
         select (IF(count(id) = 0, false, true)) as result
@@ -16,17 +16,17 @@
     </select>
 
     <resultMap id="roleDetail" type="Role">
-        <id property="id" column="id" />
-        <result property="name" column="name" />
-        <result property="description" column="description" />
-        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole" />
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole"/>
     </resultMap>
 
     <select id="selectRole" resultMap="roleDetail">
         select * from role
         <where>
-            <if test="id!=null">id = ${id}</if>
-            <if test="name!=null">and name = #{name}</if>
+            <if test="id != null">id = ${id}</if>
+            <if test="name != null">and name = #{name}</if>
         </where>
     </select>
 
@@ -40,7 +40,16 @@
 
     <select id="selectAllRoles" resultMap="roleDetail">
         select *
-        from role;
+        from role
+        <where>
+            <if test="role.name != null">
+                name like '%' #{role.name} '%'
+            </if>
+            <if test="role.description != null">
+                and description like '%' #{role.description} '%'
+            </if>
+        </where>
+        limit ${from}, ${length};
     </select>
 
     <insert id="addRole">

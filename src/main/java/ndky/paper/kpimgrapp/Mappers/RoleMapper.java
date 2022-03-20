@@ -3,6 +3,7 @@ package ndky.paper.kpimgrapp.Mappers;
 import ndky.paper.kpimgrapp.Models.Role;
 import ndky.paper.kpimgrapp.Models.RoleScope;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +16,7 @@ public interface RoleMapper extends UtilMapper {
 
     Optional<Role> selectRole(Role role);
 
-    List<Role> selectAllRoles();
+    List<Role> selectAllRoles(int from, int length, Role role);
 
     /**
      * add role will not affect role_scope
@@ -32,4 +33,7 @@ public interface RoleMapper extends UtilMapper {
      * update role will not affect role_scope
      */
     Integer updateRole(Role role);
+
+    @Select("select count(id) from role")
+    Integer selectRoleTotal();
 }

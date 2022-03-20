@@ -2,16 +2,20 @@ package ndky.paper.kpimgrapp.Controllers;
 
 import ndky.paper.kpimgrapp.Mappers.RoleMapper;
 import ndky.paper.kpimgrapp.Models.Role;
+import ndky.paper.kpimgrapp.Request.RoleRequest;
+import ndky.paper.kpimgrapp.Response.ErrorResponse;
 import ndky.paper.kpimgrapp.Response.ModifyResponse;
 import ndky.paper.kpimgrapp.Response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * controller for manage role
  */
 @RestController
+@PreAuthorize("hasAuthority('admin') or hasAuthority('officer')")
 @RequestMapping("/role")
 public class RoleController {
     @Autowired
@@ -27,9 +31,10 @@ public class RoleController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllRoles() {
-        var result = roleMapper.selectAllRoles();
-        return new QueryResponse(result, result.size()).responseEntity();
+    public ResponseEntity<?> getAllRoles(@RequestBody RoleRequest roleRequest) {
+        var result = roleMapper.selectAllRoles(roleRequest.getStartPos(), roleRequest.getCount(), roleRequest.getQuery());
+        var total = roleMapper.selectRoleTotal();
+        return new QueryResponse(result, total).responseEntity();
     }
 
     @PostMapping
@@ -45,11 +50,15 @@ public class RoleController {
 
     @DeleteMapping
     public ResponseEntity<?> deleteRole(@RequestBody Role role) {
+        if (role.getName().equals("admin") || role.getName().equals("teacher"))
+            return new ErrorResponse(role.getName() + " is not deletable!").responseEntity();
         return new ModifyResponse(roleMapper.deleteRole(role), "Done").responseEntity();
     }
 
     @PutMapping
     public ResponseEntity<?> updateRole(@RequestBody Role role) {
+        if (role.getName().equals("admin") || role.getName().equals("teacher"))
+            return new ErrorResponse(role.getName() + " is not updatable!").responseEntity();
         if (role.getName() != null && !roleMapper.existsRoleStrict(role.getId(), role.getName()) && roleMapper.existsRole(role.getName()))
             return new ModifyResponse(ModifyResponse.DUPLICATE, 0, "Trying to rename to a duplicate role.").responseEntity();
         int afflicted = roleMapper.updateRole(role);

@@ -1,9 +1,9 @@
 package ndky.paper.kpimgrapp.Response;
 
 public class QueryResponse extends BaseResponse {
-    private Object result;
+    protected Object result;
 
-    private long total;
+    protected long total;
 
     public QueryResponse(Object result, long total) {
         this.result = result;
