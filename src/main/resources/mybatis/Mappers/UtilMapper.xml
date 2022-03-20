@@ -16,5 +16,41 @@
             </foreach>
             )
         </where>
+        ;
     </select>
+
+    <select id="selectUserPermissionBy" resultType="UserPermission">
+        select distinct
+        a.username,
+        d.object_id,
+        e.table_name,
+        e.column_name,
+        d.operation_id,
+        f.`name` as operation_name
+        from authorization a,
+        user_roles b,
+        role c,
+        role_scope d,
+        dict_operation_object e,
+        dict_operation f
+        where a.id = b.authorization_id
+        and b.role_id = c.id
+        and c.id = d.role_id
+        and d.object_id = e.id
+        and f.id = d.operation_id
+        <if test="authorizationId != null and authorizationId != ''">
+            and a.id = ${authorizationId}
+        </if>
+        <if test="username != null and username != ''">
+            and a.username = #{username}
+        </if>
+        <if test="tableName != null and tableName != ''">
+            and e.table_name = #{tableName}
+        </if>
+        <if test="operationName != null and operationName != ''">
+            and f.`name` = #{operationName}
+        </if>
+        ;
+    </select>
+
 </mapper>

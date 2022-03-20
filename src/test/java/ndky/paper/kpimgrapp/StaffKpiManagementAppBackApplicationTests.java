@@ -2,17 +2,20 @@ package ndky.paper.kpimgrapp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ndky.paper.kpimgrapp.Mappers.AuthenticationMapper;
+import ndky.paper.kpimgrapp.Mappers.UtilMapper;
+import ndky.paper.kpimgrapp.Models.UserPermission;
+import ndky.paper.kpimgrapp.Request.UserPermissionRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
 class StaffKpiManagementAppBackApplicationTests {
-    private ObjectMapper json = new ObjectMapper();
+    private final ObjectMapper json = new ObjectMapper();
 
     @Test
     void testJson() throws JsonProcessingException {
@@ -23,14 +26,11 @@ class StaffKpiManagementAppBackApplicationTests {
     }
 
     @Autowired
-    private AuthenticationMapper mapper;
+    private UtilMapper utilMapper;
 
     @Test
     void testMyBatis() throws JsonProcessingException {
-        var user = mapper.selectUserByUserName("aa");
-        if (user.isPresent()) {
-            var uu = user.get();
-            System.out.println(json.writeValueAsString(uu));
-        }
+        List<UserPermission> userPermissions = utilMapper.selectUserPermissionBy(new UserPermissionRequest(null, "bb", "", ""));
+        System.out.println(json.writeValueAsString(userPermissions));
     }
 }

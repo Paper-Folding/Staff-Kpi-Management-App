@@ -1,6 +1,9 @@
 package ndky.paper.kpimgrapp.Controllers;
 
+import ndky.paper.kpimgrapp.Mappers.UtilMapper;
+import ndky.paper.kpimgrapp.Request.UserPermissionRequest;
 import ndky.paper.kpimgrapp.Response.JwtResponse;
+import ndky.paper.kpimgrapp.Response.QueryResponse;
 import ndky.paper.kpimgrapp.Security.Jwt.JwtUtils;
 import ndky.paper.kpimgrapp.Security.Services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,13 +43,23 @@ public class AuthenticationController {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(HttpServletResponse.SC_OK,
-                jwt,
+        return new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getStaffInfoId(),
                 userDetails.getUsername(),
                 userDetails.getRealName(),
-                roles));
+                roles).responseEntity();
     }
 
+    @Autowired
+    private UtilMapper utilMapper;
+
+    /**
+     * Used for collect user permission info
+     */
+    @GetMapping("/permission")
+    public ResponseEntity<?> queryUserPermission(@RequestBody UserPermissionRequest userPermissionRequest) {
+        var userPermissions = utilMapper.selectUserPermissionBy(userPermissionRequest);
+        return new QueryResponse(userPermissions, userPermissions.size()).responseEntity();
+    }
 }

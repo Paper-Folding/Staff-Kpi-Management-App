@@ -10,8 +10,8 @@ public class JwtResponse extends BaseResponse {
     private String username, realName;
     private List<String> roles;
 
-    public JwtResponse(int code, String token, Long id, Long staffInfoId, String username, String realName, List<String> roles) {
-        super(code);
+    public JwtResponse(String token, Long id, Long staffInfoId, String username, String realName, List<String> roles) {
+        super();
         this.token = token;
         this.id = id;
         this.staffInfoId = staffInfoId;
