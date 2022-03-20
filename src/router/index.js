@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import auth from "../utils/Auth.js";
+import UserAndRole from './UserAndRole.js';
 
 const routes = [
     {
@@ -20,8 +21,10 @@ const routes = [
                 meta: { title: '欢迎您' },
                 component: () => import('../views/Home.vue'),
             },
+            ...UserAndRole,
         ]
-    }
+    },
+    { path: '/:pathMatch(.*)*', meta: { title: 'Something Went Wrong' }, component: () => import('../views/FourZeroFour.vue') }
 ];
 
 const router = createRouter({
