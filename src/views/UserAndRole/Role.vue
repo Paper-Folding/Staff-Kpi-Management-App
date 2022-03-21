@@ -4,11 +4,24 @@
 </template>
 
 <script>
-import PaperTable from "../../components/PaperTable/PaperTable.vue"
+import { mapActions, mapGetters } from 'vuex'
+import PaperTable from "../../components/PaperTable/PaperTable.vue";
+import state from '../../components/PaperTable/Constants';
 export default {
     data() {
         return {
-            table: { header: this.$store.state.Role.fieldsMapper, rows: [] }
+            table: { header: this.$store.state.Role.fieldsMapper, rows: [] },
+            currentStatus: state.NORMAL
+        }
+    },
+    async mounted() {
+        await this.request();
+        this.table.rows = this.$store.state.Role.rows;
+    },
+    methods: {
+        ...mapActions({ request: "Role/requestList" }),
+        onRowClicked() {
+
         }
     },
     components: {

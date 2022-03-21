@@ -24,8 +24,8 @@ export default {
             this.showChild = false;
         }, 1000); // this is no method of methods
         // make responsive
-        this.onWindowResize();
-        window.addEventListener("resize", this.onWindowResize);
+        this.menuResponsive();
+        // window.addEventListener("resize", this.menuResponsive);
     },
     unmounted() {
         document.body.classList.remove("side-menu", "collapsed");
@@ -38,7 +38,7 @@ export default {
     },
     methods: {
         ...mapActions({ logoff: "Login/logoff" }),
-        onWindowResize() {
+        menuResponsive() {
             this.collapsed = window.innerWidth <= 960 ? true : false;
         },
         onItemClick(_, item) {

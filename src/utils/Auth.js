@@ -5,7 +5,7 @@ export default class Auth {
     static header() {
         const user = this.getLoggedUser();
         if (user && user.token)
-            return { Authorization: 'Bearer ' + user.token };
+            return { Authorization: user.token };
         else {
             router.push({ path: '/', params: { msg: 'expired' } });
             return {};

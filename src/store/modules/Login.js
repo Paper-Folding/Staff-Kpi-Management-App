@@ -1,4 +1,4 @@
-import axios from "axios";
+import request from "../../utils/Ajax";
 import jsCookie from "js-cookie";
 import auth from "../../utils/Auth.js";
 
@@ -13,10 +13,10 @@ const getters = {
 const actions = {
     async postLogin({ commit, rootState }, postData) {
         try {
-            const result = await axios.post(import.meta.env.VITE_API_URL + "/auth/login", {
+            const result = await request('post', '/auth/login', {
                 username: postData.username,
                 password: postData.password
-            }, { timeout: 5000 });
+            }, false);
             if (result.status === 200 && result.data.code === 200)
                 commit('loginSuccess', result.data);
             else

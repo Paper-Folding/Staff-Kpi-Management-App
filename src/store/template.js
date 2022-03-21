@@ -1,5 +1,5 @@
 /** Just a template, delete me once project done developing. */
-import axios from "axios";
+import request from "../utils/Ajax";
 import jsCookie from "js-cookie";
 
 const state = {

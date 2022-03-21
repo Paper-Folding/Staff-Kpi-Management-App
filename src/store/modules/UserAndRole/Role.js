@@ -1,4 +1,4 @@
-import axios from "axios";
+import request from "../../../utils/Ajax";
 import jsCookie from "js-cookie";
 
 const state = {
@@ -14,8 +14,15 @@ const getters = {
 }
 
 const actions = {
-    async getRoleList({ commit }) {
-        let res = await axios.get(import.meta.env.VITE_API_URL + "/role/all");
+    async requestList({ commit }) {
+        let res = await request('post', '/role/get/all', {
+            page: 1,
+            count: 10,
+            query: {
+                name: "ad",
+                description: "江"
+            }
+        });
         if (res.status === 200 && res.data.code === 200) {
             commit('roleList', res.data.result);
         }
