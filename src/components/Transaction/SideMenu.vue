@@ -18,7 +18,6 @@ export default {
         };
     },
     mounted() {
-        // this.updateMenu();
         document.body.classList.add('side-menu');
         setTimeout(() => {
             this.showChild = false;

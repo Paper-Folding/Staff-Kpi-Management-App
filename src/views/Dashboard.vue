@@ -1,6 +1,8 @@
 <template>
     <SideMenu />
-    <router-view />
+    <div class="stage">
+        <router-view />
+    </div>
 </template>
 
 <script>
@@ -11,3 +13,9 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.stage {
+    margin: 0 3.5rem;
+}
+</style>

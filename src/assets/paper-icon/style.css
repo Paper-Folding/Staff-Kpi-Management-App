@@ -1,0 +1,48 @@
+@font-face {
+  font-family: 'paper-icon';
+  src:  url('fonts/paper-icon.eot?cj6m7y');
+  src:  url('fonts/paper-icon.eot?cj6m7y#iefix') format('embedded-opentype'),
+    url('fonts/paper-icon.ttf?cj6m7y') format('truetype'),
+    url('fonts/paper-icon.woff?cj6m7y') format('woff'),
+    url('fonts/paper-icon.svg?cj6m7y#paper-icon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+i {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'paper-icon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.pi-bar-left:before {
+  content: "\e902";
+}
+.pi-bar-right:before {
+  content: "\e903";
+}
+.pi-left-arrow:before {
+  content: "\e914";
+}
+.pi-right-arrow:before {
+  content: "\e916";
+}
+.pi-star-fill:before {
+  content: "\e901";
+}
+.pi-star:before {
+  content: "\e900";
+}
+.pi-three-dots:before {
+  content: "\e926";
+}

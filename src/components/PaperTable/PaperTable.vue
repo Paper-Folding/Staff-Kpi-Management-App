@@ -23,28 +23,28 @@
             ></row>
         </transition-group>
     </table>
-    <row-loading :status="this.status" v-if="this.status !== state.NORMAL">
+    <Loading :status="this.status" v-if="this.status !== state.NORMAL">
         <template #nothingLoaded>
             <slot name="nothingLoaded">No data was loaded!</slot>
         </template>
         <template #nothingFound>
             <slot name="nothingFound">Nothing was found!</slot>
         </template>
-    </row-loading>
+    </Loading>
 </template>
 
 <script>
 /**
  * Props:
  *  header: defines how table header should be rendered, if you are not passing in header, the table will use the key set of the first row passed in by modelValue, which is risky if your data is dynamic.
- *      e.g. :header=[{ id: { text: '#', hidden: true } }, { name: '姓名', width: '10%' }], the table header will only show 'name' column in modelValue with '姓名'
+ *      e.g. :header = { id: { text: '#', hidden: true }, name: { text: "名字", width: '10%' } }, the table header will only show 'name' column in modelValue with '姓名'
  *  modelValue: defines how table data should be displayed, for more detail, please check @file('./Cell.vue') for more detailed variations.
  *  keyColumn: Type is String. If you'd like to dynamically change DOM, e.g. delete a row, you MUST give it a column name of modelValue which has unique values(e.g. 'id'). Else, the table with use index of vue's v-for loop.
  * status: defines when you want your table state is, it has four values: NORMAL, LOADING, NOTHING_LOADED, NOTHING_FOUND, use them in other files by `import {state}`,
  *  and plus, you must control table states yourself
  */
 import Row from "./Row.vue";
-import RowLoading from './RowLoading.vue';
+import Loading from './Loading.vue';
 import state from "./Constants.js";
 
 export default {
@@ -79,7 +79,7 @@ export default {
     },
     components: {
         Row,
-        RowLoading
+        Loading
     },
     emits: ["rowClick"]
 };
@@ -111,7 +111,7 @@ table {
         }
     }
 
-    @media (max-width: 846px) {
+    @media (max-width: 520px) {
         display: block;
         overflow-x: auto;
         white-space: nowrap;
