@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface StaffInfoMapper {
-    List<StaffInfo> selectStaffInfo(int from, int length, StaffInfo staffInfo, List<String> selectFieldsNames);
+    List<StaffInfo> selectStaffInfo(int from, int length, StaffInfo staffInfo, String query, List<String> selectFieldsNames);
 
     Integer selectStaffInfoTotal();
 }

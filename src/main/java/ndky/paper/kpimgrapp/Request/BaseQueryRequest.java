@@ -11,12 +11,16 @@ public class BaseQueryRequest {
     // count decides how many records should be returned
     private Integer count;
 
+    // all fields ambiguous match
+    private String queryStr;
+
     public BaseQueryRequest() {
     }
 
-    public BaseQueryRequest(Integer page, Integer count) {
+    public BaseQueryRequest(Integer page, Integer count, String queryStr) {
         this.page = page;
         this.count = count;
+        this.queryStr = queryStr;
     }
 
     public Integer getPage() {
@@ -37,5 +41,13 @@ public class BaseQueryRequest {
 
     public Integer getStartPos() {
         return (this.getPage() - 1) * this.getCount();
+    }
+
+    public String getQueryStr() {
+        return queryStr;
+    }
+
+    public void setQueryStr(String queryStr) {
+        this.queryStr = queryStr;
     }
 }

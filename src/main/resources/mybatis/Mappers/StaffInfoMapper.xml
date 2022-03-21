@@ -10,6 +10,9 @@
         </foreach>
         from staff_info
         <where>
+            <if test="query != null">
+                no like '%' #{query} '%' or name like '%' #{query} '%' or gender = #{query} or nation like '%' #{query} '%'
+            </if>
             <if test="staffInfo.no != null">
                 no like '%' #{staffInfo.no} '%'
             </if>
@@ -20,7 +23,7 @@
                 and gender = #{gender}
             </if>
             <if test="staffInfo.nation != null">
-                and name like '%' #{staffInfo.nation} '%'
+                and nation like '%' #{staffInfo.nation} '%'
             </if>
         </where>
         limit ${from}, ${length};

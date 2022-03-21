@@ -9,8 +9,8 @@ public class RoleRequest extends BaseQueryRequest {
     public RoleRequest() {
     }
 
-    public RoleRequest(Integer page, Integer count, Role query) {
-        super(page, count);
+    public RoleRequest(Integer page, Integer count, Role query, String queryStr) {
+        super(page, count, queryStr);
         this.query = query;
     }
 

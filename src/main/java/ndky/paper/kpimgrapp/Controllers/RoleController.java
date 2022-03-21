@@ -21,7 +21,8 @@ public class RoleController {
     @Autowired
     private RoleMapper roleMapper;
 
-    @GetMapping
+    // Browser does not support send get request with request body.
+    @PostMapping("/get")
     public ResponseEntity<?> getRole(@RequestBody Role role) {
         var result = roleMapper.selectRole(role);
         if (result.isPresent())
@@ -30,9 +31,9 @@ public class RoleController {
             return new QueryResponse(null, 0).responseEntity();
     }
 
-    @GetMapping("/all")
+    @PostMapping("/get/all")
     public ResponseEntity<?> getAllRoles(@RequestBody RoleRequest roleRequest) {
-        var result = roleMapper.selectAllRoles(roleRequest.getStartPos(), roleRequest.getCount(), roleRequest.getQuery());
+        var result = roleMapper.selectAllRoles(roleRequest.getStartPos(), roleRequest.getCount(), roleRequest.getQuery(), roleRequest.getQueryStr());
         var total = roleMapper.selectRoleTotal();
         return new QueryResponse(result, total).responseEntity();
     }

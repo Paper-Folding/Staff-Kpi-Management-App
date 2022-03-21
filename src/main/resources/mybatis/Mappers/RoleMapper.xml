@@ -42,10 +42,13 @@
         select *
         from role
         <where>
-            <if test="role.name != null">
+            <if test="query != null">
+                name like '%' #{query} '%' or description like '%' #{query} '%'
+            </if>
+            <if test="query == null and role.name != null">
                 name like '%' #{role.name} '%'
             </if>
-            <if test="role.description != null">
+            <if test="query == null and role.description != null">
                 and description like '%' #{role.description} '%'
             </if>
         </where>

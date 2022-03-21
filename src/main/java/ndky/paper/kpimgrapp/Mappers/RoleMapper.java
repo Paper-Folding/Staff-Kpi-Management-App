@@ -16,7 +16,7 @@ public interface RoleMapper extends UtilMapper {
 
     Optional<Role> selectRole(Role role);
 
-    List<Role> selectAllRoles(int from, int length, Role role);
+    List<Role> selectAllRoles(int from, int length, Role role, String query);
 
     /**
      * add role will not affect role_scope

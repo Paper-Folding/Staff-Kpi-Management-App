@@ -12,7 +12,7 @@ import ndky.paper.kpimgrapp.Utils.Constants;
 import ndky.paper.kpimgrapp.Utils.RoleUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +34,7 @@ public class StaffInfoController {
     @Autowired
     private UtilMapper utilMapper;
 
-    @GetMapping
+    @PostMapping("/get")
     public ResponseEntity<?> getStaffInfo(@RequestBody StaffInfoRequest staffInfoRequest, HttpServletRequest request) {
         // 1. get user permitted role scopes
         List<RoleScope> roleScopeList = roleUtil.getUserRoleScopes(roleUtil.getUsernameFromRequest(request), Constants.SELECT);
@@ -46,7 +46,7 @@ public class StaffInfoController {
         if (allowedFields.contains("*"))
             allowedFields = List.of("*");
         // 3. select data and response
-        List<StaffInfo> staffInfoList = staffInfoMapper.selectStaffInfo(staffInfoRequest.getStartPos(), staffInfoRequest.getCount(), staffInfoRequest.getQuery(), allowedFields);
+        List<StaffInfo> staffInfoList = staffInfoMapper.selectStaffInfo(staffInfoRequest.getStartPos(), staffInfoRequest.getCount(), staffInfoRequest.getQuery(), staffInfoRequest.getQueryStr(), allowedFields);
         Integer total = staffInfoMapper.selectStaffInfoTotal();
         return new TableResponse(allowedFields, staffInfoList, total).responseEntity();
     }
