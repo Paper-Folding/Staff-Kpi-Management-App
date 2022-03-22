@@ -1,7 +1,14 @@
 <!-- 用户与权限 - 角色管理 role/role-scope -->
 <template>
-    <paper-table :status="currentStatus" key-column="id" v-model="table.rows" :header="table.header" @row-click="onRowClicked"></paper-table>
+    <paper-table :status="currentStatus" key-column="id" v-model="table.rows" :header="table.header" @row-click="seeDetail"></paper-table>
     <pagination v-model="curPage" v-bind="{ total, per, showAmount: 10 }"></pagination>
+    <paper-modal ref="modal" size="xl">
+        <template #title>角色信息</template>
+        <template #body>
+            <power-editor></power-editor>
+        </template>
+        <template #footer></template>
+    </paper-modal>
 </template>
 
 <script>
@@ -9,6 +16,8 @@ import { mapActions, mapGetters } from 'vuex'
 import PaperTable from "../../components/PaperTable/PaperTable.vue";
 import state from '../../components/PaperTable/Constants';
 import Pagination from '../../components/Pagination.vue';
+import PaperModal from '../../components/PaperModal.vue';
+import PowerEditor from '../../components/Transaction/PowerEditor.vue';
 export default {
     data() {
         return {
@@ -39,13 +48,15 @@ export default {
     },
     methods: {
         ...mapActions({ request: "Role/requestList" }),
-        onRowClicked() {
-
+        seeDetail(row) {
+            this.$refs.modal.open();
         }
     },
     components: {
         PaperTable,
-        Pagination
+        Pagination,
+        PaperModal,
+        PowerEditor
     }
 }
 </script>

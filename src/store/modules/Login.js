@@ -33,7 +33,7 @@ const actions = {
 
 const mutations = {
     loginSuccess(state, response) {
-        jsCookie.set('loggedUser', JSON.stringify({ ...response, token: response.type + ' ' + response.token, code: undefined, type: undefined }), { expires: 10000 }); // 1/48 = 30min to expire
+        jsCookie.set('loggedUser', JSON.stringify({ ...response, token: response.type + ' ' + response.token, code: undefined, type: undefined }), { expires: 1/48 }); // 1/48 = 30min to expire
         state.logined = true;
     },
     loginFailure(state) {

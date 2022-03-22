@@ -3,8 +3,8 @@ import jsCookie from "js-cookie";
 
 const state = {
     fieldsMapper: {
-        id: '#',
-        name: '角色名',
+        id: { text: '#', width: '20%' },
+        name: { text: '角色名', width: '40%' },
         description: '描述'
     },
     rows: {},
@@ -16,7 +16,7 @@ const getters = {
 }
 
 const actions = {
-    async requestList({ commit }, params) {
+    async requestList({ commit, rootState }, params) {
         let res = await request('post', '/role/get/all', {
             page: params.page,
             count: params.amount,
@@ -27,6 +27,9 @@ const actions = {
         });
         if (res.status === 200 && res.data.code === 200) {
             commit('roleList', res.data);
+        } else {
+            rootState.notify(res.data.message);
+            commit('roleList', { result: [], total: 0 });
         }
     }
 }
