@@ -23,7 +23,7 @@ public class ForbiddenHandler implements AccessDeniedHandler {
         logger.log(Level.SEVERE, "Forbidden: Not enough permission to access " + request.getServletPath());
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setStatus(HttpServletResponse.SC_OK);
 
         final Map<String, Object> body = new HashMap<>();
         body.put("code", HttpServletResponse.SC_FORBIDDEN);
