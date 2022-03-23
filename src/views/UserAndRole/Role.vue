@@ -1,11 +1,17 @@
 <!-- 用户与权限 - 角色管理 role/role-scope -->
 <template>
-    <paper-table :status="currentStatus" key-column="id" v-model="table.rows" :header="table.header" @row-click="seeDetail"></paper-table>
+    <paper-table
+        :status="currentStatus"
+        key-column="id"
+        v-model="table.rows"
+        :header="table.header"
+        @row-click="seeDetail"
+    ></paper-table>
     <pagination v-model="curPage" v-bind="{ total, per, showAmount: 10 }"></pagination>
     <paper-modal ref="modal" size="xl">
-        <template #title>角色信息</template>
+        <template #title>{{ modalTitle }}</template>
         <template #body>
-            <power-editor></power-editor>
+            <power-editor :initial="powerEditor.initial" :disabled="powerEditor.disabled"></power-editor>
         </template>
         <template #footer></template>
     </paper-modal>
@@ -24,11 +30,16 @@ export default {
             table: { header: this.$store.state.Role.fieldsMapper, rows: [] },
             currentStatus: state.LOADING,
             curPage: 1,
-            per: 1
+            per: 1,
+            powerEditor: {
+                disabled: true,
+                initial: []
+            },
+            modalTitle: ''
         }
     },
     async mounted() {
-        await this.request({ page: this.curPage, amount: this.per });
+        await this.requestList({ page: this.curPage, amount: this.per });
         this.table.rows = this.$store.state.Role.rows;
         if (this.table.rows.length === 0)
             this.currentStatus = state.NOTHING_LOADED;
@@ -41,14 +52,17 @@ export default {
     watch: {
         async curPage(turnTo) {
             this.currentStatus = state.LOADING;
-            await this.request({ page: turnTo, amount: this.per });
+            await this.requestList({ page: turnTo, amount: this.per });
             this.table.rows = this.$store.state.Role.rows;
             this.currentStatus = state.NORMAL;
         }
     },
     methods: {
-        ...mapActions({ request: "Role/requestList" }),
-        seeDetail(row) {
+        ...mapActions({ requestList: "Role/requestList", requestRole: "Role/requestRole" }),
+        async seeDetail(row) {
+            await this.requestRole({ id: row.id });
+            this.powerEditor.initial = this.$store.state.Role.singleRole?.roleScopes;
+            this.modalTitle = row.name + ' 角色作用域';
             this.$refs.modal.open();
         }
     },

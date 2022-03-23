@@ -17,7 +17,10 @@
                     @change="onValueChange()"
                     :id="`--collapsible-checks-${item.id}--`"
                 />
-                <label :for="`--collapsible-checks-${item.id}--`">{{ item.text }}</label>
+                <label
+                    :for="`--collapsible-checks-${item.id}--`"
+                    :class="disabled ? 'disabled' : ''"
+                >{{ item.text }}</label>
             </div>
         </div>
         <div v-if="hasChildren(item) && !item.collapsed">
@@ -107,5 +110,9 @@ label,
 input[type="checkbox"] {
     user-select: none;
     cursor: pointer;
+
+    &.disabled {
+        cursor: default;
+    }
 }
 </style>

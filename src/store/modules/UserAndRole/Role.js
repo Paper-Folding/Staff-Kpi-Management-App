@@ -8,7 +8,8 @@ const state = {
         description: '描述'
     },
     rows: {},
-    total: 0
+    total: 0,
+    singleRole: null, // use for see single role detail, edit or others
 }
 
 const getters = {
@@ -32,6 +33,18 @@ const actions = {
             rootState.notify(res.data.message);
             commit('roleList', { result: [], total: 0 });
         }
+    },
+    async requestRole({ commit }, params) {
+        let res = await request('post', '/role/get', {
+            role: localStorage.getItem('role'),
+            id: params.id
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            commit('role', res.data);
+        } else {
+            rootState.notify(res.data.message);
+            commit('role', null);
+        }
     }
 }
 
@@ -39,6 +52,9 @@ const mutations = {
     roleList(state, data) {
         state.rows = data.result;
         state.total = data.total;
+    },
+    role(state, data) {
+        state.singleRole = data?.result;
     }
 }
 
