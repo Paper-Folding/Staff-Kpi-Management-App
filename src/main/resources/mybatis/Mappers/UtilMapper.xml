@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.UtilMapper">
     <select id="selectOperationObject" resultType="OperationObject">
         select *
@@ -49,6 +48,22 @@
         </if>
         <if test="operationName != null and operationName != ''">
             and f.`name` = #{operationName}
+        </if>
+        ;
+    </select>
+
+    <select id="selectRoleForUser" resultType="Role">
+        select b.*
+        from user_roles a,
+        role b,
+        authorization c
+        where a.role_id = b.id
+        and a.authorization_id = c.id
+        <if test="authorizationId != null">
+            and a.authorization_id = ${authorizationId}
+        </if>
+        <if test="username != null">
+            and c.username = #{username}
         </if>
         ;
     </select>

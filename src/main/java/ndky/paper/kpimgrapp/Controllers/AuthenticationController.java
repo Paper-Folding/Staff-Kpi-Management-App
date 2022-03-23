@@ -1,7 +1,9 @@
 package ndky.paper.kpimgrapp.Controllers;
 
 import ndky.paper.kpimgrapp.Mappers.UtilMapper;
+import ndky.paper.kpimgrapp.Models.Role;
 import ndky.paper.kpimgrapp.Request.UserPermissionRequest;
+import ndky.paper.kpimgrapp.Request.UserRoleRequest;
 import ndky.paper.kpimgrapp.Response.JwtResponse;
 import ndky.paper.kpimgrapp.Response.QueryResponse;
 import ndky.paper.kpimgrapp.Security.Jwt.JwtUtils;
@@ -14,7 +16,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -55,9 +60,18 @@ public class AuthenticationController {
     private UtilMapper utilMapper;
 
     /**
+     * used for collect user roles
+     */
+    @PostMapping("/get/role")
+    public ResponseEntity<?> queryUserRole(@RequestBody UserRoleRequest req) {
+        List<Role> list = utilMapper.selectRoleForUser(req.getId(), req.getUsername());
+        return new QueryResponse(list, list.size()).responseEntity();
+    }
+
+    /**
      * Used for collect user permission info
      */
-    @GetMapping("/permission")
+    @PostMapping("/get/permission")
     public ResponseEntity<?> queryUserPermission(@RequestBody UserPermissionRequest userPermissionRequest) {
         var userPermissions = utilMapper.selectUserPermissionBy(userPermissionRequest);
         return new QueryResponse(userPermissions, userPermissions.size()).responseEntity();
