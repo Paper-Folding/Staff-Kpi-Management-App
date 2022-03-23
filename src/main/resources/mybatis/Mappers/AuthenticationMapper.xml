@@ -33,30 +33,6 @@
           and username = #{username};
     </select>
 
-    <select id="selectRoleDetailByUsername" resultMap="roleDetail">
-        select c.id, c.name
-        from authorization a,
-             user_roles b,
-             role c
-        where a.id = b.authorization_id
-          and b.role_id = c.id
-          and a.username = #{username};
-    </select>
-
-    <resultMap id="roleDetail" type="Role">
-        <id property="id" column="id" />
-        <result property="name" column="name" />
-        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole" />
-    </resultMap>
-
-    <select id="selectRoleScopeForRole" resultType="RoleScope">
-        select b.operation_id, b.object_id
-        from role a,
-             role_scope b
-        where a.id = b.role_id
-          and a.id = #{id};
-    </select>
-
     <select id="selectRoleScopeByUsername" resultType="RoleScope">
         select distinct d.operation_id, d.object_id
         from authorization a,

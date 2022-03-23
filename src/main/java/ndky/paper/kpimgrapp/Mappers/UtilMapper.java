@@ -37,4 +37,13 @@ public interface UtilMapper {
      * @return List<Role>
      */
     List<Role> selectRoleForUser(Long authorizationId, String username);
+
+    /**
+     * check if given user with authorizationId has given role with roleName
+     *
+     * @param authorizationId
+     * @param roleName
+     * @return
+     */
+    Boolean userExistsRole(Long authorizationId, String username, String roleName);
 }

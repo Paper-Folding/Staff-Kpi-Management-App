@@ -6,7 +6,7 @@ import ndky.paper.kpimgrapp.Models.OperationObject;
 import ndky.paper.kpimgrapp.Models.RoleScope;
 import ndky.paper.kpimgrapp.Models.StaffInfo;
 import ndky.paper.kpimgrapp.Request.StaffInfoRequest;
-import ndky.paper.kpimgrapp.Response.QueryResponse;
+import ndky.paper.kpimgrapp.Response.ErrorResponse;
 import ndky.paper.kpimgrapp.Response.TableResponse;
 import ndky.paper.kpimgrapp.Utils.Constants;
 import ndky.paper.kpimgrapp.Utils.RoleUtil;
@@ -36,16 +36,28 @@ public class StaffInfoController {
 
     @PostMapping("/get")
     public ResponseEntity<?> getStaffInfo(@RequestBody StaffInfoRequest staffInfoRequest, HttpServletRequest request) {
-        // 1. get user permitted role scopes
-        List<RoleScope> roleScopeList = roleUtil.getUserRoleScopes(roleUtil.getUsernameFromRequest(request), Constants.SELECT);
-        if (roleScopeList.size() == 0)
-            return new QueryResponse(null, 0).responseEntity();
-        // 2. extract permitted fields
-        List<String> allowedFields = utilMapper.selectOperationObject(roleScopeList.stream().map(RoleScope::getObjectId).collect(Collectors.toList()), "staff_info")
-                .stream().map(OperationObject::getColumnName).collect(Collectors.toList());
-        if (allowedFields.contains("*"))
+        if (staffInfoRequest.getRole() == null || staffInfoRequest.getRole().equals(""))
+            return new ErrorResponse("No role is provided!").responseEntity();
+        String username = roleUtil.getUsernameFromRequest(request);
+        // 1. check if logged user has provided role
+        if (!utilMapper.userExistsRole(null, username, staffInfoRequest.getRole()))
+            return roleUtil.getForbiddenResponseEntity(request);
+        List<String> allowedFields;
+        // 2. back door for admin and officer
+        if (staffInfoRequest.getRole().equals("admin") || staffInfoRequest.getRole().equals("officer"))
             allowedFields = List.of("*");
-        // 3. select data and response
+        else {
+            // 3. get user permitted role scopes
+            List<RoleScope> roleScopeList = roleUtil.getUserRoleScopes(roleUtil.getUsernameFromRequest(request), Constants.SELECT);
+            if (roleScopeList.size() == 0)
+                return roleUtil.getForbiddenResponseEntity(request);
+            // 4. extract permitted fields
+            allowedFields = utilMapper.selectOperationObject(roleScopeList.stream().map(RoleScope::getObjectId).collect(Collectors.toList()), "staff_info")
+                    .stream().map(OperationObject::getColumnName).collect(Collectors.toList());
+            if (allowedFields.contains("*"))
+                allowedFields = List.of("*");
+        }
+        // 5. select data and response
         List<StaffInfo> staffInfoList = staffInfoMapper.selectStaffInfo(staffInfoRequest.getStartPos(), staffInfoRequest.getCount(), staffInfoRequest.getQuery(), staffInfoRequest.getQueryStr(), allowedFields);
         Integer total = staffInfoMapper.selectStaffInfoTotal();
         return new TableResponse(allowedFields, staffInfoList, total).responseEntity();

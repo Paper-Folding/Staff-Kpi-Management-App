@@ -9,8 +9,8 @@ public class StaffInfoRequest extends BaseQueryRequest {
     public StaffInfoRequest() {
     }
 
-    public StaffInfoRequest(Integer page, Integer count, StaffInfo query, String queryStr) {
-        super(page, count, queryStr);
+    public StaffInfoRequest(String role, Integer page, Integer count, StaffInfo query, String queryStr) {
+        super(role, page, count, queryStr);
         this.query = query;
     }
 

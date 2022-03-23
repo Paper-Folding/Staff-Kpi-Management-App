@@ -11,14 +11,18 @@ public class Role {
 
     private List<RoleScope> roleScopes;
 
+    // this is the role name that tells backend currently logged user is using which role
+    private String role;
+
     public Role() {
     }
 
-    public Role(Long id, String name, String description, List<RoleScope> roleScopes) {
+    public Role(Long id, String name, String description, List<RoleScope> roleScopes, String role) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.roleScopes = roleScopes;
+        this.role = role;
     }
 
     public Long getId() {
@@ -51,5 +55,13 @@ public class Role {
 
     public void setRoleScopes(List<RoleScope> roleScopes) {
         this.roleScopes = roleScopes;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

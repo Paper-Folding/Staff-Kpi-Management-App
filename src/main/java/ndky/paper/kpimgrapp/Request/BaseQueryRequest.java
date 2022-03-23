@@ -5,6 +5,9 @@ package ndky.paper.kpimgrapp.Request;
  * contains base request params: current request page and per page amount (count here)
  */
 public class BaseQueryRequest {
+    // this is the role name that tells backend currently logged user is using which role
+    private String role;
+
     // page is start from 1
     private Integer page;
 
@@ -17,10 +20,19 @@ public class BaseQueryRequest {
     public BaseQueryRequest() {
     }
 
-    public BaseQueryRequest(Integer page, Integer count, String queryStr) {
+    public BaseQueryRequest(String role, Integer page, Integer count, String queryStr) {
+        this.role = role;
         this.page = page;
         this.count = count;
         this.queryStr = queryStr;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public Integer getPage() {

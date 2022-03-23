@@ -68,4 +68,17 @@
         ;
     </select>
 
+    <select id="userExistsRole" resultType="Boolean">
+        select IF(count(a.id) > 0, true, false)
+        from authorization a, user_roles b, role c
+        where a.id = b.authorization_id and b.role_id = c.id
+        <if test="authorizationId != null">
+            and b.authorization_id = ${authorizationId}
+        </if>
+        <if test="username != null">
+            and a.username = #{username}
+        </if>
+        and c.`name` = #{roleName};
+    </select>
+
 </mapper>
