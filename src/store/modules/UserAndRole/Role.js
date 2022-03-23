@@ -18,6 +18,7 @@ const getters = {
 const actions = {
     async requestList({ commit, rootState }, params) {
         let res = await request('post', '/role/get/all', {
+            role: localStorage.getItem('role'),
             page: params.page,
             count: params.amount,
             // query: {

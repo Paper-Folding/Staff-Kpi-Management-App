@@ -5,7 +5,14 @@
                 <span>
                     <span class="fw-bold">{{ username }}</span>，&nbsp;您当前的角色为
                     <span class="fw-bold">{{ roleDisplay }}</span>.
-                    <a href="javascript:void(0)" class="link-secondary text-decoration-none" style="" @click="openUpRoleModal">&nbsp;&nbsp;&nbsp;<i class="bi-arrow-left-right"></i>切换角色</a>
+                    <a
+                        href="javascript:void(0)"
+                        class="link-secondary text-decoration-none"
+                        @click="openUpRoleModal"
+                    >
+                        &nbsp;&nbsp;&nbsp;
+                        <i class="bi-arrow-left-right"></i>切换角色
+                    </a>
                 </span>
             </div>
             <div class="right-one">
@@ -106,6 +113,7 @@ export default {
                 localStorage.setItem('role', this.role.name);
                 this.roleDisplay = this.role.name;
                 this.$store.state.notify(`角色已切换至${this.role.name}`, 'success');
+                this.$router.push("/dashboard");
             }
             this.$refs.modal.close();
         }
@@ -130,7 +138,7 @@ nav {
     box-shadow: 3px 0px 10px #c5c5c5;
     border-bottom: 1px #dfdfdf solid;
 
-    .left-one{
+    .left-one {
         margin-left: 2rem;
     }
 
