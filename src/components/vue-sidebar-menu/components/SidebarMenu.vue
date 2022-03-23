@@ -147,6 +147,7 @@ export default {
 @import "../scss/vue-sidebar-menu";
 .v-sidebar-menu {
   box-shadow: 3px 0px 10px #c5c5c5;
+  z-index: 412;
 
   .vsm--header {
     font-size: 1.5em;

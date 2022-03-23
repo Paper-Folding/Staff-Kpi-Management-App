@@ -1,5 +1,4 @@
 {
-    "volar.formatting.printWidth": 200,
     "[vue]": {
         "editor.defaultFormatter": "johnsoncodehk.volar",
     },

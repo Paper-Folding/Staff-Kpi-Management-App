@@ -1,4 +1,5 @@
 <template>
+    <Navbar />
     <SideMenu />
     <div class="stage">
         <router-view />
@@ -7,9 +8,18 @@
 
 <script>
 import SideMenu from "../components/Transaction/SideMenu.vue";
+import Navbar from "../components/Transaction/Navbar.vue";
 export default {
+    mounted() {
+        document.body.classList.add('dashboard');
+    },
+    unmounted() {
+        document.body.classList.remove('dashboard');
+    },
     components: {
-        SideMenu
+        SideMenu,
+        Navbar
+
     }
 }
 </script>

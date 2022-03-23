@@ -1,5 +1,5 @@
 <template>
-    <SidebarMenu v-model:collapsed="collapsed" :menu="menuContent" theme="white-theme" :showChild="showChild" @item-click="onItemClick">
+    <SidebarMenu class="sidemenu" v-model:collapsed="collapsed" :menu="menuContent" theme="white-theme" :showChild="showChild" @item-click="onItemClick">
         <template v-slot:toggle-icon>
             <!-- hide pre-defined icon -->
             <span></span>
@@ -18,7 +18,6 @@ export default {
         };
     },
     mounted() {
-        document.body.classList.add('side-menu');
         setTimeout(() => {
             this.showChild = false;
         }, 1000); // this is no method of methods
@@ -27,7 +26,7 @@ export default {
         // window.addEventListener("resize", this.menuResponsive);
     },
     unmounted() {
-        document.body.classList.remove("side-menu", "collapsed");
+        document.body.classList.remove("collapsed");
     },
     watch: {
         collapsed(changed) {
@@ -53,3 +52,9 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.sidemenu {
+    margin-top: 3.5rem;
+}
+</style>

@@ -16,6 +16,10 @@ export default class Auth {
         return JSON.parse(jsCookie.get("loggedUser") || "{}");
     }
 
+    static getCurrentRole() {
+        return localStorage.getItem('role');
+    }
+
     static isUserLogined() {
         const user = this.getLoggedUser();
         return user && user.token && user.token.length > 0;
