@@ -28,5 +28,5 @@ where t.table_name = c.table_name
 
 -- Records of role
 INSERT INTO `role` VALUES (1, 'admin', '江湖掌门人');
-INSERT INTO `role` VALUES (2, 'teacher', '教务办老师');
+INSERT INTO `role` VALUES (2, 'officer', '教务办老师');
 

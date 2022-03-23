@@ -27,11 +27,16 @@ public class RoleController {
     @Autowired
     private RoleUtil roleUtil;
 
+    // if user are requesting with a role other than admin or officer, deny them. Other requests in RoleController are the same.
+    // Thus, this method got true for role guaranteed while false otherwise.
+    private Boolean guaranteeRole(String roleName) {
+        return roleName != null && (roleName.equals("admin") || roleName.equals("officer"));
+    }
+
     // Browser does not support send get request with request body.
     @PostMapping("/get")
     public ResponseEntity<?> getRole(@RequestBody Role role, HttpServletRequest request) {
-        // if user are requesting with a role other than admin or officer, deny them. Other requests in RoleController are the same.
-        if (!role.getRole().equals("admin") && !role.getRole().equals("officer"))
+        if (!guaranteeRole(role.getRole()))
             return roleUtil.getForbiddenResponseEntity(request);
         var result = roleMapper.selectRole(role);
         if (result.isPresent())
@@ -42,7 +47,7 @@ public class RoleController {
 
     @PostMapping("/get/all")
     public ResponseEntity<?> getAllRoles(@RequestBody RoleRequest roleRequest, HttpServletRequest request) {
-        if (!roleRequest.getRole().equals("admin") && !roleRequest.getRole().equals("officer"))
+        if (!guaranteeRole(roleRequest.getRole()))
             return roleUtil.getForbiddenResponseEntity(request);
         var result = roleMapper.selectAllRoles(roleRequest.getStartPos(), roleRequest.getCount(), roleRequest.getQuery(), roleRequest.getQueryStr());
         var total = roleMapper.selectRoleTotal();
@@ -51,7 +56,7 @@ public class RoleController {
 
     @PostMapping
     public ResponseEntity<?> addRole(@RequestBody Role role, HttpServletRequest request) {
-        if (!role.getRole().equals("admin") && !role.getRole().equals("officer"))
+        if (!guaranteeRole(role.getRole()))
             return roleUtil.getForbiddenResponseEntity(request);
         if (roleMapper.existsRole(role.getName()))
             return new ModifyResponse(ModifyResponse.DUPLICATE, 0, "Duplicate role detected.").responseEntity();
@@ -64,7 +69,7 @@ public class RoleController {
 
     @DeleteMapping
     public ResponseEntity<?> deleteRole(@RequestBody Role role, HttpServletRequest request) {
-        if (!role.getRole().equals("admin") && !role.getRole().equals("officer"))
+        if (!guaranteeRole(role.getRole()))
             return roleUtil.getForbiddenResponseEntity(request);
         if (role.getName().equals("admin") || role.getName().equals("officer"))
             return new ErrorResponse(role.getName() + " is not deletable!").responseEntity();
@@ -73,7 +78,7 @@ public class RoleController {
 
     @PutMapping
     public ResponseEntity<?> updateRole(@RequestBody Role role, HttpServletRequest request) {
-        if (!role.getRole().equals("admin") && !role.getRole().equals("officer"))
+        if (!guaranteeRole(role.getRole()))
             return roleUtil.getForbiddenResponseEntity(request);
         if (role.getName().equals("admin") || role.getName().equals("officer"))
             return new ErrorResponse(role.getName() + " is not updatable!").responseEntity();

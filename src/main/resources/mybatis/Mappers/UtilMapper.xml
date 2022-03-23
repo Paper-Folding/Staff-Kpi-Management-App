@@ -37,7 +37,7 @@
         and c.id = d.role_id
         and d.object_id = e.id
         and f.id = d.operation_id
-        <if test="authorizationId != null and authorizationId != ''">
+        <if test="authorizationId != null">
             and a.id = ${authorizationId}
         </if>
         <if test="username != null and username != ''">

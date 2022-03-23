@@ -27,7 +27,7 @@ public class TestController {
     @PutMapping("/updatesth")
     public ResponseEntity<?> updatesth(HttpServletRequest request) {
         // 1. 通过用户名获取权限
-        if (roleUtil.checkIfPermissionExists(roleUtil.getUsernameFromRequest(request), new RoleScope(4, 3),new RoleScope(4,8)))
+        if (roleUtil.checkIfPermissionExists(roleUtil.getUsernameFromRequest(request), new RoleScope(4, 3, null, null), new RoleScope(4, 8, null, null)))
             return ResponseEntity.ok("yeah");
         else
             return roleUtil.getForbiddenResponseEntity(request);

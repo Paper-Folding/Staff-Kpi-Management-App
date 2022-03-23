@@ -5,13 +5,16 @@ import java.util.Objects;
 public class RoleScope {
     private long operationId;
     private long objectId;
+    private String tableName,columnName;
 
     public RoleScope() {
     }
 
-    public RoleScope(long operationId, long objectId) {
+    public RoleScope(long operationId, long objectId, String tableName, String columnName) {
         this.operationId = operationId;
         this.objectId = objectId;
+        this.tableName = tableName;
+        this.columnName = columnName;
     }
 
     public long getOperationId() {
@@ -28,6 +31,22 @@ public class RoleScope {
 
     public void setObjectId(long objectId) {
         this.objectId = objectId;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
     }
 
     @Override

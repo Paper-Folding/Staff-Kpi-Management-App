@@ -24,13 +24,4 @@ class StaffKpiManagementAppBackApplicationTests {
         map.put("ko", "ay");
         System.out.println(json.writeValueAsString(map));
     }
-
-    @Autowired
-    private UtilMapper utilMapper;
-
-    @Test
-    void testMyBatis() throws JsonProcessingException {
-        List<UserPermission> userPermissions = utilMapper.selectUserPermissionBy(new UserPermissionRequest(null, "bb", "", ""));
-        System.out.println(json.writeValueAsString(userPermissions));
-    }
 }

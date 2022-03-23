@@ -28,13 +28,18 @@
             <if test="id != null">id = ${id}</if>
             <if test="name != null">and name = #{name}</if>
         </where>
+        limit 1;
     </select>
 
     <select id="selectRoleScopeForRole" resultType="RoleScope">
-        select b.operation_id, b.object_id
+        select b.operation_id, b.object_id, d.table_name, d.column_name
         from role a,
-             role_scope b
+             role_scope b,
+             dict_operation c,
+             dict_operation_object d
         where a.id = b.role_id
+          and b.operation_id = c.id
+          and b.object_id = d.id
           and a.id = #{id};
     </select>
 
