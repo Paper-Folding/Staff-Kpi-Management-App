@@ -35,8 +35,8 @@ export default {
         }
     },
     setup(props) {
-        tool.tagUniqueId(props.modelValue);
-        tool.initializeCheckStatus(props.modelValue);
+        // tool.tagUniqueId(props.modelValue);
+        // tool.initializeCheckStatus(props.modelValue);
         const recheck = () => {
             tool.initializeCheckStatus(props.modelValue);
         }

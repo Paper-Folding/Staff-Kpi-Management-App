@@ -11,9 +11,9 @@
     <paper-modal ref="modal" size="xl">
         <template #title>{{ modalTitle }}</template>
         <template #body>
-            <power-editor :initial="powerEditor.initial" :disabled="powerEditor.disabled"></power-editor>
+            <power-editor ref="powerEditor" :initial="powerEditor.initial" :disabled="powerEditor.disabled"></power-editor>
         </template>
-        <template #footer></template>
+        <template #footer><button @click="collect">collect</button></template>
     </paper-modal>
 </template>
 
@@ -30,9 +30,9 @@ export default {
             table: { header: this.$store.state.Role.fieldsMapper, rows: [] },
             currentStatus: state.LOADING,
             curPage: 1,
-            per: 1,
+            per: 10,
             powerEditor: {
-                disabled: true,
+                disabled: false,
                 initial: []
             },
             modalTitle: ''
@@ -64,6 +64,9 @@ export default {
             this.powerEditor.initial = this.$store.state.Role.singleRole?.roleScopes;
             this.modalTitle = row.name + ' 角色作用域';
             this.$refs.modal.open();
+        },
+        collect(){
+            console.log(this.$refs.powerEditor.collect());
         }
     },
     components: {

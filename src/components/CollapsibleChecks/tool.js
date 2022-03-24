@@ -7,6 +7,10 @@ const Tool = {
     tagUniqueId: (() => {
         let id = 0;
         return (items) => {
+            if ('id' in items[0]) {
+                id = 0;
+                return;
+            }
             for (let item of items) {
                 if (Tool.hasChildren(item)) {
                     item.id = id++;
