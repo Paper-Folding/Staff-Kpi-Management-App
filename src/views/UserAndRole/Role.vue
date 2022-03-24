@@ -11,9 +11,17 @@
     <paper-modal ref="modal" size="xl">
         <template #title>{{ modalTitle }}</template>
         <template #body>
-            <power-editor ref="powerEditor" :initial="powerEditor.initial" :disabled="powerEditor.disabled"></power-editor>
+            <power-editor
+                ref="powerEditor"
+                :initial="powerEditor.initial"
+                :disabled="powerEditor.disabled"
+            ></power-editor>
         </template>
-        <template #footer><button @click="collect">collect</button></template>
+        <template #footer>
+            <outline-button color="blue" data-bs-dismiss="modal" class="btn-return" icon="none">
+                <slot name="cancelBtnText">关闭</slot>
+            </outline-button>
+        </template>
     </paper-modal>
 </template>
 
@@ -24,6 +32,7 @@ import state from '../../components/PaperTable/Constants';
 import Pagination from '../../components/Pagination.vue';
 import PaperModal from '../../components/PaperModal.vue';
 import PowerEditor from '../../components/Transaction/PowerEditor.vue';
+import OutlineButton from '../../components/OutlineButton.vue';
 export default {
     data() {
         return {
@@ -61,11 +70,14 @@ export default {
         ...mapActions({ requestList: "Role/requestList", requestRole: "Role/requestRole" }),
         async seeDetail(row) {
             await this.requestRole({ id: row.id });
-            this.powerEditor.initial = this.$store.state.Role.singleRole?.roleScopes;
+            this.powerEditor = {
+                initial: this.$store.state.Role.singleRole?.roleScopes,
+                disabled: true
+            }
             this.modalTitle = row.name + ' 角色作用域';
             this.$refs.modal.open();
         },
-        collect(){
+        collect() {
             console.log(this.$refs.powerEditor.collect());
         }
     },
@@ -73,10 +85,8 @@ export default {
         PaperTable,
         Pagination,
         PaperModal,
-        PowerEditor
+        PowerEditor,
+        OutlineButton
     }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

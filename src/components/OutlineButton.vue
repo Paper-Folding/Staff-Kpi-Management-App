@@ -1,7 +1,9 @@
 <template>
     <button :class="color" :disabled="disabled" @click="$emit('click', $event)">
         <i v-if="icon !== 'none'" :class="`bi-${icon}`">&nbsp;</i>
-        <span><slot></slot></span>
+        <span>
+            <slot></slot>
+        </span>
     </button>
 </template>
 
@@ -21,6 +23,11 @@ export default {
             default: false,
         },
     },
+    data() {
+        return {
+            btnClass: null
+        }
+    },
     emits: ["click"],
 };
 </script>
@@ -32,16 +39,19 @@ $orange: var(--bs-orange);
 $green: var(--bs-green);
 
 button {
+    --color: 0, 100%; /*the base color*/
+    --l: 50%; /*the initial lightness*/
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    padding: 0.25rem 0.75rem;
+    padding: 0 1rem;
     border: 3px black solid;
     border-radius: 10em;
     font-size: 1.25rem;
     cursor: pointer;
     background-color: #fff;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
     > * {
         user-select: none;
@@ -112,9 +122,30 @@ button {
         }
     }
 
+    &.custom {
+        color: var(--outline-button-custom-color);
+        border-color: var(--outline-button-custom-color);
+
+        &:hover {
+            color: #fff;
+            background-color: var(--outline-button-custom-color);
+            border-color: var(--outline-button-custom-color);
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 0.25rem var(--outline-button-custom-shadow-color);
+        }
+    }
+
     &:disabled {
         pointer-events: none;
         opacity: 0.65;
     }
 }
+
+// ::v-deep(.btn-return) {
+//     $btnReturnColor: #e00;
+//     --outline-button-custom-color: #{$btnReturnColor};
+//     --outline-button-custom-shadow-color: #{lighten($btnReturnColor, 10%)};
+// }
 </style>
