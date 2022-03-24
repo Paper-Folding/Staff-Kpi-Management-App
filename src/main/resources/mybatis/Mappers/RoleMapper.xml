@@ -68,7 +68,8 @@
     <insert id="addRoleScopesForRole" parameterType="java.util.List">
         insert into role_scope(role_id, operation_id, object_id) values
         <foreach collection="roleScopes" item="scope" open="(" close=")" separator="),(">
-            ${roleId}, ${scope.operationId}, ${scope.objectId}
+            ${roleId}, ${scope.operationId}, (select id from dict_operation_object where table_name=#{scope.tableName}
+            and column_name=#{scope.columnName})
         </foreach>
         ;
     </insert>

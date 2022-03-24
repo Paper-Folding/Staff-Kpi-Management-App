@@ -4,5 +4,6 @@ create trigger before_role_delete
     on role
     for each row
 begin
+    delete from user_roles where role_id = OLD.id;
     delete from role_scope where role_id = OLD.id;
 end;

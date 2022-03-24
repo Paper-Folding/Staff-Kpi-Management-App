@@ -6,18 +6,18 @@ public class ModifyResponse extends BaseResponse {
     public static final int DUPLICATE = -1;
 
     int afflicted;
-    String description;
+    String message;
 
-    public ModifyResponse(int code, int afflicted, String description) {
+    public ModifyResponse(int code, int afflicted, String message) {
         super(code);
         this.afflicted = afflicted;
-        this.description = description;
+        this.message = message;
     }
 
-    public ModifyResponse(int afflicted, String description) {
+    public ModifyResponse(int afflicted, String message) {
         super(HttpServletResponse.SC_OK);
         this.afflicted = afflicted;
-        this.description = description;
+        this.message = message;
     }
 
     public int getAfflicted() {
@@ -28,11 +28,11 @@ public class ModifyResponse extends BaseResponse {
         this.afflicted = afflicted;
     }
 
-    public String getDescription() {
-        return description;
+    public String getMessage() {
+        return message;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
