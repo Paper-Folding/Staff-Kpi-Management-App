@@ -100,7 +100,7 @@ export default {
                             result.push({
                                 operationId: operation.dbid,
                                 tableName: table.name,
-                                fieldName: '*'
+                                columnName: '*'
                             });
                         } else {
                             for (let field of operation.children) {
@@ -109,7 +109,7 @@ export default {
                                     result.push({
                                         operationId: operation.dbid,
                                         tableName: table.name,
-                                        fieldName: field.name
+                                        columnName: field.name
                                     });
                                 }
                             }
@@ -118,7 +118,7 @@ export default {
                         result.push({
                             operationId: operation.dbid,
                             tableName: table.name,
-                            fieldName: '*'
+                            columnName: '*'
                         });
                     }
                 }

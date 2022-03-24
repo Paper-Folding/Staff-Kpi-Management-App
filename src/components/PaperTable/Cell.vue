@@ -104,7 +104,7 @@ export default {
             case 'button':
                 this.type = 'button';
                 this.$refs.cell.style.setProperty('--pt-icon-color', this.value.color || null);
-                this.$refs.cell.style.setProperty('--pt-icon-color-hover', this.value.hoverColor || null);
+                this.$refs.cell.style.setProperty('--pt-icon-color-hover', this.value.hoverColor || this.value.color || null);
                 break;
         }
     }
