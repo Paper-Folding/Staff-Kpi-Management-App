@@ -34,6 +34,6 @@ public interface RoleMapper extends UtilMapper {
      */
     Integer updateRole(Role role);
 
-    @Select("select count(id) from role")
+    @Select("select count(id)-3 from role")
     Integer selectRoleTotal();
 }

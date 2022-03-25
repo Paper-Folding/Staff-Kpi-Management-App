@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.RoleMapper">
     <select id="existsRoleStrict" resultType="Boolean">
         select (IF(count(id) = 0, false, true)) as result
@@ -16,18 +16,21 @@
     </select>
 
     <resultMap id="roleDetail" type="Role">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="description" column="description"/>
-        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole"/>
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="description" column="description" />
+        <result property="expiration" column="expiration" />
+        <result property="creatorId" column="creator_authorization_id" />
+        <result property="creatorName" column="creatorName" />
+        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole" />
     </resultMap>
 
     <select id="selectRole" resultMap="roleDetail">
-        select * from role
-        <where>
-            <if test="id != null">id = ${id}</if>
-            <if test="name != null">and name = #{name}</if>
-        </where>
+        select a.id, a.name, a.description, a.expiration, a.creator_authorization_id, c.name as creatorName
+        from role a,authorization b,staff_info c
+        where a.creator_authorization_id = b.id and b.staff_info_id = c.id
+        <if test="id != null">and a.id = ${id}</if>
+        <if test="name != null">and a.name = #{name}</if>
         limit 1;
     </select>
 
@@ -44,25 +47,24 @@
     </select>
 
     <select id="selectAllRoles" resultMap="roleDetail">
-        select *
-        from role
-        <where>
-            <if test="query != null">
-                name like '%' #{query} '%' or description like '%' #{query} '%'
-            </if>
-            <if test="query == null and role.name != null">
-                name like '%' #{role.name} '%'
-            </if>
-            <if test="query == null and role.description != null">
-                and description like '%' #{role.description} '%'
-            </if>
-        </where>
+        select a.id, a.name, a.description, a.expiration, a.creator_authorization_id, b.username as creatorName
+        from role a,authorization b
+        where a.creator_authorization_id = b.id
+        <if test="query != null">
+            and (a.name like '%' #{query} '%' or a.description like '%' #{query} '%')
+        </if>
+        <if test="query == null and role.name != null">
+            and a.name like '%' #{role.name} '%'
+        </if>
+        <if test="query == null and role.description != null">
+            and a.description like '%' #{role.description} '%'
+        </if>
         limit ${from}, ${length};
     </select>
 
     <insert id="addRole">
-        insert into role(name, description)
-        values (#{name}, #{description});
+        insert into role(name, description, expiration, creator_authorization_id)
+        values (#{name}, #{description}, #{expiration}, ${creatorId});
     </insert>
 
     <insert id="addRoleScopesForRole" parameterType="java.util.List">
@@ -91,7 +93,8 @@
         update role
         <set>
             <if test="name!=null">name = #{name},</if>
-            <if test="description!=null">description = #{description}</if>
+            <if test="description!=null">description = #{description},</if>
+            <if test="expiration != null">expiration = #{expiration}</if>
         </set>
         where id = ${id}
     </update>

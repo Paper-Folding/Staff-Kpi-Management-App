@@ -6,6 +6,7 @@ import ndky.paper.kpimgrapp.Request.RoleRequest;
 import ndky.paper.kpimgrapp.Response.ErrorResponse;
 import ndky.paper.kpimgrapp.Response.ModifyResponse;
 import ndky.paper.kpimgrapp.Response.QueryResponse;
+import ndky.paper.kpimgrapp.Security.Jwt.JwtUtils;
 import ndky.paper.kpimgrapp.Utils.RoleUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +28,22 @@ public class RoleController {
     @Autowired
     private RoleUtil roleUtil;
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
     // if user are requesting with a role other than admin or officer, deny them. Other requests in RoleController are the same.
     // Thus, this method got true for role guaranteed while false otherwise.
     private Boolean guaranteeRole(String roleName) {
         return roleName != null && (roleName.equals("admin") || roleName.equals("officer"));
+    }
+
+    private Boolean guaranteeCreatorModify(Role role, HttpServletRequest request) {
+        if (role.getRole().equals("officer")) {
+            // check if they are the creator of current selected role
+            String requestUser = jwtUtils.getUserNameFromJwtToken(jwtUtils.getJwtFromRequest(request));
+            return role.getCreatorName().equals(requestUser);
+        }
+        return true;
     }
 
     // Browser does not support send get request with request body.
@@ -73,6 +86,8 @@ public class RoleController {
             return roleUtil.getForbiddenResponseEntity(request);
         if (role.getName().equals("admin") || role.getName().equals("officer"))
             return new ErrorResponse(role.getName() + " is not deletable!").responseEntity();
+        if (!guaranteeCreatorModify(role, request))
+            return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
         return new ModifyResponse(roleMapper.deleteRole(role), "Done").responseEntity();
     }
 
@@ -82,6 +97,8 @@ public class RoleController {
             return roleUtil.getForbiddenResponseEntity(request);
         if (role.getName().equals("admin") || role.getName().equals("officer"))
             return new ErrorResponse(role.getName() + " is not updatable!").responseEntity();
+        if (!guaranteeCreatorModify(role, request))
+            return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
         if (role.getName() != null && !roleMapper.existsRoleStrict(role.getId(), role.getName()) && roleMapper.existsRole(role.getName()))
             return new ModifyResponse(ModifyResponse.DUPLICATE, 0, "Trying to rename to a duplicate role.").responseEntity();
         int afflicted = roleMapper.updateRole(role);

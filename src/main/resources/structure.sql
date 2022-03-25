@@ -35,26 +35,32 @@ CREATE TABLE `annual_evaluate`  (
 -- Table structure for authorization
 -- ----------------------------
 DROP TABLE IF EXISTS `authorization`;
-CREATE TABLE `authorization`  (
-                                  `id` bigint NOT NULL AUTO_INCREMENT,
-                                  `staff_info_id` bigint NULL DEFAULT NULL COMMENT '关联staff_info中的人员id',
-                                  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'unique',
-                                  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '',
-                                  PRIMARY KEY (`id`) USING BTREE,
-                                  INDEX `staff_info_id`(`staff_info_id`) USING BTREE,
-                                  INDEX `username`(`username`) USING BTREE,
-                                  CONSTRAINT `authorization_ibfk_1` FOREIGN KEY (`staff_info_id`) REFERENCES `staff_info` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '身份验证表' ROW_FORMAT = Dynamic;
+CREATE TABLE `authorization`
+(
+    `id`            bigint                                                        NOT NULL AUTO_INCREMENT,
+    `staff_info_id` bigint                                                        NULL     DEFAULT NULL COMMENT '关联staff_info中的人员id',
+    `username`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'unique',
+    `password`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `staff_info_id` (`staff_info_id`) USING BTREE,
+    INDEX `username` (`username`) USING BTREE,
+    CONSTRAINT `authorization_ibfk_1` FOREIGN KEY (`staff_info_id`) REFERENCES `staff_info` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '身份验证表'
+  ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for class
 -- ----------------------------
 DROP TABLE IF EXISTS `class`;
-CREATE TABLE `class`  (
-                          `id` bigint NOT NULL AUTO_INCREMENT,
-                          `staff_info_id` bigint NULL DEFAULT NULL COMMENT '教工号',
-                          `class` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '班级名称',
-                          `duty_time` date NULL DEFAULT NULL COMMENT '任职年份',
+CREATE TABLE `class`
+(
+    `id`                             bigint                                                        NOT NULL AUTO_INCREMENT,
+    `staff_info_id`                  bigint                                                        NULL DEFAULT NULL COMMENT '教工号',
+    `class`                          varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '班级名称',
+    `duty_time`                      date                                                          NULL DEFAULT NULL COMMENT '任职年份',
                           `add_time` datetime NULL DEFAULT NULL COMMENT '登记时间',
                           `extra` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '备注',
                           PRIMARY KEY (`id`) USING BTREE
@@ -130,33 +136,46 @@ CREATE TABLE `day_off`  (
 -- Table structure for dict_operation
 -- ----------------------------
 DROP TABLE IF EXISTS `dict_operation`;
-CREATE TABLE `dict_operation`  (
-                                   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '操作标识符',
-                                   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '操作名',
-                                   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '操作描述',
-                                   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '操作字典表' ROW_FORMAT = Dynamic;
+CREATE TABLE `dict_operation`
+(
+    `id`          bigint                                                        NOT NULL AUTO_INCREMENT COMMENT '操作标识符',
+    `name`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '操作名',
+    `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '操作描述',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '操作字典表'
+  ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for dict_operation_object
 -- ----------------------------
 DROP TABLE IF EXISTS `dict_operation_object`;
-CREATE TABLE `dict_operation_object`  (
-                                          `id` bigint NOT NULL AUTO_INCREMENT,
-                                          `table_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '',
-                                          `column_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '',
-                                          PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 287 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限作用域对象表，其实就是表格的字段表，用于描述某个权限的可作用对象' ROW_FORMAT = Dynamic;
+CREATE TABLE `dict_operation_object`
+(
+    `id`          bigint                                                        NOT NULL AUTO_INCREMENT,
+    `table_name`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '',
+    `column_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `get id` (`table_name`, `column_name`) USING BTREE,
+    UNIQUE INDEX `id` (`id`) USING BTREE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限作用域对象表，其实就是表格的字段表，用于描述某个权限的可作用对象'
+  ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for monthly_news
 -- ----------------------------
 DROP TABLE IF EXISTS `monthly_news`;
-CREATE TABLE `monthly_news`  (
-                                 `id` bigint NOT NULL AUTO_INCREMENT,
-                                 `staff_info_id` bigint NULL DEFAULT NULL COMMENT '教工号',
-                                 `date` date NULL DEFAULT NULL COMMENT '日期',
-                                 `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '填写内容',
+CREATE TABLE `monthly_news`
+(
+    `id`                                bigint                                                    NOT NULL AUTO_INCREMENT,
+    `staff_info_id`                     bigint                                                    NULL DEFAULT NULL COMMENT '教工号',
+    `date`                              date                                                      NULL DEFAULT NULL COMMENT '日期',
+    `content`                           longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '填写内容',
                                  `time` datetime NULL DEFAULT NULL COMMENT '填写时间',
                                  PRIMARY KEY (`id`) USING BTREE,
                                  INDEX `staff_info_id`(`staff_info_id`) USING BTREE,
@@ -209,42 +228,57 @@ CREATE TABLE `research`  (
 -- Table structure for role
 -- ----------------------------
 DROP TABLE IF EXISTS `role`;
-CREATE TABLE `role`  (
-                         `id` bigint NOT NULL AUTO_INCREMENT,
-                         `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '用户权限名',
-                         `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '权限描述',
-                         PRIMARY KEY (`id`) USING BTREE,
-                         UNIQUE INDEX `id`(`id`) USING BTREE,
-                         UNIQUE INDEX `name`(`name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限字典表' ROW_FORMAT = Dynamic;
-
+CREATE TABLE `role`
+(
+    `id`                       bigint                                                        NOT NULL AUTO_INCREMENT,
+    `name`                     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '用户权限名',
+    `description`              varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '权限描述',
+    `expiration`               datetime                                                      NULL DEFAULT NULL COMMENT '角色过期时间',
+    `creator_authorization_id` bigint                                                        NULL DEFAULT NULL COMMENT '角色创建者authorization id',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE INDEX `id` (`id`) USING BTREE,
+    UNIQUE INDEX `name` (`name`) USING BTREE,
+    INDEX `expiration` (`expiration`) USING BTREE,
+    INDEX `creator_authorization_id` (`creator_authorization_id`) USING BTREE,
+    CONSTRAINT `role_ibfk_1` FOREIGN KEY (`creator_authorization_id`) REFERENCES `authorization` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限字典表'
+  ROW_FORMAT = Dynamic;
 -- ----------------------------
 -- Table structure for role_scope
 -- ----------------------------
 DROP TABLE IF EXISTS `role_scope`;
-CREATE TABLE `role_scope`  (
-                               `id` bigint NOT NULL AUTO_INCREMENT,
-                               `role_id` bigint NULL DEFAULT NULL COMMENT '角色id',
-                               `operation_id` bigint NULL DEFAULT NULL COMMENT '操作id',
-                               `object_id` bigint NULL DEFAULT NULL COMMENT '操作对象id',
-                               PRIMARY KEY (`id`) USING BTREE,
-                               INDEX `role_id`(`role_id`) USING BTREE,
-                               INDEX `operation_id`(`operation_id`) USING BTREE,
-                               INDEX `object_id`(`object_id`) USING BTREE,
-                               CONSTRAINT `role_scope_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-                               CONSTRAINT `role_scope_ibfk_2` FOREIGN KEY (`operation_id`) REFERENCES `dict_operation` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-                               CONSTRAINT `role_scope_ibfk_3` FOREIGN KEY (`object_id`) REFERENCES `dict_operation_object` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限访问作用域表' ROW_FORMAT = Dynamic;
+CREATE TABLE `role_scope`
+(
+    `id`           bigint NOT NULL AUTO_INCREMENT,
+    `role_id`      bigint NULL DEFAULT NULL COMMENT '角色id',
+    `operation_id` bigint NULL DEFAULT NULL COMMENT '操作id',
+    `object_id`    bigint NULL DEFAULT NULL COMMENT '操作对象id',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `role_id` (`role_id`) USING BTREE,
+    INDEX `operation_id` (`operation_id`) USING BTREE,
+    INDEX `object_id` (`object_id`) USING BTREE,
+    CONSTRAINT `role_scope_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `role_scope_ibfk_2` FOREIGN KEY (`operation_id`) REFERENCES `dict_operation` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `role_scope_ibfk_3` FOREIGN KEY (`object_id`) REFERENCES `dict_operation_object` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限访问作用域表'
+  ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for semester_evaluate
 -- ----------------------------
 DROP TABLE IF EXISTS `semester_evaluate`;
-CREATE TABLE `semester_evaluate`  (
-                                      `id` bigint NOT NULL AUTO_INCREMENT,
-                                      `staff_info_id` bigint NULL DEFAULT NULL COMMENT '对应教工id',
-                                      `course_no` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '课程编号',
-                                      `course_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '课程名',
+CREATE TABLE `semester_evaluate`
+(
+    `id`                                         bigint                                                        NOT NULL AUTO_INCREMENT,
+    `staff_info_id`                              bigint                                                        NULL DEFAULT NULL COMMENT '对应教工id',
+    `course_no`                                  varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL DEFAULT '' COMMENT '课程编号',
+    `course_name`                                varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '课程名',
                                       `class_id` bigint NULL DEFAULT NULL COMMENT '班级id',
                                       `semester` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '学期',
                                       `result` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '考核结果',
@@ -261,37 +295,42 @@ CREATE TABLE `semester_evaluate`  (
 DROP TABLE IF EXISTS `staff_info`;
 CREATE TABLE `staff_info`  (
                                `id` bigint NOT NULL AUTO_INCREMENT,
-                               `no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '工号',
-                               `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '姓名',
-                               `gender` enum('女','男') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '性别，enum(\'女\',\'男\')类型',
-                               `nation` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '民族',
-                               `birth` date NULL DEFAULT NULL COMMENT '出生年月日',
-                               `enroll_time` date NULL DEFAULT NULL COMMENT '参加工作时间',
-                               `politic` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '政治面貌',
-                               `major` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '专业',
-                               `level` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '学历学位',
-                               `level_unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '学历学位授予单位',
-                               `level_date` date NULL DEFAULT NULL COMMENT '学历学位授予日期',
-                               `job_alias` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '职称',
-                               `research_direction` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '主要研究方向',
-                               `job` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '职务',
-                               `department` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '部门',
-                               `idcard` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '身份证号',
-                               `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '办公电话',
-                               `long_phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '长号',
-                               `short_phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '短号',
+                               `no`                 varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NOT NULL DEFAULT '' COMMENT '工号',
+                               `name`               varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci   NULL     DEFAULT '' COMMENT '姓名',
+                               `gender`             enum('女','男') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT NULL COMMENT '性别，enum(\'女\',\'男\')类型',
+                               `nation`             varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci   NULL     DEFAULT '' COMMENT '民族',
+                               `birth`              date                                                           NULL     DEFAULT NULL COMMENT '出生年月日',
+                               `enroll_time`        date                                                           NULL     DEFAULT NULL COMMENT '参加工作时间',
+                               `politic`            varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci   NULL     DEFAULT '' COMMENT '政治面貌',
+                               `major`              varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL     DEFAULT '' COMMENT '专业',
+                               `level`              varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL     DEFAULT '' COMMENT '学历学位',
+                               `level_unit`         varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL     DEFAULT '' COMMENT '学历学位授予单位',
+                               `level_date`         date                                                           NULL     DEFAULT NULL COMMENT '学历学位授予日期',
+                               `job_alias`          varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL     DEFAULT '' COMMENT '职称',
+                               `research_direction` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL     DEFAULT '' COMMENT '主要研究方向',
+                               `job`                varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL     DEFAULT '' COMMENT '职务',
+                               `department`         varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL     DEFAULT NULL COMMENT '部门',
+                               `idcard`             varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NULL     DEFAULT NULL COMMENT '身份证号',
+                               `phone`              varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci   NULL     DEFAULT NULL COMMENT '办公电话',
+                               `long_phone`         varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci   NULL     DEFAULT NULL COMMENT '长号',
+                               `short_phone`        varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci   NULL     DEFAULT NULL COMMENT '短号',
                                PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '员工基本信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '员工基本信息表'
+  ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for trivia
 -- ----------------------------
 DROP TABLE IF EXISTS `trivia`;
-CREATE TABLE `trivia`  (
-                           `id` bigint NOT NULL AUTO_INCREMENT,
-                           `staff_info_id` bigint NULL DEFAULT NULL COMMENT '教工id',
-                           `type` enum('进修','培训','学术会议','学习交流','other') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '类别，enum(\'进修\',\'培训\',\'学术会议\',\'学习交流\',\'other\')类型',
-                           `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '名称',
+CREATE TABLE `trivia`
+(
+    `id`                                       bigint                                                                                  NOT NULL AUTO_INCREMENT,
+    `staff_info_id`                            bigint                                                                                  NULL DEFAULT NULL COMMENT '教工id',
+    `type`                                     enum ('进修','培训','学术会议','学习交流','other') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '类别，enum(\'进修\',\'培训\',\'学术会议\',\'学习交流\',\'other\')类型',
+    `name`                                     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci                           NULL DEFAULT '' COMMENT '名称',
                            `count` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '记录学时数',
                            `time` datetime NULL DEFAULT NULL COMMENT '发生时间',
                            `add_staff_info_id` bigint NULL DEFAULT NULL COMMENT '登记人id',
@@ -325,15 +364,20 @@ CREATE TABLE `tutor`  (
 -- Table structure for user_roles
 -- ----------------------------
 DROP TABLE IF EXISTS `user_roles`;
-CREATE TABLE `user_roles`  (
-                               `id` bigint NOT NULL AUTO_INCREMENT,
-                               `authorization_id` bigint NULL DEFAULT NULL COMMENT '用户id',
-                               `role_id` bigint NULL DEFAULT NULL COMMENT '权限id',
-                               PRIMARY KEY (`id`) USING BTREE,
-                               INDEX `authorization_id`(`authorization_id`) USING BTREE,
-                               INDEX `role_id`(`role_id`) USING BTREE,
-                               CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`authorization_id`) REFERENCES `authorization` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-                               CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户鉴权表' ROW_FORMAT = Dynamic;
+CREATE TABLE `user_roles`
+(
+    `id`               bigint NOT NULL AUTO_INCREMENT,
+    `authorization_id` bigint NULL DEFAULT NULL COMMENT '用户id',
+    `role_id`          bigint NULL DEFAULT NULL COMMENT '权限id',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `authorization_id` (`authorization_id`) USING BTREE,
+    INDEX `role_id` (`role_id`) USING BTREE,
+    CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`authorization_id`) REFERENCES `authorization` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户鉴权表'
+  ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
