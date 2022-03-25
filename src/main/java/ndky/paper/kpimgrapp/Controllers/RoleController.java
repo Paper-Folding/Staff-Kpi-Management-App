@@ -38,6 +38,8 @@ public class RoleController {
     }
 
     private Boolean guaranteeCreatorModify(Role role, HttpServletRequest request) {
+        if (role.getCreatorName() == null)
+            return false;
         if (role.getRole().equals("officer")) {
             // check if they are the creator of current selected role
             String requestUser = jwtUtils.getUserNameFromJwtToken(jwtUtils.getJwtFromRequest(request));
@@ -84,7 +86,7 @@ public class RoleController {
     public ResponseEntity<?> deleteRole(@RequestBody Role role, HttpServletRequest request) {
         if (!guaranteeRole(role.getRole()))
             return roleUtil.getForbiddenResponseEntity(request);
-        if (role.getName().equals("admin") || role.getName().equals("officer"))
+        if (role.getName().equals("admin") || role.getName().equals("officer") || role.getName().equals("initial"))
             return new ErrorResponse(role.getName() + " is not deletable!").responseEntity();
         if (!guaranteeCreatorModify(role, request))
             return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
@@ -95,7 +97,7 @@ public class RoleController {
     public ResponseEntity<?> updateRole(@RequestBody Role role, HttpServletRequest request) {
         if (!guaranteeRole(role.getRole()))
             return roleUtil.getForbiddenResponseEntity(request);
-        if (role.getName().equals("admin") || role.getName().equals("officer"))
+        if (role.getName().equals("admin") || role.getName().equals("officer") || role.getName().equals("initial"))
             return new ErrorResponse(role.getName() + " is not updatable!").responseEntity();
         if (!guaranteeCreatorModify(role, request))
             return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();

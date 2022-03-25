@@ -233,7 +233,7 @@ CREATE TABLE `role`
     `id`                       bigint                                                        NOT NULL AUTO_INCREMENT,
     `name`                     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '用户权限名',
     `description`              varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '权限描述',
-    `expiration`               datetime                                                      NULL DEFAULT NULL COMMENT '角色过期时间',
+    `expiration`               datetime                                                      NULL DEFAULT NULL COMMENT '角色过期时间, null means permanent',
     `creator_authorization_id` bigint                                                        NULL DEFAULT NULL COMMENT '角色创建者authorization id',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `id` (`id`) USING BTREE,
