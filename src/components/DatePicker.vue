@@ -42,7 +42,7 @@ export default {
                 inputFormat = "yyyy年MM月";
                 break;
             case 'time':
-                inputFormat = "hh时mm分";
+                inputFormat = "HH时mm分";
         }
         const picked = computed({
             get: () => props.modelValue,
