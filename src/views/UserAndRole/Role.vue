@@ -16,7 +16,7 @@
                 <input
                     type="text"
                     class="form-control"
-                    v-model="modalEditor.name"
+                    v-model="modalEditor.data.name"
                     :disabled="modalEditor.disabled"
                     placeholder="角色名称"
                 />
@@ -26,15 +26,42 @@
                 <textarea
                     placeholder="角色描述"
                     class="form-control"
-                    v-model="modalEditor.description"
+                    v-model="modalEditor.data.description"
                     :disabled="modalEditor.disabled"
                     rows="3"
                 ></textarea>
             </div>
+            <div class="mb-3">
+                <span class="form-label">失效时间</span>
+                <div class="date-scope">
+                    <date-picker
+                        v-model="modalEditor.data.expirationDay"
+                        :disabled="modalEditor.disabled"
+                        class="date-day"
+                        type="day"
+                    ></date-picker>
+                    <date-picker
+                        v-model="modalEditor.data.expirationTime"
+                        :disabled="modalEditor.disabled"
+                        class="date-time"
+                        type="time"
+                    ></date-picker>
+                </div>
+            </div>
+            <div class="mb-3" v-if="modalEditor.mode === 'see'">
+                <span class="form-label">创建者用户名</span>
+                <input
+                    type="text"
+                    class="form-control"
+                    disabled
+                    v-model="modalEditor.data.creator"
+                    placeholder="创建者"
+                />
+            </div>
             <span class="form-label">权限编辑</span>
             <power-editor
                 ref="powerEditor"
-                :initial="modalEditor.initial"
+                :initial="modalEditor.data.roleScopes"
                 :disabled="modalEditor.disabled"
             ></power-editor>
         </template>
@@ -58,6 +85,8 @@ import Pagination from '../../components/Pagination.vue';
 import PaperModal from '../../components/PaperModal.vue';
 import PowerEditor from '../../components/Transaction/PowerEditor.vue';
 import OutlineButton from '../../components/OutlineButton.vue';
+import DatePicker from '../../components/DatePicker.vue';
+import Maid from '../../utils/Maid.js';
 export default {
     data() {
         return {
@@ -68,10 +97,15 @@ export default {
             modalEditor: {
                 mode: '',
                 disabled: false,
-                initial: [],
-                id: -1,
-                name: '',
-                description: ''
+                data: {
+                    id: -1,
+                    name: '',
+                    description: '',
+                    expirationDay: null,
+                    expirationTime: null,
+                    creator: '',
+                    roleScopes: []
+                }
             },
             modalTitle: ''
         }
@@ -98,54 +132,56 @@ export default {
     methods: {
         ...mapActions({ requestList: "Role/requestList", requestRole: "Role/requestRole", deleteRole: "Role/requestDeleteRole", addRole: "Role/requestAddRole", updateRole: "Role/requestUpdateRole" }),
         async seeDetail(row) {
-            if (row.id === 1 || row.id === 2)
-                return;
             await this.requestRole({ id: row.id });
             this.modalEditor = {
                 mode: 'see',
-                initial: this.$store.state.Role.singleRole?.roleScopes,
                 disabled: true,
-                id: row.id,
-                name: row.name,
-                description: row.description
+                data: {
+                    id: row.id,
+                    name: row.name,
+                    description: row.description,
+                    expirationDay: new Date(row.expiration),
+                    expirationTime: new Date(row.expiration),
+                    creator: row.creatorName,
+                    roleScopes: this.$store.state.Role.singleRole?.roleScopes
+                }
             }
             this.modalTitle = row.name + ' 角色作用域';
             this.$refs.modal.open();
         },
         async callEdit(row) {
-            if (row.id === 1 || row.id === 2) {
-                this.$store.state.notify(row.name + ' 禁止更改！', 'warning');
-                return;
-            }
             await this.requestRole({ id: row.id });
             this.modalEditor = {
                 mode: 'edit',
-                initial: this.$store.state.Role.singleRole?.roleScopes,
                 disabled: false,
-                id: row.id,
-                name: row.name,
-                description: row.description
+                data: {
+                    id: row.id,
+                    name: row.name,
+                    description: row.description,
+                    expirationDay: new Date(row.expiration),
+                    expirationTime: new Date(row.expiration),
+                    creator: row.creatorName,
+                    roleScopes: this.$store.state.Role.singleRole?.roleScopes
+                }
             }
             this.modalTitle = '编辑 ' + row.name + ' 角色';
             this.$refs.modal.open();
         },
         async callDelete(row) {
-            if (row.id === 1 || row.id === 2) {
-                this.$store.state.notify(row.name + ' 禁止删除！', 'warning');
-                return;
-            }
-            if (confirm(`确实要删除${row.name}角色吗？与此角色相关联的用户也会直接失去此角色！`)) {
-                await this.deleteRole({ id: row.id, name: row.name });
+            if (confirm(`确实要删除${row.name}角色吗？与此角色相关联的用户也会因此直接失去此角色！`)) {
+                await this.deleteRole({ id: row.id, name: row.name, creatorName: row.creatorName });
                 await this.requestList({ page: this.curPage, amount: this.per });
                 this.table.rows = this.sanitizeRows(this.$store.state.Role.rows);
             }
         },
         async editIt() {
             await this.updateRole({
-                id: this.modalEditor.id,
-                name: this.modalEditor.name,
-                description: this.modalEditor.description,
-                roleScopes: this.$refs.powerEditor.collect()
+                id: this.modalEditor.data.id,
+                name: this.modalEditor.data.name,
+                description: this.modalEditor.data.description,
+                expiration: Maid.formatDate(this.modalEditor.data.expirationDay, 'YYYY-mm-dd') + ' ' + Maid.formatDate(this.modalEditor.data.expirationTime, 'HH:MM'),
+                roleScopes: this.$refs.powerEditor.collect(),
+                creatorName: this.modalEditor.data.creator
             });
             if (this.$store.state.Role.responseStatus) {
                 this.$refs.modal.close();
@@ -158,8 +194,14 @@ export default {
         },
         sanitizeRows(requestedRows) {
             let result = [];
+            let now = new Date();
             for (let row of requestedRows) {
-                result.push({ ...row, edit: { type: 'btn', title: '编辑角色', icon: 'bi-pencil-square', color: 'var(--bs-primary)', click: this.callEdit }, delete: { type: 'btn', title: '移除角色', icon: 'bi-trash', color: 'var(--bs-danger)', click: this.callDelete } });
+                result.push({
+                    ...row,
+                    isExpired: Maid.compareTime(row.expiration, now) < 0 ? { type: 'i', icon: 'bi-x-lg' } : { type: 'i', icon: 'bi-check-lg' },
+                    edit: { type: 'btn', title: '编辑角色', icon: 'bi-pencil-square', color: 'var(--bs-primary)', click: this.callEdit },
+                    delete: { type: 'btn', title: '移除角色', icon: 'bi-trash', color: 'var(--bs-danger)', click: this.callDelete }
+                });
             }
             return result;
         }
@@ -169,7 +211,8 @@ export default {
         Pagination,
         PaperModal,
         PowerEditor,
-        OutlineButton
+        OutlineButton,
+        DatePicker
     }
 }
 </script>
@@ -178,5 +221,20 @@ export default {
 .form-label {
     user-select: none;
     font-weight: bold;
+}
+
+.date-scope {
+    display: flex;
+    justify-content: flex-start;
+}
+
+::v-deep() {
+    .date-day {
+        width: 9em;
+    }
+
+    .date-time {
+        width: 5.5em;
+    }
 }
 </style>

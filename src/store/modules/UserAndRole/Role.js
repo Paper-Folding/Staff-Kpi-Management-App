@@ -1,10 +1,13 @@
 import request from "../../../utils/Ajax";
+import Auth from "../../../utils/Auth";
 
 const state = {
     fieldsMapper: {
         id: { text: '#', width: '10%' },
-        name: { text: '角色名', width: '30%' },
-        description: { text: '描述', width: '45%' },
+        name: { text: '角色名', width: '20%' },
+        description: { text: '描述', width: '30%' },
+        isExpired: { text: '有效否', width: '10%' },
+        creatorName: { text: '创建者用户名', width: '15%' },
         edit: '',
         delete: ''
     },
@@ -52,7 +55,8 @@ const actions = {
         let res = await request("delete", '/role', {
             role: localStorage.getItem('role'),
             id: params.id,
-            name: params.name
+            name: params.name,
+            creatorName: params.creatorName
         })
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已删除', 'success');
@@ -66,13 +70,14 @@ const actions = {
             id: params.id,
             name: params.name,
             description: params.description,
+            expiration: params.expiration,
+            creatorId: Auth.getLoggedUser().id,
             roleScopes: params.roleScopes
         });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已添加', 'success');
         } else {
             rootState.notify(res.data.message);
-
         }
     },
     async requestUpdateRole({ commit, rootState }, params) {
@@ -81,7 +86,9 @@ const actions = {
             id: params.id,
             name: params.name,
             description: params.description,
-            roleScopes: params.roleScopes
+            expiration: params.expiration,
+            roleScopes: params.roleScopes,
+            creatorName: params.creatorName,
         });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已更改', 'success');
