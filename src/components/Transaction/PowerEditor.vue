@@ -1,10 +1,10 @@
 <!-- 权限编辑器 -->
 <template>
-    <CCS v-model="processedInitialList"></CCS>
+    <Core v-model="processedInitialList"></Core>
 </template>
 
 <script>
-import CCS from "../CollapsibleChecks/Container.vue";
+import Core from "../CollapsibleChecks/Container.vue";
 import tool from "../CollapsibleChecks/tool";
 export default {
     data() {
@@ -177,7 +177,7 @@ export default {
         }
     },
     components: {
-        CCS
+        Core
     }
 }
 </script>

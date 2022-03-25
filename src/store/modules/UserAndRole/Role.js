@@ -57,27 +57,28 @@ const actions = {
             id: params.id,
             name: params.name,
             creatorName: params.creatorName
-        })
+        });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已删除', 'success');
         } else {
             rootState.notify(res.data.message);
         }
     },
-    async requestAddRole({ rootState }, params) {
+    async requestAddRole({ commit, rootState }, params) {
         let res = await request("post", '/role', {
             role: localStorage.getItem('role'),
-            id: params.id,
             name: params.name,
             description: params.description,
             expiration: params.expiration,
+            roleScopes: params.roleScopes,
             creatorId: Auth.getLoggedUser().id,
-            roleScopes: params.roleScopes
         });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已添加', 'success');
+            commit('modifyComplete', true)
         } else {
             rootState.notify(res.data.message);
+            commit('modifyComplete', false)
         }
     },
     async requestUpdateRole({ commit, rootState }, params) {
@@ -92,10 +93,10 @@ const actions = {
         });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已更改', 'success');
-            commit('updateRole', true);
+            commit('modifyComplete', true);
         } else {
             rootState.notify(res.data.message);
-            commit('updateRole', false);
+            commit('modifyComplete', false);
         }
     },
 }
@@ -108,7 +109,7 @@ const mutations = {
     role(state, data) {
         state.singleRole = data?.result;
     },
-    updateRole(state, isSuccess) {
+    modifyComplete(state, isSuccess) {
         state.responseStatus = isSuccess;
     }
 }
