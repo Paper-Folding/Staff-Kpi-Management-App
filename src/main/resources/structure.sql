@@ -244,7 +244,7 @@ CREATE TABLE `role`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限字典表'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色'
   ROW_FORMAT = Dynamic;
 -- ----------------------------
 -- Table structure for role_scope
