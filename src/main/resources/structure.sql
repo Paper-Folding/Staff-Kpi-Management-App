@@ -190,7 +190,7 @@ CREATE TABLE `dict_operation_object`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限作用域对象表，其实就是表格的字段表，用于描述某个权限的可作用对象'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色作用域对象字典表，其实就是表格的字段表，用于描述某个角色的可作用对象'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -272,8 +272,8 @@ DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role`
 (
     `id`                       bigint                                                        NOT NULL AUTO_INCREMENT,
-    `name`                     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '用户权限名',
-    `description`              varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '权限描述',
+    `name`                     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '角色名',
+    `description`              varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '角色描述',
     `expiration`               datetime                                                      NULL DEFAULT NULL COMMENT '角色过期时间, null means permanent',
     `creator_authorization_id` bigint                                                        NULL DEFAULT NULL COMMENT '角色创建者authorization id',
     PRIMARY KEY (`id`) USING BTREE,
@@ -307,7 +307,7 @@ CREATE TABLE `role_scope`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限访问作用域表'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色访问作用域表'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -423,7 +423,7 @@ CREATE TABLE `user_roles`
 (
     `id`               bigint NOT NULL AUTO_INCREMENT,
     `authorization_id` bigint NULL DEFAULT NULL COMMENT '用户id',
-    `role_id`          bigint NULL DEFAULT NULL COMMENT '权限id',
+    `role_id`          bigint NULL DEFAULT NULL COMMENT '角色id',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `authorization_id` (`authorization_id`) USING BTREE,
     INDEX `role_id` (`role_id`) USING BTREE,
@@ -432,7 +432,7 @@ CREATE TABLE `user_roles`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户鉴权表'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户角色表'
   ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
