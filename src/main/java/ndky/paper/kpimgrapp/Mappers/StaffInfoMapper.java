@@ -7,7 +7,16 @@ import java.util.List;
 
 @Mapper
 public interface StaffInfoMapper {
-    List<StaffInfo> selectStaffInfo(int from, int length, StaffInfo staffInfo, String query, List<String> selectFieldsNames);
+    /**
+     * select staff info list
+     * @param from start index
+     * @param length how many records should be returned
+     * @param staffInfo accurate field query
+     * @param query ambiguous query
+     * @param selectFieldsNames which fields should be cast
+     * @return List<StaffInfo>
+     */
+    List<StaffInfo> selectStaffInfoList(int from, int length, StaffInfo staffInfo, String query, List<String> selectFieldsNames);
 
-    Integer selectStaffInfoTotal();
+    Long selectStaffInfoTotal();
 }

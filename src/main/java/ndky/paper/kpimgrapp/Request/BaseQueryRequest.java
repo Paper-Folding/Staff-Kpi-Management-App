@@ -5,7 +5,7 @@ package ndky.paper.kpimgrapp.Request;
  * contains base request params: current request page and per page amount (count here)
  */
 public class BaseQueryRequest {
-    // this is the role name that tells backend currently logged user is using which role
+    // this is the role name that tells backend currently logged user is using which role for request
     private String role;
 
     // page is start from 1

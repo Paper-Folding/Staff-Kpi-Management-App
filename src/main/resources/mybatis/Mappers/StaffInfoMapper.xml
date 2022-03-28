@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.StaffInfoMapper">
-    <select id="selectStaffInfo" resultType="StaffInfo">
+    <select id="selectStaffInfoList" resultType="StaffInfo">
         select
         <foreach collection="selectFieldsNames" item="field" separator=",">
             ${field}
@@ -29,7 +29,7 @@
         limit ${from}, ${length};
     </select>
 
-    <select id="selectStaffInfoTotal" resultType="Integer">
+    <select id="selectStaffInfoTotal" resultType="Long">
         select count(id)
         from staff_info;
     </select>

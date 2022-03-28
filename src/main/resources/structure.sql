@@ -37,10 +37,10 @@ CREATE TABLE `annual_evaluate`
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for authorization
+-- Table structure for authentication
 -- ----------------------------
-DROP TABLE IF EXISTS `authorization`;
-CREATE TABLE `authorization`
+DROP TABLE IF EXISTS `authentication`;
+CREATE TABLE `authentication`
 (
     `id`            bigint                                                        NOT NULL AUTO_INCREMENT,
     `staff_info_id` bigint                                                        NULL     DEFAULT NULL COMMENT '关联staff_info中的人员id',
@@ -49,7 +49,7 @@ CREATE TABLE `authorization`
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `staff_info_id` (`staff_info_id`) USING BTREE,
     INDEX `username` (`username`) USING BTREE,
-    CONSTRAINT `authorization_ibfk_1` FOREIGN KEY (`staff_info_id`) REFERENCES `staff_info` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    CONSTRAINT `authentication_ibfk_1` FOREIGN KEY (`staff_info_id`) REFERENCES `staff_info` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
@@ -271,22 +271,23 @@ CREATE TABLE `research`
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role`
 (
-    `id`                       bigint                                                        NOT NULL AUTO_INCREMENT,
-    `name`                     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '角色名',
-    `description`              varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '角色描述',
-    `expiration`               datetime                                                      NULL DEFAULT NULL COMMENT '角色过期时间, null means permanent',
-    `creator_authorization_id` bigint                                                        NULL DEFAULT NULL COMMENT '角色创建者authorization id',
+    `id`                        bigint                                                        NOT NULL AUTO_INCREMENT,
+    `name`                      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '角色名',
+    `description`               varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '角色描述',
+    `expiration`                datetime                                                      NULL DEFAULT NULL COMMENT '角色过期时间, null means permanent',
+    `creator_authentication_id` bigint                                                        NULL DEFAULT NULL COMMENT '角色创建者auth id',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `id` (`id`) USING BTREE,
     UNIQUE INDEX `name` (`name`) USING BTREE,
     INDEX `expiration` (`expiration`) USING BTREE,
-    INDEX `creator_authorization_id` (`creator_authorization_id`) USING BTREE,
-    CONSTRAINT `role_ibfk_1` FOREIGN KEY (`creator_authorization_id`) REFERENCES `authorization` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    INDEX `role_ibfk_1` (`creator_authentication_id`) USING BTREE,
+    CONSTRAINT `role_ibfk_1` FOREIGN KEY (`creator_authentication_id`) REFERENCES `authentication` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色表'
   ROW_FORMAT = Dynamic;
+
 -- ----------------------------
 -- Table structure for role_scope
 -- ----------------------------
@@ -307,7 +308,7 @@ CREATE TABLE `role_scope`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色访问作用域表'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '权限访问作用域表'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -421,14 +422,14 @@ CREATE TABLE `tutor`
 DROP TABLE IF EXISTS `user_roles`;
 CREATE TABLE `user_roles`
 (
-    `id`               bigint NOT NULL AUTO_INCREMENT,
-    `authorization_id` bigint NULL DEFAULT NULL COMMENT '用户id',
-    `role_id`          bigint NULL DEFAULT NULL COMMENT '角色id',
+    `id`                bigint NOT NULL AUTO_INCREMENT,
+    `authentication_id` bigint NULL DEFAULT NULL COMMENT '用户auth id',
+    `role_id`           bigint NULL DEFAULT NULL COMMENT '角色id',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `authorization_id` (`authorization_id`) USING BTREE,
     INDEX `role_id` (`role_id`) USING BTREE,
-    CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`authorization_id`) REFERENCES `authorization` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    INDEX `authentication_id` (`authentication_id`) USING BTREE,
+    CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `user_roles_ibfk_3` FOREIGN KEY (`authentication_id`) REFERENCES `authentication` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4

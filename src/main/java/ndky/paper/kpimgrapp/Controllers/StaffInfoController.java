@@ -1,9 +1,5 @@
 package ndky.paper.kpimgrapp.Controllers;
 
-import ndky.paper.kpimgrapp.Mappers.StaffInfoMapper;
-import ndky.paper.kpimgrapp.Mappers.UtilMapper;
-import ndky.paper.kpimgrapp.Utils.AuthorizationUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,14 +7,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/staffInfo")
 public class StaffInfoController {
-    @Autowired
-    private StaffInfoMapper staffInfoMapper;
+//    @PostMapping("/get")
+//    public ResponseEntity<?> getStaffInfoList(@RequestBody StaffInfoRequest staffInfoRequest, HttpServletRequest request) {
+//
+//    }
 
-    @Autowired
-    private AuthorizationUtil authorizationUtil;
-
-    @Autowired
-    private UtilMapper utilMapper;
+//    @Autowired
+//    private StaffInfoMapper staffInfoMapper;
+//
+//    @Autowired
+//    private AuthorizationUtil authorizationUtil;
+//
+//    @Autowired
+//    private UtilMapper utilMapper;
 
 //    @PostMapping("/get")
 //    public ResponseEntity<?> getStaffInfo(@RequestBody StaffInfoRequest staffInfoRequest, HttpServletRequest request) {

@@ -1,23 +1,23 @@
 package ndky.paper.kpimgrapp.Request;
 
 public class UserRoleRequest {
-    private Long id;
+    private Long authenticationId;
     private String username;
 
     public UserRoleRequest() {
     }
 
-    public UserRoleRequest(Long id, String username) {
-        this.id = id;
+    public UserRoleRequest(Long authenticationId, String username) {
+        this.authenticationId = authenticationId;
         this.username = username;
     }
 
-    public Long getId() {
-        return id;
+    public Long getAuthenticationId() {
+        return authenticationId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAuthenticationId(Long authenticationId) {
+        this.authenticationId = authenticationId;
     }
 
     public String getUsername() {

@@ -1,9 +1,11 @@
 package ndky.paper.kpimgrapp.Controllers;
 
-import ndky.paper.kpimgrapp.Mappers.AuthorizationMapper;
+import ndky.paper.kpimgrapp.Models.Role;
 import ndky.paper.kpimgrapp.Models.UserPermission;
 import ndky.paper.kpimgrapp.Request.UserPermissionRequest;
+import ndky.paper.kpimgrapp.Request.UserRoleRequest;
 import ndky.paper.kpimgrapp.Response.QueryResponse;
+import ndky.paper.kpimgrapp.Utils.AuthorizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,14 +19,20 @@ import java.util.List;
 @RequestMapping("/auth")
 public class AuthorizationController {
     @Autowired
-    private AuthorizationMapper authorizationMapper;
+    private AuthorizationUtil authorizationUtil;
+
+    @PostMapping("/get/role")
+    public ResponseEntity<?> queryUserRole(@RequestBody UserRoleRequest userRoleRequest) {
+        List<Role> list = authorizationUtil.queryRoles(userRoleRequest);
+        return new QueryResponse(list, list.size()).responseEntity();
+    }
 
     /**
      * Used for collect user permission info
      */
     @PostMapping("/get/permission")
     public ResponseEntity<?> queryUserPermission(@RequestBody UserPermissionRequest userPermissionRequest) {
-        List<UserPermission> userPermissions = authorizationMapper.queryPermissions(userPermissionRequest);
+        List<UserPermission> userPermissions = authorizationUtil.queryPermissions(userPermissionRequest);
         return new QueryResponse(userPermissions, userPermissions.size()).responseEntity();
     }
 }

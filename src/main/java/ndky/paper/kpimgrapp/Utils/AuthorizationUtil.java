@@ -1,14 +1,17 @@
 package ndky.paper.kpimgrapp.Utils;
 
 import ndky.paper.kpimgrapp.Mappers.AuthorizationMapper;
+import ndky.paper.kpimgrapp.Models.Role;
 import ndky.paper.kpimgrapp.Models.UserPermission;
 import ndky.paper.kpimgrapp.Request.UserPermissionRequest;
+import ndky.paper.kpimgrapp.Request.UserRoleRequest;
 import ndky.paper.kpimgrapp.Response.AccessDeniedResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +30,17 @@ public class AuthorizationUtil {
     private AuthorizationMapper authorizationMapper;
 
     /**
+     * query user roles by auth user's authorizationId or username
+     *
+     * @return List<Role>
+     */
+    public List<Role> queryRoles(UserRoleRequest userRoleRequest) {
+        if (userRoleRequest.getAuthenticationId() == null && (userRoleRequest.getUsername() == null || userRoleRequest.getUsername().equals("")))
+            return new ArrayList<>();
+        return authorizationMapper.queryRoles(userRoleRequest.getAuthenticationId(), userRoleRequest.getUsername());
+    }
+
+    /**
      * query user permissions by multiple conditions:
      * auth user's authorizationId or username, target roleId or roleName, target operationId or operationName,
      * target tableName
@@ -34,6 +48,8 @@ public class AuthorizationUtil {
      * @return List<UserPermission>
      */
     public List<UserPermission> queryPermissions(UserPermissionRequest userPermissionRequest) {
+        if (userPermissionRequest.getAuthenticationId() == null && (userPermissionRequest.getUsername() == null || userPermissionRequest.getUsername().equals("")))
+            return new ArrayList<>();
         return authorizationMapper.queryPermissions(userPermissionRequest);
     }
 
@@ -46,6 +62,17 @@ public class AuthorizationUtil {
         if (roleId == null && (roleName == null || roleName.equals("")))
             return false;
         return authorizationMapper.userExistsRole(authenticationId, username, roleId, roleName);
+    }
+
+    /**
+     * check if specified auth user has such a permission
+     */
+    public Boolean userHasPermission(UserPermissionRequest userPermissionRequest) {
+        if (userPermissionRequest.getAuthenticationId() == null && (userPermissionRequest.getUsername() == null || userPermissionRequest.getUsername().equals("")))
+            return false;
+        if (userPermissionRequest.getRoleId() == null && (userPermissionRequest.getRoleName() == null || userPermissionRequest.getRoleName().equals("")))
+            return false;
+        return authorizationMapper.userExistsPermission(userPermissionRequest);
     }
 
 //    /**
@@ -75,6 +102,9 @@ public class AuthorizationUtil {
         return jwtUtils.getUserNameFromJwtToken(jwtUtils.getJwtFromRequest(request));
     }
 
+    /**
+     * This method returns an error response body with a msg contains currently requested path
+     */
     public ResponseEntity<?> getForbiddenResponseEntity(HttpServletRequest request) {
         return new AccessDeniedResponse(request.getServletPath()).responseEntity();
     }

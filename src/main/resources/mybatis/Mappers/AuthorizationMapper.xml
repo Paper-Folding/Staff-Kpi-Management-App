@@ -1,7 +1,24 @@
-<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.AuthorizationMapper">
+    <select id="queryRoles" resultType="Role">
+        select c.*
+        from authentication a,
+        user_roles b,
+        role c
+        where a.id=b.authentication_id and
+        b.role_id = c.id
+        <if test="authenticationId != null">
+            and a.id = ${authenticationId}
+        </if>
+        <if test="username != null">
+            and a.username = #{username}
+        </if>
+        ;
+    </select>
+
     <select id="queryPermissions" resultType="UserPermission">
         select
         a.id as authentication_id,
@@ -13,13 +30,13 @@
         e.id as object_id,
         e.table_name,
         e.column_name
-        from authorization a,
+        from authentication a,
         user_roles b,
         role c,
         role_scope d,
         dict_operation_object e,
         dict_operation f
-        where a.id = b.authorization_id
+        where a.id = b.authentication_id
         and b.role_id = c.id
         and c.id = d.role_id
         and d.object_id = e.id
@@ -50,8 +67,8 @@
 
     <select id="userExistsRole" resultType="Boolean">
         select IF(count(a.id) > 0, true, false)
-        from authorization a, user_roles b, role c
-        where a.id = b.authorization_id and b.role_id = c.id
+        from authentication a, user_roles b, role c
+        where a.id = b.authentication_id and b.role_id = c.id
         <if test="authorizationId != null">
             and a.id = ${authorizationId}
         </if>
@@ -63,6 +80,49 @@
         </if>
         <if test="roleName != null">
             and c.name = #{roleName}
+        </if>
+        ;
+    </select>
+
+    <select id="userExistsPermission" resultType="Boolean">
+        select IF(count(a.id) > 0, true, false)
+        from authentication a,
+        user_roles b,
+        role c,
+        role_scope d,
+        dict_operation_object e,
+        dict_operation f
+        where a.id = b.authentication_id
+        and b.role_id = c.id
+        and c.id = d.role_id
+        and d.object_id = e.id
+        and d.operation_id = f.id
+        <if test="authenticationId != null">
+            and a.id = ${authenticationId}
+        </if>
+        <if test="username != null">
+            and a.username = #{username}
+        </if>
+        <if test="roleId != null">
+            and c.id = ${roleId}
+        </if>
+        <if test="roleName != null">
+            and c.name = #{roleName}
+        </if>
+        <if test="operationId != null">
+            and f.id = ${operationId}
+        </if>
+        <if test="operationName != null">
+            and f.name = #{operationName}
+        </if>
+        <if test="objectId != null">
+            and d.object_id = ${objectId}
+        </if>
+        <if test="tableName != null">
+            and e.table_name = #{tableName}
+        </if>
+        <if test="columnName != null">
+            and e.column_name = #{column_name}
         </if>
         ;
     </select>

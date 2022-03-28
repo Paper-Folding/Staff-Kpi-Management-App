@@ -18,20 +18,4 @@
     <!--        ;-->
     <!--    </select>-->
 
-    <!--    <select id="selectRoleForUser" resultType="Role">-->
-    <!--        select b.*-->
-    <!--        from user_roles a,-->
-    <!--        role b,-->
-    <!--        authorization c-->
-    <!--        where a.role_id = b.id-->
-    <!--        and a.authorization_id = c.id-->
-    <!--        <if test="authorizationId != null">-->
-    <!--            and a.authorization_id = ${authorizationId}-->
-    <!--        </if>-->
-    <!--        <if test="username != null">-->
-    <!--            and c.username = #{username}-->
-    <!--        </if>-->
-    <!--        ;-->
-    <!--    </select>-->
-
 </mapper>

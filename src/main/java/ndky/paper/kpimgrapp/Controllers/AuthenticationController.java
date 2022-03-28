@@ -50,13 +50,4 @@ public class AuthenticationController {
                 userDetails.getRealName(),
                 roles).responseEntity();
     }
-
-//    /**
-//     * used for collect user roles
-//     */
-//    @PostMapping("/get/role")
-//    public ResponseEntity<?> queryUserRole(@RequestBody UserRoleRequest req) {
-//        List<Role> list = utilMapper.selectRoleForUser(req.getId(), req.getUsername());
-//        return new QueryResponse(list, list.size()).responseEntity();
-//    }
 }
