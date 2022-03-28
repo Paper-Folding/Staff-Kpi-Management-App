@@ -21,6 +21,8 @@
     <select id="selectUserPermissionBy" resultType="UserPermission">
         select distinct
         a.username,
+        c.id as roleId,
+        c.name as roleName,
         d.object_id,
         e.table_name,
         e.column_name,
@@ -39,6 +41,12 @@
         and f.id = d.operation_id
         <if test="authorizationId != null">
             and a.id = ${authorizationId}
+        </if>
+        <if test="roleId != null">
+            and c.id = ${roleId}
+        </if>
+        <if test="roleName != null">
+            and c.name = #{roleName}
         </if>
         <if test="username != null and username != ''">
             and a.username = #{username}

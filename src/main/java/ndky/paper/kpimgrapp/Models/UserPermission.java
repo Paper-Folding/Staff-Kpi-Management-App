@@ -6,6 +6,9 @@ package ndky.paper.kpimgrapp.Models;
  */
 public class UserPermission {
     private String username;
+    // targeting role
+    private Long roleId;
+    private String roleName;
     private Long objectId;
     // targeting table
     private String tableName;
@@ -18,8 +21,10 @@ public class UserPermission {
     public UserPermission() {
     }
 
-    public UserPermission(String username, Long objectId, String tableName, String columnName, Long operationId, String operationName) {
+    public UserPermission(String username, Long roleId, String roleName, Long objectId, String tableName, String columnName, Long operationId, String operationName) {
         this.username = username;
+        this.roleId = roleId;
+        this.roleName = roleName;
         this.objectId = objectId;
         this.tableName = tableName;
         this.columnName = columnName;
@@ -33,6 +38,22 @@ public class UserPermission {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public Long getObjectId() {

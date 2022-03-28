@@ -56,6 +56,8 @@ public class StaffInfoController {
                     .stream().map(OperationObject::getColumnName).collect(Collectors.toList());
             if (allowedFields.contains("*"))
                 allowedFields = List.of("*");
+            else
+                allowedFields.add("id");
         }
         // 5. select data and response
         List<StaffInfo> staffInfoList = staffInfoMapper.selectStaffInfo(staffInfoRequest.getStartPos(), staffInfoRequest.getCount(), staffInfoRequest.getQuery(), staffInfoRequest.getQueryStr(), allowedFields);

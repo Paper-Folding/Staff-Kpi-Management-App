@@ -1,14 +1,16 @@
 package ndky.paper.kpimgrapp.Request;
 
 public class UserPermissionRequest {
-    private Long authorizationId;
-    private String username, tableName, operationName;
+    private Long authorizationId, roleId;
+    private String roleName, username, tableName, operationName;
 
     public UserPermissionRequest() {
     }
 
-    public UserPermissionRequest(Long authorizationId, String username, String tableName, String operationName) {
+    public UserPermissionRequest(Long authorizationId, Long roleId, String roleName, String username, String tableName, String operationName) {
         this.authorizationId = authorizationId;
+        this.roleId = roleId;
+        this.roleName = roleName;
         this.username = username;
         this.tableName = tableName;
         this.operationName = operationName;
@@ -20,6 +22,22 @@ public class UserPermissionRequest {
 
     public void setAuthorizationId(Long authorizationId) {
         this.authorizationId = authorizationId;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public String getUsername() {
