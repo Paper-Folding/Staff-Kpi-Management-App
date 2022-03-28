@@ -2,17 +2,17 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.RoleMapper">
-    <select id="existsRoleStrict" resultType="Boolean">
-        select (IF(count(id) = 0, false, true)) as result
-        from role
-        where id = ${roleId}
-          and name = #{name};
-    </select>
-
     <select id="existsRole" resultType="Boolean">
         select (IF(count(id) = 0, false, true)) as result
         from role
-        where name = #{name};
+        <where>
+            <if test="roleId != null">
+                id = ${roleId}
+            </if>
+            <if test="roleName != null">
+                and name = #{roleName}
+            </if>
+        </where>
     </select>
 
     <resultMap id="roleDetail" type="Role">

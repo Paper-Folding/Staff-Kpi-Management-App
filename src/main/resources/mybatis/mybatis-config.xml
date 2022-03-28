@@ -12,6 +12,7 @@
         <typeAlias type="ndky.paper.kpimgrapp.Models.RoleScope" alias="RoleScope"/>
         <typeAlias type="ndky.paper.kpimgrapp.Models.StaffInfo" alias="StaffInfo"/>
         <typeAlias type="ndky.paper.kpimgrapp.Models.OperationObject" alias="OperationObject"/>
+        <!-- AuthorizationMapper -->
         <typeAlias type="ndky.paper.kpimgrapp.Models.UserPermission" alias="UserPermission"/>
     </typeAliases>
 </configuration>

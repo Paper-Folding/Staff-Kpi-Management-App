@@ -1,4 +1,4 @@
-package ndky.paper.kpimgrapp.Security.Jwt;
+package ndky.paper.kpimgrapp.Utils;
 
 import io.jsonwebtoken.*;
 import ndky.paper.kpimgrapp.Security.Services.UserDetailsImpl;

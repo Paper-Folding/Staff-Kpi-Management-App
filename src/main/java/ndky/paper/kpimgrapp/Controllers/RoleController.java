@@ -6,8 +6,8 @@ import ndky.paper.kpimgrapp.Request.RoleRequest;
 import ndky.paper.kpimgrapp.Response.ErrorResponse;
 import ndky.paper.kpimgrapp.Response.ModifyResponse;
 import ndky.paper.kpimgrapp.Response.QueryResponse;
-import ndky.paper.kpimgrapp.Security.Jwt.JwtUtils;
-import ndky.paper.kpimgrapp.Utils.RoleUtil;
+import ndky.paper.kpimgrapp.Utils.AuthorizationUtil;
+import ndky.paper.kpimgrapp.Utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +26,7 @@ public class RoleController {
     private RoleMapper roleMapper;
 
     @Autowired
-    private RoleUtil roleUtil;
+    private AuthorizationUtil roleUtil;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -73,7 +73,7 @@ public class RoleController {
     public ResponseEntity<?> addRole(@RequestBody Role role, HttpServletRequest request) {
         if (!guaranteeRole(role.getRole()))
             return roleUtil.getForbiddenResponseEntity(request);
-        if (roleMapper.existsRole(role.getName()))
+        if (roleMapper.existsRole(role.getId(), role.getName()))
             return new ModifyResponse(ModifyResponse.DUPLICATE, 0, "Duplicate role detected.").responseEntity();
         int afflicted = roleMapper.addRole(role);
         long lastInsertId = roleMapper.selectLastInsertId();
@@ -101,7 +101,7 @@ public class RoleController {
             return new ErrorResponse(role.getName() + " is not updatable!").responseEntity();
         if (!guaranteeCreatorModify(role, request))
             return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
-        if (role.getName() != null && !roleMapper.existsRoleStrict(role.getId(), role.getName()) && roleMapper.existsRole(role.getName()))
+        if (role.getId() != null && role.getName() != null && !roleMapper.existsRole(role.getId(), role.getName()) && roleMapper.existsRole(null, role.getName()))
             return new ModifyResponse(ModifyResponse.DUPLICATE, 0, "Trying to rename to a duplicate role.").responseEntity();
         int afflicted = roleMapper.updateRole(role);
         if (role.getRoleScopes() == null)

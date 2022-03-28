@@ -1,27 +1,43 @@
 package ndky.paper.kpimgrapp.Request;
 
 public class UserPermissionRequest {
-    private Long authorizationId, roleId;
-    private String roleName, username, tableName, operationName;
+    private Long authenticationId;
+    private String username;
+
+    private Long roleId;
+    private String roleName;
+
+    private Long operationId;
+    private String operationName;
+    private String tableName;
 
     public UserPermissionRequest() {
     }
 
-    public UserPermissionRequest(Long authorizationId, Long roleId, String roleName, String username, String tableName, String operationName) {
-        this.authorizationId = authorizationId;
+    public UserPermissionRequest(Long authenticationId, String username, Long roleId, String roleName, Long operationId, String operationName, String tableName) {
+        this.authenticationId = authenticationId;
+        this.username = username;
         this.roleId = roleId;
         this.roleName = roleName;
-        this.username = username;
-        this.tableName = tableName;
+        this.operationId = operationId;
         this.operationName = operationName;
+        this.tableName = tableName;
     }
 
-    public Long getAuthorizationId() {
-        return authorizationId;
+    public Long getAuthenticationId() {
+        return authenticationId;
     }
 
-    public void setAuthorizationId(Long authorizationId) {
-        this.authorizationId = authorizationId;
+    public void setAuthenticationId(Long authenticationId) {
+        this.authenticationId = authenticationId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getRoleId() {
@@ -40,20 +56,12 @@ public class UserPermissionRequest {
         this.roleName = roleName;
     }
 
-    public String getUsername() {
-        return username;
+    public Long getOperationId() {
+        return operationId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setOperationId(Long operationId) {
+        this.operationId = operationId;
     }
 
     public String getOperationName() {
@@ -62,5 +70,13 @@ public class UserPermissionRequest {
 
     public void setOperationName(String operationName) {
         this.operationName = operationName;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 }

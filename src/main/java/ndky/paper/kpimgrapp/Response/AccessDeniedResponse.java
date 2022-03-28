@@ -2,6 +2,9 @@ package ndky.paper.kpimgrapp.Response;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * response when forbidden
+ */
 public class AccessDeniedResponse extends BaseResponse {
     private String error, message, path;
 

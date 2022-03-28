@@ -10,9 +10,7 @@ import java.util.Optional;
 
 @Mapper
 public interface RoleMapper extends UtilMapper {
-    Boolean existsRole(String name);
-
-    Boolean existsRoleStrict(long roleId, String name);
+    Boolean existsRole(Long roleId, String roleName);
 
     Optional<Role> selectRole(Role role);
 

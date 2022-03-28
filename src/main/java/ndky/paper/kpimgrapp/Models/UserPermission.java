@@ -5,31 +5,40 @@ package ndky.paper.kpimgrapp.Models;
  * e.g. if front end wants to know if the user has the permission to delete something, then this function is necessary
  */
 public class UserPermission {
+    // targeting auth user
+    private Long authenticationId;
     private String username;
     // targeting role
     private Long roleId;
     private String roleName;
-    private Long objectId;
-    // targeting table
-    private String tableName;
-    // targeting column, select operation always use this to store fields of table, most commonly, it is '*' for all fields of targeting table
-    private String columnName;
+    // targeting operation and object
     private Long operationId;
-    // operation name, e.g. insert/delete/select...
     private String operationName;
+    private Long objectId;
+    private String tableName;
+    private String columnName; // it is '*' if a permission affect a whole record
 
     public UserPermission() {
     }
 
-    public UserPermission(String username, Long roleId, String roleName, Long objectId, String tableName, String columnName, Long operationId, String operationName) {
+    public UserPermission(Long authenticationId, String username, Long roleId, String roleName, Long operationId, String operationName, Long objectId, String tableName, String columnName) {
+        this.authenticationId = authenticationId;
         this.username = username;
         this.roleId = roleId;
         this.roleName = roleName;
+        this.operationId = operationId;
+        this.operationName = operationName;
         this.objectId = objectId;
         this.tableName = tableName;
         this.columnName = columnName;
-        this.operationId = operationId;
-        this.operationName = operationName;
+    }
+
+    public Long getAuthenticationId() {
+        return authenticationId;
+    }
+
+    public void setAuthenticationId(Long authenticationId) {
+        this.authenticationId = authenticationId;
     }
 
     public String getUsername() {
@@ -56,6 +65,22 @@ public class UserPermission {
         this.roleName = roleName;
     }
 
+    public Long getOperationId() {
+        return operationId;
+    }
+
+    public void setOperationId(Long operationId) {
+        this.operationId = operationId;
+    }
+
+    public String getOperationName() {
+        return operationName;
+    }
+
+    public void setOperationName(String operationName) {
+        this.operationName = operationName;
+    }
+
     public Long getObjectId() {
         return objectId;
     }
@@ -78,21 +103,5 @@ public class UserPermission {
 
     public void setColumnName(String columnName) {
         this.columnName = columnName;
-    }
-
-    public Long getOperationId() {
-        return operationId;
-    }
-
-    public void setOperationId(Long operationId) {
-        this.operationId = operationId;
-    }
-
-    public String getOperationName() {
-        return operationName;
-    }
-
-    public void setOperationName(String operationName) {
-        this.operationName = operationName;
     }
 }
