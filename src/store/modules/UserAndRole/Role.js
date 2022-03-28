@@ -27,10 +27,7 @@ const actions = {
             role: localStorage.getItem('role'),
             page: params.page,
             count: params.amount,
-            // query: {
-            //     name: "add",
-            //     description: "江"
-            // }
+            queryStr: params.queryStr || null
         });
         if (res.status === 200 && res.data.code === 200) {
             commit('roleList', res.data);
