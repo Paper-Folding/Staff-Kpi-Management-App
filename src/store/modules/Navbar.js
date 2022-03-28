@@ -16,7 +16,7 @@ const actions = {
         if (Auth.isUserLogined()) {
             const user = Auth.getLoggedUser();
             let res = await request("post", "/auth/get/role", {
-                id: user.id
+                authenticationId: user.id
             });
             if (res.status === 200 && res.data.code === 200) {
                 commit('requestDone', res.data);
