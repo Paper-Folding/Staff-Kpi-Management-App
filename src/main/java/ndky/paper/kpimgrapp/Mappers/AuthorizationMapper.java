@@ -10,9 +10,23 @@ import java.util.List;
 // authorization controls resource access
 @Mapper
 public interface AuthorizationMapper {
-    List<Role> queryRoles(Long authenticationId, String username);
 
-    List<UserPermission> queryPermissions(UserPermissionRequest userPermissionRequest);
+    /**
+     * query user's roles
+     *
+     * @param authenticationId
+     * @param username
+     * @param expired          select expired? default is false
+     */
+    List<Role> queryRoles(Long authenticationId, String username, Boolean expired);
+
+    /**
+     * query user permissions
+     *
+     * @param userPermissionRequest
+     * @param expired               select expired? default is false
+     */
+    List<UserPermission> queryPermissions(UserPermissionRequest userPermissionRequest, Boolean expired);
 
     /**
      * check if specified auth user has such a role

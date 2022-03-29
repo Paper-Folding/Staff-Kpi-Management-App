@@ -6,7 +6,6 @@ import ndky.paper.kpimgrapp.Response.ErrorResponse;
 import ndky.paper.kpimgrapp.Response.ModifyResponse;
 import ndky.paper.kpimgrapp.Response.QueryResponse;
 import ndky.paper.kpimgrapp.Utils.AuthorizationUtil;
-import ndky.paper.kpimgrapp.Utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,19 +26,16 @@ public class RoleController {
     @Autowired
     private AuthorizationUtil authorizationUtil;
 
-    @Autowired
-    private JwtUtils jwtUtils;
-
     // if user are requesting with a role other than admin or officer, deny them. Other requests in RoleController are the same.
     // Thus, this method got true for role guaranteed while false otherwise.
     private Boolean ifRoleFieldPresent(RoleRequest roleRequest) {
-        return roleRequest.getRole() != null && (roleRequest.getRole().equals("admin") || roleRequest.getRole().equals("officer"));
+        return roleRequest.getRole() != null && ("admin".equals(roleRequest.getRole()) || "officer".equals(roleRequest.getRole()));
     }
 
     private Boolean guaranteeCreatorModify(RoleRequest roleRequest, HttpServletRequest request) {
-        if (roleRequest.getRole().equals("officer")) {
+        if ("officer".equals(roleRequest.getRole())) {
             // check if they are the creator of current selected role
-            String requestedUsername = jwtUtils.getUserNameFromJwtToken(jwtUtils.getJwtFromRequest(request));
+            String requestedUsername = authorizationUtil.getUsernameFromRequest(request);
             return roleMapper.verifyRoleCreator(requestedUsername, roleRequest.getId());
         }
         return true;
@@ -83,7 +79,7 @@ public class RoleController {
     public ResponseEntity<?> deleteRole(@RequestBody RoleRequest roleRequest, HttpServletRequest request) {
         if (!ifRoleFieldPresent(roleRequest))
             return authorizationUtil.getForbiddenResponseEntity(request);
-        if (roleRequest.getName().equals("admin") || roleRequest.getName().equals("officer") || roleRequest.getName().equals("initial"))
+        if ("admin".equals(roleRequest.getName()) || "officer".equals(roleRequest.getName()) || "initial".equals(roleRequest.getName()))
             return new ErrorResponse(roleRequest.getName() + " is not deletable!").responseEntity();
         if (!guaranteeCreatorModify(roleRequest, request))
             return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
@@ -94,7 +90,7 @@ public class RoleController {
     public ResponseEntity<?> updateRole(@RequestBody RoleRequest roleRequest, HttpServletRequest request) {
         if (!ifRoleFieldPresent(roleRequest))
             return authorizationUtil.getForbiddenResponseEntity(request);
-        if (roleRequest.getName().equals("admin") || roleRequest.getName().equals("officer") || roleRequest.getName().equals("initial"))
+        if ("admin".equals(roleRequest.getName()) || "officer".equals(roleRequest.getName()) || "initial".equals(roleRequest.getName()))
             return new ErrorResponse(roleRequest.getName() + " is not updatable!").responseEntity();
         if (!guaranteeCreatorModify(roleRequest, request))
             return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();

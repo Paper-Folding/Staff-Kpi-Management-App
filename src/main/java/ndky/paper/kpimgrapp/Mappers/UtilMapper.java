@@ -12,9 +12,4 @@ public interface UtilMapper {
      */
     @Select("select LAST_INSERT_ID()")
     long selectLastInsertId();
-
-//    /**
-//     * get operation objects by given id list and table name
-//     */
-//    List<OperationObject> selectOperationObject(List<Long> ids, String tableName);
 }

@@ -6,17 +6,17 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface StaffInfoMapper {
+public interface StaffInfoMapper extends UtilMapper {
     /**
      * select staff info list
-     * @param from start index
-     * @param length how many records should be returned
-     * @param staffInfo accurate field query
-     * @param query ambiguous query
+     *
+     * @param from              start index
+     * @param length            how many records should be returned
+     * @param query             ambiguous query
      * @param selectFieldsNames which fields should be cast
      * @return List<StaffInfo>
      */
-    List<StaffInfo> selectStaffInfoList(int from, int length, StaffInfo staffInfo, String query, List<String> selectFieldsNames);
+    List<StaffInfo> selectStaffInfoList(int from, int length, String query, List<String> selectFieldsNames);
 
-    Long selectStaffInfoTotal();
+    Long selectStaffInfoTotal(String query);
 }

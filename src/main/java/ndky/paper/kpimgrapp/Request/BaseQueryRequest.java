@@ -14,6 +14,9 @@ public class BaseQueryRequest {
     // count decides how many records should be returned
     private Integer count;
 
+    // indicate which record to start
+    private Integer startPos;
+
     // all fields ambiguous match
     private String query;
 
@@ -24,6 +27,7 @@ public class BaseQueryRequest {
         this.role = role;
         this.page = page;
         this.count = count;
+        this.startPos = (page - 1) * count;
         this.query = query;
     }
 

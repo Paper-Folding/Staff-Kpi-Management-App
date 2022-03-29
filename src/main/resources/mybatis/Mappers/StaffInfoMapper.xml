@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.StaffInfoMapper">
     <select id="selectStaffInfoList" resultType="StaffInfo">
         select
@@ -11,19 +10,10 @@
         from staff_info
         <where>
             <if test="query != null">
-                no like '%' #{query} '%' or name like '%' #{query} '%' or gender = #{query} or nation like '%' #{query} '%'
-            </if>
-            <if test="staffInfo.no != null">
-                no like '%' #{staffInfo.no} '%'
-            </if>
-            <if test="staffInfo.name != null">
-                and name like '%' #{staffInfo.name} '%'
-            </if>
-            <if test="staffInfo.gender != null">
-                and gender = #{gender}
-            </if>
-            <if test="staffInfo.nation != null">
-                and nation like '%' #{staffInfo.nation} '%'
+                no like '%' #{query} '%'
+                or name like '%' #{query} '%'
+                or gender = #{query}
+                or nation like '%' #{query} '%'
             </if>
         </where>
         limit ${from}, ${length};
@@ -31,6 +21,15 @@
 
     <select id="selectStaffInfoTotal" resultType="Long">
         select count(id)
-        from staff_info;
+        from staff_info
+        <where>
+            <if test="query != null">
+                no like '%' #{query} '%'
+                or name like '%' #{query} '%'
+                or gender = #{query}
+                or nation like '%' #{query} '%'
+            </if>
+        </where>
+        ;
     </select>
 </mapper>
