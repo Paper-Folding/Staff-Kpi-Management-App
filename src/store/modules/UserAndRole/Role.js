@@ -52,8 +52,7 @@ const actions = {
         let res = await request("delete", '/role', {
             role: localStorage.getItem('role'),
             id: params.id,
-            name: params.name,
-            creatorName: params.creatorName
+            name: params.name
         });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已删除', 'success');
@@ -67,8 +66,8 @@ const actions = {
             name: params.name,
             description: params.description,
             expiration: params.expiration,
+            creatorId: Auth.getLoggedUser().id, // if a user modify cookie to add role, I'd say they are just big fool
             roleScopes: params.roleScopes,
-            creatorId: Auth.getLoggedUser().id,
         });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已添加', 'success');
@@ -85,8 +84,7 @@ const actions = {
             name: params.name,
             description: params.description,
             expiration: params.expiration,
-            roleScopes: params.roleScopes,
-            creatorName: params.creatorName,
+            roleScopes: params.roleScopes
         });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('角色' + params.name + '已更改', 'success');
