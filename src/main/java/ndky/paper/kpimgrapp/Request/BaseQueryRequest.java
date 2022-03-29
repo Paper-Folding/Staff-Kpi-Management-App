@@ -15,16 +15,16 @@ public class BaseQueryRequest {
     private Integer count;
 
     // all fields ambiguous match
-    private String queryStr;
+    private String query;
 
     public BaseQueryRequest() {
     }
 
-    public BaseQueryRequest(String role, Integer page, Integer count, String queryStr) {
+    public BaseQueryRequest(String role, Integer page, Integer count, String query) {
         this.role = role;
         this.page = page;
         this.count = count;
-        this.queryStr = queryStr;
+        this.query = query;
     }
 
     public String getRole() {
@@ -55,11 +55,11 @@ public class BaseQueryRequest {
         return (this.getPage() - 1) * this.getCount();
     }
 
-    public String getQueryStr() {
-        return queryStr;
+    public String getQuery() {
+        return query;
     }
 
-    public void setQueryStr(String queryStr) {
-        this.queryStr = queryStr;
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

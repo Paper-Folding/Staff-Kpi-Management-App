@@ -1,7 +1,6 @@
 package ndky.paper.kpimgrapp.Controllers;
 
 import ndky.paper.kpimgrapp.Mappers.RoleMapper;
-import ndky.paper.kpimgrapp.Models.Role;
 import ndky.paper.kpimgrapp.Request.RoleRequest;
 import ndky.paper.kpimgrapp.Response.ErrorResponse;
 import ndky.paper.kpimgrapp.Response.ModifyResponse;
@@ -26,34 +25,32 @@ public class RoleController {
     private RoleMapper roleMapper;
 
     @Autowired
-    private AuthorizationUtil roleUtil;
+    private AuthorizationUtil authorizationUtil;
 
     @Autowired
     private JwtUtils jwtUtils;
 
     // if user are requesting with a role other than admin or officer, deny them. Other requests in RoleController are the same.
     // Thus, this method got true for role guaranteed while false otherwise.
-    private Boolean guaranteeRole(String roleName) {
-        return roleName != null && (roleName.equals("admin") || roleName.equals("officer"));
+    private Boolean ifRoleFieldPresent(RoleRequest roleRequest) {
+        return roleRequest.getRole() != null && (roleRequest.getRole().equals("admin") || roleRequest.getRole().equals("officer"));
     }
 
-    private Boolean guaranteeCreatorModify(Role role, HttpServletRequest request) {
-        if (role.getCreatorName() == null)
-            return false;
-        if (role.getRole().equals("officer")) {
+    private Boolean guaranteeCreatorModify(RoleRequest roleRequest, HttpServletRequest request) {
+        if (roleRequest.getRole().equals("officer")) {
             // check if they are the creator of current selected role
-            String requestUser = jwtUtils.getUserNameFromJwtToken(jwtUtils.getJwtFromRequest(request));
-            return role.getCreatorName().equals(requestUser);
+            String requestedUsername = jwtUtils.getUserNameFromJwtToken(jwtUtils.getJwtFromRequest(request));
+            return roleMapper.verifyRoleCreator(requestedUsername, roleRequest.getId());
         }
         return true;
     }
 
     // Browser does not support send get request with request body.
     @PostMapping("/get")
-    public ResponseEntity<?> getRole(@RequestBody Role role, HttpServletRequest request) {
-        if (!guaranteeRole(role.getRole()))
-            return roleUtil.getForbiddenResponseEntity(request);
-        var result = roleMapper.selectRole(role);
+    public ResponseEntity<?> getRole(@RequestBody RoleRequest roleRequest, HttpServletRequest request) {
+        if (!ifRoleFieldPresent(roleRequest))
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        var result = roleMapper.selectRole(roleRequest);
         if (result.isPresent())
             return new QueryResponse(result.get(), 1).responseEntity();
         else
@@ -62,53 +59,53 @@ public class RoleController {
 
     @PostMapping("/get/all")
     public ResponseEntity<?> getAllRoles(@RequestBody RoleRequest roleRequest, HttpServletRequest request) {
-        if (!guaranteeRole(roleRequest.getRole()))
-            return roleUtil.getForbiddenResponseEntity(request);
-        var result = roleMapper.selectAllRoles(roleRequest.getStartPos(), roleRequest.getCount(), roleRequest.getQuery(), roleRequest.getQueryStr());
+        if (!ifRoleFieldPresent(roleRequest))
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        var result = roleMapper.selectAllRoles(roleRequest.getStartPos(), roleRequest.getCount(), roleRequest.getQuery());
         var total = roleMapper.selectRoleTotal();
         return new QueryResponse(result, total).responseEntity();
     }
 
     @PostMapping
-    public ResponseEntity<?> addRole(@RequestBody Role role, HttpServletRequest request) {
-        if (!guaranteeRole(role.getRole()))
-            return roleUtil.getForbiddenResponseEntity(request);
-        if (roleMapper.existsRole(role.getId(), role.getName()))
+    public ResponseEntity<?> addRole(@RequestBody RoleRequest roleRequest, HttpServletRequest request) {
+        if (!ifRoleFieldPresent(roleRequest))
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        if (roleMapper.existsRole(roleRequest.getId(), roleRequest.getName()))
             return new ModifyResponse(ModifyResponse.DUPLICATE, 0, "Duplicate role detected.").responseEntity();
-        int afflicted = roleMapper.addRole(role);
+        int afflicted = roleMapper.addRole(roleRequest);
         long lastInsertId = roleMapper.selectLastInsertId();
-        if (role.getRoleScopes() != null && role.getRoleScopes().size() > 0)
-            afflicted += roleMapper.addRoleScopesForRole(lastInsertId, role.getRoleScopes());
+        if (roleRequest.getRoleScopes() != null && roleRequest.getRoleScopes().size() > 0)
+            afflicted += roleMapper.addRoleScopesForRole(lastInsertId, roleRequest.getRoleScopes());
         return new ModifyResponse(afflicted, "Done").responseEntity();
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteRole(@RequestBody Role role, HttpServletRequest request) {
-        if (!guaranteeRole(role.getRole()))
-            return roleUtil.getForbiddenResponseEntity(request);
-        if (role.getName().equals("admin") || role.getName().equals("officer") || role.getName().equals("initial"))
-            return new ErrorResponse(role.getName() + " is not deletable!").responseEntity();
-        if (!guaranteeCreatorModify(role, request))
+    public ResponseEntity<?> deleteRole(@RequestBody RoleRequest roleRequest, HttpServletRequest request) {
+        if (!ifRoleFieldPresent(roleRequest))
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        if (roleRequest.getName().equals("admin") || roleRequest.getName().equals("officer") || roleRequest.getName().equals("initial"))
+            return new ErrorResponse(roleRequest.getName() + " is not deletable!").responseEntity();
+        if (!guaranteeCreatorModify(roleRequest, request))
             return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
-        return new ModifyResponse(roleMapper.deleteRole(role), "Done").responseEntity();
+        return new ModifyResponse(roleMapper.deleteRole(roleRequest), "Done").responseEntity();
     }
 
     @PutMapping
-    public ResponseEntity<?> updateRole(@RequestBody Role role, HttpServletRequest request) {
-        if (!guaranteeRole(role.getRole()))
-            return roleUtil.getForbiddenResponseEntity(request);
-        if (role.getName().equals("admin") || role.getName().equals("officer") || role.getName().equals("initial"))
-            return new ErrorResponse(role.getName() + " is not updatable!").responseEntity();
-        if (!guaranteeCreatorModify(role, request))
+    public ResponseEntity<?> updateRole(@RequestBody RoleRequest roleRequest, HttpServletRequest request) {
+        if (!ifRoleFieldPresent(roleRequest))
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        if (roleRequest.getName().equals("admin") || roleRequest.getName().equals("officer") || roleRequest.getName().equals("initial"))
+            return new ErrorResponse(roleRequest.getName() + " is not updatable!").responseEntity();
+        if (!guaranteeCreatorModify(roleRequest, request))
             return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
-        if (role.getId() != null && role.getName() != null && !roleMapper.existsRole(role.getId(), role.getName()) && roleMapper.existsRole(null, role.getName()))
+        if (roleRequest.getId() != null && roleRequest.getName() != null && !roleMapper.existsRole(roleRequest.getId(), roleRequest.getName()) && roleMapper.existsRole(null, roleRequest.getName()))
             return new ModifyResponse(ModifyResponse.DUPLICATE, 0, "Trying to rename to a duplicate role.").responseEntity();
-        int afflicted = roleMapper.updateRole(role);
-        if (role.getRoleScopes() == null)
-            return new ModifyResponse(afflicted, "Done").responseEntity();
-        afflicted += roleMapper.deleteRoleScopesForRole(role.getId());
-        if (role.getRoleScopes().size() > 0)
-            afflicted += roleMapper.addRoleScopesForRole(role.getId(), role.getRoleScopes());
+        int afflicted = roleMapper.updateRole(roleRequest);
+        if (roleRequest.getRoleScopes() != null) {
+            afflicted += roleMapper.deleteRoleScopesForRole(roleRequest.getId());
+            if (roleRequest.getRoleScopes().size() > 0)
+                afflicted += roleMapper.addRoleScopesForRole(roleRequest.getId(), roleRequest.getRoleScopes());
+        }
         return new ModifyResponse(afflicted, "Done").responseEntity();
     }
 }

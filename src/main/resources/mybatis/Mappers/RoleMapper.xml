@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.RoleMapper">
     <select id="existsRole" resultType="Boolean">
-        select (IF(count(id) = 0, false, true)) as result
+        select (if(count(id) = 0, false, true)) as result
         from role
         <where>
             <if test="roleId != null">
@@ -16,13 +16,13 @@
     </select>
 
     <resultMap id="roleDetail" type="Role">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="description" column="description"/>
-        <result property="expiration" column="expiration"/>
-        <result property="creatorId" column="creator_authorization_id"/>
-        <result property="creatorName" column="creatorName"/>
-        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole"/>
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="description" column="description" />
+        <result property="expiration" column="expiration" />
+        <result property="creatorId" column="creator_authorization_id" />
+        <result property="creatorName" column="creatorName" />
+        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole" />
     </resultMap>
 
     <select id="selectRole" resultMap="roleDetail">
@@ -32,6 +32,14 @@
         <if test="id != null">and a.id = ${id}</if>
         <if test="name != null">and a.name = #{name}</if>
         limit 1;
+    </select>
+
+    <select id="verifyRoleCreator" resultType="Boolean">
+        select if(count(a.id) > 0 and strcmp(b.username, #{requestedUsername}) = 0, true, false)
+        from role a,
+             authentication b
+        where a.creator_authentication_id = b.id
+          and a.id = ${targetRoleId};
     </select>
 
     <select id="selectRoleScopeForRole" resultType="RoleScope">
@@ -52,12 +60,6 @@
         where a.creator_authentication_id = b.id
         <if test="query != null">
             and (a.name like '%' #{query} '%' or a.description like '%' #{query} '%')
-        </if>
-        <if test="query == null and role.name != null">
-            and a.name like '%' #{role.name} '%'
-        </if>
-        <if test="query == null and role.description != null">
-            and a.description like '%' #{role.description} '%'
         </if>
         limit ${from}, ${length};
     </select>
@@ -96,6 +98,6 @@
             <if test="description!=null">description = #{description},</if>
             expiration = #{expiration}
         </set>
-        where id = ${id}
+        where id = ${id};
     </update>
 </mapper>
