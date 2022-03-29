@@ -1,35 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.StaffInfoMapper">
+
     <select id="selectStaffInfoList" resultType="StaffInfo">
         select
         <foreach collection="selectFieldsNames" item="field" separator=",">
             ${field}
         </foreach>
         from staff_info
-        <where>
-            <if test="query != null">
-                no like '%' #{query} '%'
-                or name like '%' #{query} '%'
-                or gender = #{query}
-                or nation like '%' #{query} '%'
-            </if>
-        </where>
+        where disabled = '0'
+        <if test="query != null">
+            and (no like '%' #{query} '%'
+            or name like '%' #{query} '%'
+            or gender = #{query}
+            or nation like '%' #{query} '%')
+        </if>
         limit ${from}, ${length};
     </select>
 
     <select id="selectStaffInfoTotal" resultType="Long">
         select count(id)
         from staff_info
-        <where>
-            <if test="query != null">
-                no like '%' #{query} '%'
-                or name like '%' #{query} '%'
-                or gender = #{query}
-                or nation like '%' #{query} '%'
-            </if>
-        </where>
+        where disabled = '0'
+        <if test="query != null">
+            and (no like '%' #{query} '%'
+            or name like '%' #{query} '%'
+            or gender = #{query}
+            or nation like '%' #{query} '%')
+        </if>
         ;
     </select>
+
+    <update id="deleteStaff">
+        update staff_info set disabled = '1'
+        where id = ${id}
+        <if test="no != null">
+            and no = #{no}
+        </if>
+        ;
+    </update>
+
+    <update id="updateStaffInfo">
+        update staff_info
+        <set>
+            <foreach collection="allowedFieldsNames" item="field" separator=",">
+                <if test="staffInfoRequest[field.aA] != null">
+                    ${field._} = #{staffInfoRequest.${field.aA}}
+                </if>
+            </foreach>
+        </set>
+        where id = ${staffInfoRequest.id};
+    </update>
+
+    <insert id="attachRolesForUser">
+        insert into user_roles(authentication_id, role_id) values
+        <foreach collection="roles" item="role" open="(" close=")" separator="),(">
+            ${authenticationId}, ${role.id}
+        </foreach>
+        ;
+    </insert>
 </mapper>

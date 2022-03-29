@@ -47,4 +47,3 @@ INSERT INTO `role`
 VALUES (2, 'officer', '教务办老师', null, null);
 INSERT INTO `role`
 VALUES (3, 'initial', '初始角色', null, null);
-

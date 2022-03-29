@@ -20,6 +20,12 @@ public class ModifyResponse extends BaseResponse {
         this.message = message;
     }
 
+    public ModifyResponse(int afflicted) {
+        super(HttpServletResponse.SC_OK);
+        this.afflicted = afflicted;
+        this.message = "done";
+    }
+
     public int getAfflicted() {
         return afflicted;
     }

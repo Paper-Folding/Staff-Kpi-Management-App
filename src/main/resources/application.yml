@@ -21,3 +21,4 @@ paper:
   jwt:
     secret: LingLingsScarletShineInMyHeartForever
     expireMs: 86400000
+

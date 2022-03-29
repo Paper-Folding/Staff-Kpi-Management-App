@@ -1,6 +1,9 @@
 package ndky.paper.kpimgrapp.Request;
 
+import ndky.paper.kpimgrapp.Models.Role;
+
 import java.util.Date;
+import java.util.List;
 
 public class StaffInfoRequest extends BaseQueryRequest {
     private Long id;
@@ -12,10 +15,13 @@ public class StaffInfoRequest extends BaseQueryRequest {
     private Date levelDate;
     private String jobAlias, researchDirection, job, department, idcard, phone, longPhone, shortPhone;
 
+    // used for attach roles to staff
+    private List<Role> roles;
+
     public StaffInfoRequest() {
     }
 
-    public StaffInfoRequest(String role, Integer page, Integer count, String query, Long id, String no, String name, String gender, String nation, Date birth, Date enrollTime, String politic, String major, String level, String levelUnit, Date levelDate, String jobAlias, String researchDirection, String job, String department, String idcard, String phone, String longPhone, String shortPhone) {
+    public StaffInfoRequest(String role, Integer page, Integer count, String query, Long id, String no, String name, String gender, String nation, Date birth, Date enrollTime, String politic, String major, String level, String levelUnit, Date levelDate, String jobAlias, String researchDirection, String job, String department, String idcard, String phone, String longPhone, String shortPhone, List<Role> roles) {
         super(role, page, count, query);
         this.id = id;
         this.no = no;
@@ -37,6 +43,7 @@ public class StaffInfoRequest extends BaseQueryRequest {
         this.phone = phone;
         this.longPhone = longPhone;
         this.shortPhone = shortPhone;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -197,5 +204,13 @@ public class StaffInfoRequest extends BaseQueryRequest {
 
     public void setShortPhone(String shortPhone) {
         this.shortPhone = shortPhone;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

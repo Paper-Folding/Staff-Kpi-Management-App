@@ -37,4 +37,8 @@ public interface AuthorizationMapper {
      * check if user currently selected role has specific permission
      */
     Boolean userExistsPermission(UserPermissionRequest userPermissionRequest);
+
+    List<String> queryTableFields(String tableName, List<String> fieldsIgnore);
+
+    Long getAuthenticationIdByStaffInfoId(Long staffInfoId);
 }

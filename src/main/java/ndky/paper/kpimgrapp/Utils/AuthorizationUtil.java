@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -84,5 +85,18 @@ public class AuthorizationUtil {
      */
     public ResponseEntity<?> getForbiddenResponseEntity(HttpServletRequest request) {
         return new AccessDeniedResponse(request.getServletPath()).responseEntity();
+    }
+
+    /**
+     * get table fields name collection
+     *
+     * @return List<String>
+     */
+    public List<String> getFieldsForTable(String tableName, String... excludedFields) {
+        return authorizationMapper.queryTableFields(tableName, Arrays.asList(excludedFields));
+    }
+
+    public Long getAuthenticationIdByStaffInfoId(Long StaffInfoId) {
+        return authorizationMapper.getAuthenticationIdByStaffInfoId(StaffInfoId);
     }
 }

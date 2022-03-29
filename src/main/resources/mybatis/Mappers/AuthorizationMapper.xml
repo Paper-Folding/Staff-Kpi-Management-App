@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.AuthorizationMapper">
     <select id="queryRoles" resultType="Role">
         select c.*
@@ -133,5 +133,21 @@
             and e.column_name = #{column_name}
         </if>
         ;
+    </select>
+
+    <select id="queryTableFields" resultType="String">
+        select column_name
+        from dict_operation_object
+        where table_name = #{tableName} and column_name != '*'
+        <foreach item="field" collection="fieldsIgnore">
+            and column_name != #{field}
+        </foreach>
+        ;
+    </select>
+
+    <select id="getAuthenticationIdByStaffInfoId" resultType="Long">
+        select id
+        from authentication
+        where staff_info_id = ${staffInfoId};
     </select>
 </mapper>

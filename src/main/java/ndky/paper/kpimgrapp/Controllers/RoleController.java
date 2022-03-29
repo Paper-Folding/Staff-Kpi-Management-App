@@ -72,7 +72,7 @@ public class RoleController {
         long lastInsertId = roleMapper.selectLastInsertId();
         if (roleRequest.getRoleScopes() != null && roleRequest.getRoleScopes().size() > 0)
             afflicted += roleMapper.addRoleScopesForRole(lastInsertId, roleRequest.getRoleScopes());
-        return new ModifyResponse(afflicted, "Done").responseEntity();
+        return new ModifyResponse(afflicted).responseEntity();
     }
 
     @DeleteMapping
@@ -82,8 +82,8 @@ public class RoleController {
         if ("admin".equals(roleRequest.getName()) || "officer".equals(roleRequest.getName()) || "initial".equals(roleRequest.getName()))
             return new ErrorResponse(roleRequest.getName() + " is not deletable!").responseEntity();
         if (!guaranteeCreatorModify(roleRequest, request))
-            return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
-        return new ModifyResponse(roleMapper.deleteRole(roleRequest), "Done").responseEntity();
+            return new ErrorResponse("您没有权限删除此角色，因为您不是该角色的创建者。").responseEntity();
+        return new ModifyResponse(roleMapper.deleteRole(roleRequest)).responseEntity();
     }
 
     @PutMapping
@@ -93,7 +93,7 @@ public class RoleController {
         if ("admin".equals(roleRequest.getName()) || "officer".equals(roleRequest.getName()) || "initial".equals(roleRequest.getName()))
             return new ErrorResponse(roleRequest.getName() + " is not updatable!").responseEntity();
         if (!guaranteeCreatorModify(roleRequest, request))
-            return new ErrorResponse("您没有权限对此角色产生任何更改，因为您不是该角色的创建者。").responseEntity();
+            return new ErrorResponse("您没有权限修改此角色，因为您不是该角色的创建者。").responseEntity();
         if (roleRequest.getId() != null && roleRequest.getName() != null && !roleMapper.existsRole(roleRequest.getId(), roleRequest.getName()) && roleMapper.existsRole(null, roleRequest.getName()))
             return new ModifyResponse(ModifyResponse.DUPLICATE, 0, "Trying to rename to a duplicate role.").responseEntity();
         int afflicted = roleMapper.updateRole(roleRequest);
@@ -102,6 +102,6 @@ public class RoleController {
             if (roleRequest.getRoleScopes().size() > 0)
                 afflicted += roleMapper.addRoleScopesForRole(roleRequest.getId(), roleRequest.getRoleScopes());
         }
-        return new ModifyResponse(afflicted, "Done").responseEntity();
+        return new ModifyResponse(afflicted).responseEntity();
     }
 }
