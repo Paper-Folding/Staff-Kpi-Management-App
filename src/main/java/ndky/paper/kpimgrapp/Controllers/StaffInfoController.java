@@ -76,7 +76,7 @@ public class StaffInfoController {
         // 6. select data and response
         var result = staffInfoMapper.selectStaffInfoList(type.equals("select") ? staffInfoRequest.getStartPos() : 0, type.equals("select") ? staffInfoRequest.getCount() : 0, staffInfoRequest.getQuery(), allowedFields);
         Long total = staffInfoMapper.selectStaffInfoTotal(staffInfoRequest.getQuery());
-        return new TableResponse(allowedFields, result, total).responseEntity();
+        return new TableResponse(allowedFields.stream().map(ele -> Maid.mapUnderCoreStringToCamelCase(ele, false)).collect(Collectors.toList()), result, total).responseEntity();
     }
 
     @PostMapping("/get/all")
