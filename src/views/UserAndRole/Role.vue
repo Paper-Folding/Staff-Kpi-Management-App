@@ -157,7 +157,10 @@ export default {
             this.currentStatus = state.LOADING;
             await this.requestList({ page: this.curPage, amount: this.per, query: newVal });
             this.table.rows = this.sanitizeRows(this.$store.state.Role.rows);
-            this.currentStatus = state.NORMAL;
+            if (this.table.rows.length === 0)
+                this.currentStatus = state.NOTHING_FOUND;
+            else
+                this.currentStatus = state.NORMAL;
         }, 800)
     },
     methods: {
@@ -229,7 +232,7 @@ export default {
             await this.addRole({
                 name: this.modalEditor.data.name,
                 description: this.modalEditor.data.description,
-                expiration: this.modalEditor.roleNoExpire ? null : (Maid.formatDate(this.modalEditor.data.expirationDay, 'YYYY-mm-dd') + ' ' + Maid.formatDate(this.modalEditor.data.expirationTime, 'HH:MM')),
+                expiration: this.modalEditor.roleNoExpire ? null : (Maid.formatDate(this.modalEditor.data.expirationDay, 'YYYY-MM-DD') + ' ' + Maid.formatDate(this.modalEditor.data.expirationTime, 'hh:mm')),
                 roleScopes: this.$refs.powerEditor.collect()
             });
             if (this.$store.state.Role.responseStatus) {
@@ -246,7 +249,7 @@ export default {
                 id: this.modalEditor.data.id,
                 name: this.modalEditor.data.name,
                 description: this.modalEditor.data.description,
-                expiration: this.modalEditor.roleNoExpire ? null : (Maid.formatDate(this.modalEditor.data.expirationDay, 'YYYY-mm-dd') + ' ' + Maid.formatDate(this.modalEditor.data.expirationTime, 'HH:MM')),
+                expiration: this.modalEditor.roleNoExpire ? null : (Maid.formatDate(this.modalEditor.data.expirationDay, 'YYYY-MM-DD') + ' ' + Maid.formatDate(this.modalEditor.data.expirationTime, 'hh:mm')),
                 roleScopes: this.$refs.powerEditor.collect(),
                 creatorName: this.modalEditor.data.creator
             });
@@ -289,6 +292,15 @@ export default {
 .top {
     display: flex;
     justify-content: space-between;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .search {
+            margin-left: 1rem;
+        }
+    }
 }
 
 .form-label {

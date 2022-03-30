@@ -22,13 +22,16 @@ export default {
         }
     },
     async mounted() {
-        await this.requestList({
-            page: this.page,
-            amount: this.per
-        })
+        await this.requestList({ page: this.curPage, amount: this.per });
+        this.table.header = this.$store.state.User.table.header;
+        this.table.rows = this.$store.state.User.table.rows;
+        if (this.table.rows.length === 0)
+            this.currentStatus = state.NOTHING_LOADED;
+        else
+            this.currentStatus = state.NORMAL;
     },
     computed: {
-        ...mapGetters({ total: "User/total" })
+        ...mapGetters({ total: "User/getTotal" })
     },
     methods: {
         ...mapActions({ requestList: "User/requestStaffList" })
@@ -40,4 +43,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep() {
+    .paper-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
 </style>

@@ -57,6 +57,7 @@
  *      title: 'hint of the icon'
  * }
  */
+import formatDate from "./TimeUtil.js";
 export default {
     data() {
         return {
@@ -69,12 +70,15 @@ export default {
             type: null,
             require: true
         },
+        header: null,
         row: Object
     },
     mounted() {
-        if (['string', 'number'].includes(typeof this.value)) {
+        if (['string', 'number'].includes(typeof this.value) || this.value == null) {
             this.type = 'string';
-            this.val = { text: this.value };
+            this.val = { text: this.value || "" };
+            if (this.header.time != null && this.value != null)
+                this.val.text = formatDate(this.val.text, this.header.time);
             return;
         }
         switch (this.value.type) {
@@ -83,6 +87,8 @@ export default {
             case 'text':
                 this.type = 'string';
                 this.val = { text: this.value.text, elipsis: this.value.elipsis || false };
+                if (this.header.time != null)
+                    this.val.text = formatDate(this.value, this.header.time);
                 break;
             case 'img':
             case 'image':
@@ -127,9 +133,11 @@ td {
     }
 
     &.button i {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        transform-origin: center;
+        @media (min-width: 768px) {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            transform-origin: center;
+        }
         transition: transform 0.25s;
         font-size: 1.25em;
         color: var(--pt-icon-color, #000);

@@ -6,6 +6,7 @@
             :scope="index === 0 ? 'row' : null"
             :row="value"
             :value="value[key]"
+            :header="header[key]"
             :class="!Array.isArray(header) && header[key].hidden ? 'd-none' : null"
         ></cell>
     </tr>

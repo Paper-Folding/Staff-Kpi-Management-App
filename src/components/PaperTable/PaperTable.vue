@@ -1,7 +1,7 @@
 <!-- A data table component to display traditional table data -->
 <template>
-    <table class="table table-hover">
-        <thead>
+    <table ref="table" class="table table-hover" :class="expanded ? 'expanded' : ''">
+        <thead ref="header">
             <tr>
                 <th
                     v-for="(val, key) in header"
@@ -37,7 +37,7 @@
 /**
  * Props:
  *  header: defines how table header should be rendered, if you are not passing in header, the table will use the key set of the first row passed in by modelValue, which is risky if your data is dynamic.
- *      e.g. :header = { id: { text: '#', hidden: true }, name: { text: "名字", width: '10%' } }, the table header will only show 'name' column in modelValue with '姓名'
+ *      e.g. :header = { id: { text: '#', hidden: true }, name: { text: "名字", width: '10%' }, enroll: { text: '参加时间', time: 'YYYY-MM-DD hh:mm:ss'} }, the table header will only show 'name' column in modelValue with '姓名' and 'enroll' column with its children formatted date.
  *  modelValue: defines how table data should be displayed, for more detail, please check @file('./Cell.vue') for more detailed variations.
  *  keyColumn: Type is String. If you'd like to dynamically change DOM, e.g. delete a row, you MUST give it a column name of modelValue which has unique values(e.g. 'id'). Else, the table with use index of vue's v-for loop.
  * status: defines when you want your table state is, it has four values: NORMAL, LOADING, NOTHING_LOADED, NOTHING_FOUND, use them in other files by `import {state}`,
@@ -49,6 +49,11 @@ import state from "./Constants.js";
 
 export default {
     name: "PaperTable",
+    data() {
+        return {
+            expanded: true
+        }
+    },
     props: {
         header: {
             type: [Object, Array],
@@ -69,6 +74,28 @@ export default {
     },
     created() {
         this.state = state;
+    },
+    methods: {
+        determineTableDisplayStyle() {
+            this.expanded = true;
+            if (this.$refs.table.clientWidth > this.$refs.header.clientWidth)
+                this.expanded = false;
+            else
+                this.expanded = true;
+            return this.expanded;
+        }
+    },
+    watch: {
+        status() {
+            let c = 0;
+            let i = setInterval(() => {
+                if (!this.determineTableDisplayStyle())
+                    clearInterval(i);
+                c++;
+                if (c > 10)
+                    clearInterval(i);
+            }, 300);
+        }
     },
     computed: {
         keys() {
@@ -103,18 +130,18 @@ table {
         vertical-align: middle;
     }
 
+    &.expanded {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
     .cell-button {
         transition: transform 0.25s;
 
         &:hover {
             transform: scale(2.5);
         }
-    }
-
-    @media (max-width: 520px) {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
     }
 }
 

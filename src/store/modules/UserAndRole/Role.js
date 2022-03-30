@@ -8,8 +8,8 @@ const state = {
         description: { text: '描述', width: '30%' },
         isExpired: { text: '有效否', width: '10%' },
         creatorName: { text: '创建者用户名', width: '15%' },
-        edit: '',
-        delete: ''
+        edit: '编辑',
+        delete: '移除'
     },
     rows: {},
     total: 0,
