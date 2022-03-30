@@ -6,7 +6,10 @@
         :data-bs-keyboard="escDismiss"
         tabindex="-1"
     >
-        <div class="modal-dialog" :class="`modal-${size}`">
+        <div
+            class="modal-dialog"
+            :class="[`modal-${size}`, scrollable ? 'modal-dialog-scrollable' : '']"
+        >
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -17,6 +20,7 @@
                         type="button"
                         class="btn-close"
                         data-bs-dismiss="modal"
+                        aria-label="Close"
                     ></button>
                 </div>
                 <div class="modal-body">
@@ -45,6 +49,7 @@
  *      escDismiss      if modal closable by esc key, true for yes
  *      closeBtn        if modal should show close button at top right corner
  *      size            how wide will a modal be, 'xl', 'lg', 'md' and 'sm' should be passed, default is 'md' 
+ *      scrollable      should modal body scrollable? default is false
  *  slots:
  *      their names are: 'title', 'body', 'footer'
  *      'cancelBtnText' for cancel button and 'confirmBtnText' for confirm button if footer slot is not specified
@@ -72,9 +77,13 @@ export default {
         size: {
             type: String,
             default: 'sm'
+        },
+        scrollable: {
+            type: Boolean,
+            default: false
         }
     },
-    setup(props, context) {
+    setup(_, context) {
         let target = ref(null), modal = null;
         onMounted(() => {
             modal = new Modal(target.value);

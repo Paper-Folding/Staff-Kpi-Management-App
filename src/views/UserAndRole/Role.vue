@@ -1,6 +1,9 @@
 <!-- 用户与权限 - 角色管理 role/role-scope -->
 <template>
-    <outline-button icon="plus-circle" color="green" class="mt-3 mb-2" @click="callAdd">添加角色</outline-button>
+    <div class="mt-3 mb-2 top">
+        <outline-button icon="plus-circle" color="green" @click="callAdd">添加角色</outline-button>
+        <search-input v-model="query" placeholder="键入以搜索"></search-input>
+    </div>
     <paper-table
         :status="currentStatus"
         key-column="id"
@@ -105,6 +108,8 @@ import PowerEditor from '../../components/Transaction/PowerEditor.vue';
 import OutlineButton from '../../components/OutlineButton.vue';
 import DatePicker from '../../components/DatePicker.vue';
 import Maid from '../../utils/Maid.js';
+import SearchInput from '../../components/SearchInput.vue';
+import { debounce } from "lodash";
 export default {
     data() {
         return {
@@ -112,6 +117,7 @@ export default {
             currentStatus: state.LOADING,
             curPage: 1,
             per: 10,
+            query: "",
             modalEditor: {
                 mode: '',
                 disabled: false,
@@ -143,10 +149,16 @@ export default {
     watch: {
         async curPage(turnTo) {
             this.currentStatus = state.LOADING;
-            await this.requestList({ page: turnTo, amount: this.per });
+            await this.requestList({ page: turnTo, amount: this.per, query: this.query });
             this.table.rows = this.sanitizeRows(this.$store.state.Role.rows);
             this.currentStatus = state.NORMAL;
-        }
+        },
+        query: debounce(async function (newVal) {
+            this.currentStatus = state.LOADING;
+            await this.requestList({ page: this.curPage, amount: this.per, query: newVal });
+            this.table.rows = this.sanitizeRows(this.$store.state.Role.rows);
+            this.currentStatus = state.NORMAL;
+        }, 800)
     },
     methods: {
         ...mapActions({ requestList: "Role/requestList", requestRole: "Role/requestRole", deleteRole: "Role/requestDeleteRole", addRole: "Role/requestAddRole", updateRole: "Role/requestUpdateRole" }),
@@ -209,7 +221,7 @@ export default {
         async callDelete(row) {
             if (confirm(`确实要删除${row.name}角色吗？与此角色相关联的用户也会因此直接失去此角色！`)) {
                 await this.deleteRole({ id: row.id, name: row.name, creatorName: row.creatorName });
-                await this.requestList({ page: this.curPage, amount: this.per });
+                await this.requestList({ page: this.curPage, amount: this.per, query: this.query });
                 this.table.rows = this.sanitizeRows(this.$store.state.Role.rows);
             }
         },
@@ -224,7 +236,7 @@ export default {
                 this.$refs.modal.close();
                 this.table.rows = [];
                 this.currentStatus = state.LOADING;
-                await this.requestList({ page: this.curPage, amount: this.per });
+                await this.requestList({ page: this.curPage, amount: this.per, query: this.query });
                 this.table.rows = this.sanitizeRows(this.$store.state.Role.rows);
                 this.currentStatus = state.NORMAL;
             }
@@ -242,7 +254,7 @@ export default {
                 this.$refs.modal.close();
                 this.table.rows = [];
                 this.currentStatus = state.LOADING;
-                await this.requestList({ page: this.curPage, amount: this.per });
+                await this.requestList({ page: this.curPage, amount: this.per, query: this.query });
                 this.table.rows = this.sanitizeRows(this.$store.state.Role.rows);
                 this.currentStatus = state.NORMAL;
             }
@@ -267,12 +279,18 @@ export default {
         PaperModal,
         PowerEditor,
         OutlineButton,
-        DatePicker
+        DatePicker,
+        SearchInput
     }
 }
 </script>
 
 <style lang="scss" scoped>
+.top {
+    display: flex;
+    justify-content: space-between;
+}
+
 .form-label {
     user-select: none;
     font-weight: bold;

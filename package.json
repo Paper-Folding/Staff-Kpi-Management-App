@@ -17,9 +17,9 @@
     "lodash": "^4.17.21",
     "sass": "^1.49.9",
     "vue": "^3.2.25",
-    "vue3-datepicker": "^0.3.2",
     "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.0.14",
+    "vue3-datepicker": "^0.3.2",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
