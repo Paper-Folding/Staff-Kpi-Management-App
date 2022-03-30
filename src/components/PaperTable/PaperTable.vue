@@ -75,6 +75,9 @@ export default {
     created() {
         this.state = state;
     },
+    mounted() {
+        setTimeout(this.determineTableDisplayStyle, 1000);
+    },
     methods: {
         determineTableDisplayStyle() {
             this.expanded = true;
@@ -83,18 +86,6 @@ export default {
             else
                 this.expanded = true;
             return this.expanded;
-        }
-    },
-    watch: {
-        status() {
-            let c = 0;
-            let i = setInterval(() => {
-                if (!this.determineTableDisplayStyle())
-                    clearInterval(i);
-                c++;
-                if (c > 10)
-                    clearInterval(i);
-            }, 300);
         }
     },
     computed: {

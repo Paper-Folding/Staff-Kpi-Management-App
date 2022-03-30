@@ -77,7 +77,7 @@ export default {
         if (['string', 'number'].includes(typeof this.value) || this.value == null) {
             this.type = 'string';
             this.val = { text: this.value || "" };
-            if (this.header.time != null && this.value != null)
+            if (this.header?.time != null && this.value != null)
                 this.val.text = formatDate(this.val.text, this.header.time);
             return;
         }

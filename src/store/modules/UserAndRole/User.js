@@ -25,7 +25,28 @@ const state = {
         phone: '办公电话',
         longPhone: '长号',
         shortPhone: '短号'
-    }
+    },
+    importTemplate: {
+        no: '工号',
+        name: '姓名',
+        gender: '性别',
+        nation: '民族',
+        birth: '诞辰',
+        enrollTime: '入坑时间',
+        politic: '政治面貌',
+        major: '专业',
+        level: '学位',
+        levelUnit: '学位授予单位',
+        levelDate: '学位授予日期',
+        jobAlias: '职称',
+        researchDirection: '研究方向',
+        job: '职务',
+        department: '部门',
+        idcard: '身份证号',
+        phone: '办公电话',
+        longPhone: '长号',
+        shortPhone: '短号'
+    },
 }
 
 const getters = {
