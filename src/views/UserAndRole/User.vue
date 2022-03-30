@@ -1,19 +1,37 @@
 <!-- 用户与权限 - 用户信息 staff_info -->
 <template>
-    <paper-table :status="currentStatus" key-column="id"></paper-table>
+    <paper-table
+        :status="currentStatus"
+        key-column="id"
+        v-model="table.rows"
+        :header="table.header"
+    ></paper-table>
 </template>
 
 <script>
 import PaperTable from "../../components/PaperTable/PaperTable.vue";
 import state from "../../components/PaperTable/Constants";
+import { mapActions, mapGetters } from 'vuex';
 export default {
     data() {
         return {
-            table: { header: [], rows: [] },
+            table: { header: {}, rows: [] },
             currentStatus: state.LOADING,
             curPage: 1,
             per: 10,
         }
+    },
+    async mounted() {
+        await this.requestList({
+            page: this.page,
+            amount: this.per
+        })
+    },
+    computed: {
+        ...mapGetters({ total: "User/total" })
+    },
+    methods: {
+        ...mapActions({ requestList: "User/requestStaffList" })
     },
     components: {
         PaperTable

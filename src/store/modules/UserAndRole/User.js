@@ -1,8 +1,9 @@
 /** Just a template, delete me once project done developing. */
-import axios from "axios";
-import jsCookie from "js-cookie";
+import request from "../../../utils/Ajax";
 
 const state = {
+    table: { header: {}, rows: [] },
+    total: 0,
     fieldsMapper: {
         id: '#',
         no: '工号',
@@ -10,33 +11,58 @@ const state = {
         gender: '性别',
         nation: '民族',
         birth: '诞辰',
-        "enroll_time": '入坑时间',
+        enrollTime: '入坑时间',
         politic: '政治面貌',
         major: '专业',
         level: '学位',
-        "level_unit": '学位授予单位',
-        "level_date": '学位授予日期',
-        "job_alias": '职称',
-        "research_direction": '研究方向',
+        levelUnit: '学位授予单位',
+        levelDate: '学位授予日期',
+        jobAlias: '职称',
+        researchDirection: '研究方向',
         job: '职务',
         department: '部门',
         idcard: '身份证号',
         phone: '办公电话',
-        "long_phone": '长号',
-        "short_phone": '短号'
+        longPhone: '长号',
+        shortPhone: '短号'
     }
 }
 
 const getters = {
-
+    getTotal: state => state.total
 }
 
 const actions = {
-
+    async requestStaffList({ commit, rootState }, params) {
+        let res = await request("post", "/staffInfo/get/all", {
+            role: localStorage.getItem("role"),
+            page: params.page,
+            count: params.amount,
+            query: params.query || null
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            commit('staffList', res.data);
+        } else {
+            rootState.notify(res.data.message);
+            commit('staffList', { result: { header: {}, rows: [] }, total: 0 });
+        }
+    }
 }
 
 const mutations = {
-
+    staffList(state, data) {
+        if (data.result.header.includes('*')) {
+            state.table.header = state.fieldsMapper;
+        } else {
+            let result = {};
+            for (let head of data.result.header) {
+                result[head] = state.fieldsMapper[head];
+            }
+            state.table.header = result;
+        }
+        state.table.rows = data.result.rows;
+        state.total = data.total;
+    }
 }
 
 export default {
