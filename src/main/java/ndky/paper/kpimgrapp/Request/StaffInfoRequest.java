@@ -2,18 +2,13 @@ package ndky.paper.kpimgrapp.Request;
 
 import ndky.paper.kpimgrapp.Models.Role;
 
-import java.util.Date;
 import java.util.List;
 
 public class StaffInfoRequest extends BaseQueryRequest {
     private Long id;
-    private String no, name;
-    private String gender;
-    private String nation;
-    private Date birth, enrollTime;
-    private String politic, major, level, levelUnit;
-    private Date levelDate;
-    private String jobAlias, researchDirection, job, department, idcard, phone, longPhone, shortPhone;
+
+    // fuck staff info
+    private String no, name, gender, nation, birth, enrollTime, politic, major, level, levelUnit, levelDate, jobAlias, researchDirection, job, department, idcard, phone, longPhone, shortPhone;
 
     // used for attach roles to staff
     private List<Role> roles;
@@ -21,7 +16,7 @@ public class StaffInfoRequest extends BaseQueryRequest {
     public StaffInfoRequest() {
     }
 
-    public StaffInfoRequest(String role, Integer page, Integer count, String query, Long id, String no, String name, String gender, String nation, Date birth, Date enrollTime, String politic, String major, String level, String levelUnit, Date levelDate, String jobAlias, String researchDirection, String job, String department, String idcard, String phone, String longPhone, String shortPhone, List<Role> roles) {
+    public StaffInfoRequest(String role, Integer page, Integer count, String query, Long id, String no, String name, String gender, String nation, String birth, String enrollTime, String politic, String major, String level, String levelUnit, String levelDate, String jobAlias, String researchDirection, String job, String department, String idcard, String phone, String longPhone, String shortPhone, List<Role> roles) {
         super(role, page, count, query);
         this.id = id;
         this.no = no;
@@ -86,19 +81,19 @@ public class StaffInfoRequest extends BaseQueryRequest {
         this.nation = nation;
     }
 
-    public Date getBirth() {
+    public String getBirth() {
         return birth;
     }
 
-    public void setBirth(Date birth) {
+    public void setBirth(String birth) {
         this.birth = birth;
     }
 
-    public Date getEnrollTime() {
+    public String getEnrollTime() {
         return enrollTime;
     }
 
-    public void setEnrollTime(Date enrollTime) {
+    public void setEnrollTime(String enrollTime) {
         this.enrollTime = enrollTime;
     }
 
@@ -134,11 +129,11 @@ public class StaffInfoRequest extends BaseQueryRequest {
         this.levelUnit = levelUnit;
     }
 
-    public Date getLevelDate() {
+    public String getLevelDate() {
         return levelDate;
     }
 
-    public void setLevelDate(Date levelDate) {
+    public void setLevelDate(String levelDate) {
         this.levelDate = levelDate;
     }
 

@@ -2,6 +2,8 @@ package ndky.paper.kpimgrapp.Controllers;
 
 import ndky.paper.kpimgrapp.Mappers.StaffInfoMapper;
 import ndky.paper.kpimgrapp.Models.UserPermission;
+import ndky.paper.kpimgrapp.Request.BaseQueryRequest;
+import ndky.paper.kpimgrapp.Request.StaffInfoImportRequest;
 import ndky.paper.kpimgrapp.Request.StaffInfoRequest;
 import ndky.paper.kpimgrapp.Request.UserPermissionRequest;
 import ndky.paper.kpimgrapp.Response.ErrorResponse;
@@ -35,7 +37,7 @@ public class StaffInfoController {
     @Autowired
     private AuthorizationUtil authorizationUtil;
 
-    private ResponseEntity<?> preCheck(String username, StaffInfoRequest staffInfoRequest) {
+    private ResponseEntity<?> preCheck(String username, BaseQueryRequest staffInfoRequest) {
         // 1. check if role field is present, this is used for returning role permitted fields
         if (staffInfoRequest.getRole() == null || "".equals(staffInfoRequest.getRole())) {
             logger.log(Level.WARNING, "No role is provided.");
@@ -49,8 +51,7 @@ public class StaffInfoController {
         return null;
     }
 
-    @PostMapping("/get/all")
-    public ResponseEntity<?> getStaffInfoList(@RequestBody StaffInfoRequest staffInfoRequest, HttpServletRequest request) {
+    private ResponseEntity<?> getMapping(StaffInfoRequest staffInfoRequest, HttpServletRequest request, String type) {
         String username = authorizationUtil.getUsernameFromRequest(request); // user who is requesting
         ResponseEntity<?> res = preCheck(username, staffInfoRequest);
         if (res != null)
@@ -59,9 +60,10 @@ public class StaffInfoController {
         // 3. open backdoor for admin or officer
         if ("admin".equals(staffInfoRequest.getRole()) || "officer".equals(staffInfoRequest.getRole())) {
             allowedFields = List.of("*");
-        } else {
+        }
+        else {
             // 4. query user permission scope for current context(select for staff_info)
-            var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "select", "staff_info"));
+            var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, type, "staff_info"));
             if (permissionList.size() == 0)
                 return authorizationUtil.getForbiddenResponseEntity(request);
             // 5. extract permitted fields
@@ -72,9 +74,19 @@ public class StaffInfoController {
                 allowedFields.add("id");
         }
         // 6. select data and response
-        var result = staffInfoMapper.selectStaffInfoList(staffInfoRequest.getStartPos(), staffInfoRequest.getCount(), staffInfoRequest.getQuery(), allowedFields);
+        var result = staffInfoMapper.selectStaffInfoList(type.equals("select") ? staffInfoRequest.getStartPos() : 0, type.equals("select") ? staffInfoRequest.getCount() : 0, staffInfoRequest.getQuery(), allowedFields);
         Long total = staffInfoMapper.selectStaffInfoTotal(staffInfoRequest.getQuery());
         return new TableResponse(allowedFields, result, total).responseEntity();
+    }
+
+    @PostMapping("/get/all")
+    public ResponseEntity<?> getStaffInfoList(@RequestBody StaffInfoRequest staffInfoRequest, HttpServletRequest request) {
+        return getMapping(staffInfoRequest, request, "select");
+    }
+
+    @PostMapping("/get/export")
+    public ResponseEntity<?> exportStaffInfoList(@RequestBody StaffInfoRequest staffInfoRequest, HttpServletRequest request) {
+        return getMapping(staffInfoRequest, request, "export");
     }
 
     @DeleteMapping
@@ -103,7 +115,8 @@ public class StaffInfoController {
         List<String> allowedFields;
         if ("admin".equals(staffInfoRequest.getRole()) || "officer".equals(staffInfoRequest.getRole())) {
             allowedFields = List.of("*");
-        } else {
+        }
+        else {
             var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "update", "staff_info"));
             if (permissionList.size() == 0)
                 return authorizationUtil.getForbiddenResponseEntity(request);
@@ -113,6 +126,20 @@ public class StaffInfoController {
             allowedFields = authorizationUtil.getFieldsForTable("staff_info", "id", "disabled");
         Integer afflicted = staffInfoMapper.updateStaffInfo(staffInfoRequest, Maid.batchMapUnderCoreStringToCamelCase(allowedFields, false));
         return new ModifyResponse(afflicted).responseEntity();
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<?> importStaffList(@RequestBody StaffInfoImportRequest staffInfoImportRequest, HttpServletRequest request) {
+        String username = authorizationUtil.getUsernameFromRequest(request); // user who is requesting
+        ResponseEntity<?> res = preCheck(username, staffInfoImportRequest);
+        if (res != null)
+            return res;
+        if (!"admin".equals(staffInfoImportRequest.getRole()) && !"officer".equals(staffInfoImportRequest.getRole())) {
+            boolean allowed = authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoImportRequest.getRole(), null, "import", "staff_info"));
+            if (!allowed)
+                return authorizationUtil.getForbiddenResponseEntity(request);
+        }
+        return new ModifyResponse(staffInfoMapper.batchAddStaff(staffInfoImportRequest.getList())).responseEntity();
     }
 
     @PreAuthorize("hasAuthority('admin') or hasAuthority('officer')")

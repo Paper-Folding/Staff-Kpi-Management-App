@@ -28,4 +28,6 @@ public interface StaffInfoMapper extends UtilMapper {
     Integer updateStaffInfo(StaffInfoRequest staffInfoRequest, List<Map<String, String>> allowedFieldsNames);
 
     Integer attachRolesForUser(Long authenticationId, List<Role> roles);
+
+    Integer batchAddStaff(List<StaffInfoRequest> staffInfoRequestList);
 }

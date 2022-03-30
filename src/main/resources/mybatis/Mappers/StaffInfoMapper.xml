@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.StaffInfoMapper">
 
     <select id="selectStaffInfoList" resultType="StaffInfo">
@@ -16,7 +16,10 @@
             or gender = #{query}
             or nation like '%' #{query} '%')
         </if>
-        limit ${from}, ${length};
+        <if test="length != null and length != 0">
+            limit ${from}, ${length}
+        </if>
+        ;
     </select>
 
     <select id="selectStaffInfoTotal" resultType="Long">
@@ -57,6 +60,34 @@
         insert into user_roles(authentication_id, role_id) values
         <foreach collection="roles" item="role" open="(" close=")" separator="),(">
             ${authenticationId}, ${role.id}
+        </foreach>
+        ;
+    </insert>
+
+    <insert id="batchAddStaff">
+        insert into staff_info(no, name, gender, nation, birth, enroll_time, politic, major, level, level_unit,
+        level_date, job_alias, research_direction, job, department, idcard, phone, long_phone,
+        short_phone) values
+        <foreach collection="staffInfoRequestList" item="it" open="(" close=")" separator="),(">
+            #{it.no},
+            #{it.name},
+            #{it.gender},
+            #{it.nation},
+            #{it.birth},
+            #{it.enrollTime},
+            #{it.politic},
+            #{it.major},
+            #{it.level},
+            #{it.levelUnit},
+            #{it.levelDate},
+            #{it.jobAlias},
+            #{it.researchDirection},
+            #{it.job},
+            #{it.department},
+            #{it.idcard},
+            #{it.phone},
+            #{it.longPhone},
+            #{it.shortPhone}
         </foreach>
         ;
     </insert>
