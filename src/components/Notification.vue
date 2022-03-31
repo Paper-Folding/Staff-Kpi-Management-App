@@ -39,8 +39,8 @@ export default {
             msgSpan.innerText = msg;
             let closeBtn = document.createElement('button');
             closeBtn.classList.add('btn-close', 'btn-close-white');
-            closeBtn.setAttribute('data-bs-dismiss', 'toast');
             closeBtn.setAttribute('aria-label', 'Close');
+            closeBtn.addEventListener('click', () => notification.classList.add('d-none'));
 
             body.appendChild(icon);
             body.appendChild(msgSpan);
