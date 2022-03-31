@@ -1,12 +1,17 @@
 <template>
     <div class="wrapper">
-        <img src="../assets/images/sad Ling.png" />
+        <img :src="imgSrc" />
         <h3>Where is my page?</h3>
     </div>
 </template>
 
 <script>
+import imgSrc from "../assets/images/sad Ling.png";
+
 export default {
+    created() {
+        this.imgSrc = imgSrc;
+    },
     mounted() {
         document.body.classList.add('err');
     },
