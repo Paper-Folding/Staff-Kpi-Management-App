@@ -1,5 +1,6 @@
 /** Just a template, delete me once project done developing. */
 import request from "../../../utils/Ajax";
+import Auth from "../../../utils/Auth";
 
 const state = {
     table: { header: {}, rows: [] },
@@ -25,7 +26,7 @@ const state = {
         phone: '办公电话',
         longPhone: '长号',
         shortPhone: '短号',
-        edit: '编辑',
+        edit: '编辑角色',
         delete: '移除'
     },
     importTemplate: {
@@ -50,7 +51,9 @@ const state = {
         shortPhone: '短号'
     },
     exportsData: [],
-    responseStatus: true
+    responseStatus: true,
+    roleList: [],
+    userRoleList: []
 }
 
 const getters = {
@@ -104,6 +107,38 @@ const actions = {
         } else {
             rootState.notify(res.data.message);
         }
+    },
+    async attachRole({ rootState }, params) {
+        let res = await request("put", "/staffInfo/attachRole", {
+            role: localStorage.getItem("role"),
+            id: params.id,
+            roles: params.roles
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            rootState.notify("角色Attached！", 'success');
+        } else {
+            rootState.notify(res.data.message);
+        }
+    },
+    async requestRoleList({ commit, rootState }) {
+        let res = await request('post', "/auth/get/role/all");
+        if (res.status === 200 && res.data.code === 200) {
+            commit('roleList', res.data);
+        } else {
+            rootState.notify(res.data.message);
+            commit('roleList', null);
+        }
+    },
+    async requestUserRoleList({ commit, rootState }, params) {
+        let res = await request('post', "/auth/get/role", {
+            staffInfoId: params.id
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            commit('userRoleList', res.data);
+        } else {
+            rootState.notify(res.data.message);
+            commit('userRoleList', null);
+        }
     }
 }
 
@@ -116,7 +151,7 @@ const mutations = {
             for (let head of data.result.header) {
                 result[head] = state.fieldsMapper[head];
             }
-            result.edit = '编辑';
+            result.edit = '编辑角色';
             result.delete = '移除';
             state.table.header = result;
         }
@@ -137,6 +172,18 @@ const mutations = {
             if ('id' in row)
                 delete row.id;
         }
+    },
+    roleList(state, data) {
+        if (data == null)
+            state.roleList = [];
+        else
+            state.roleList = data.result;
+    },
+    userRoleList(state, data) {
+        if (data == null)
+            state.userRoleList = [];
+        else
+            state.userRoleList = data.result;
     }
 }
 

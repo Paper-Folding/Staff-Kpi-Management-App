@@ -57,7 +57,7 @@
                     ></date-picker>
                     <date-picker
                         v-model="modalEditor.data.expirationTime"
-                        :disabled="modalEditor.disabled || modalEditor.roleNoExpire"
+                        :disabled="modalEditor.data.expirationDay == null || modalEditor.disabled || modalEditor.roleNoExpire"
                         class="date-time"
                         type="time"
                     ></date-picker>
@@ -86,13 +86,13 @@
                 @click="editIt"
                 v-if="modalEditor.mode === 'edit'"
                 color="red"
-                icon="none"
+                icon="check-lg"
             >确认修改</outline-button>
             <outline-button
                 @click="addIt"
                 v-if="modalEditor.mode === 'add'"
                 color="green"
-                icon="none"
+                icon="check-lg"
             >确认添加</outline-button>
         </template>
     </paper-modal>

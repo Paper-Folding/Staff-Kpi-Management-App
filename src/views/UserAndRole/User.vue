@@ -15,6 +15,31 @@
         :header="table.header"
     ></paper-table>
     <pagination v-model="curPage" v-bind="{ total, per, showAmount: 10 }"></pagination>
+    <paper-modal ref="editModal" size="lg">
+        <template #title>{{ roleEditor.title }}</template>
+        <template #body>
+            <vue-select
+                v-model="roleEditor.userRoleList"
+                :options="roleEditor.roleList"
+                track-by="id"
+                :multiple="true"
+                :close-on-select="false"
+                :clear-on-select="false"
+                :preserve-search="true"
+                label="name"
+                :allow-empty="false"
+                :custom-label="roleSelectorCustomLabel"
+                select-label="按下回车以选中"
+                deselect-label="当前"
+                selected-label="当前"
+                placeholder="可在此键入搜索"
+            ></vue-select>
+        </template>
+        <template #footer>
+            <outline-button color="blue" data-bs-dismiss="modal" icon="none">关闭</outline-button>
+            <outline-button @click="attachIt" color="red" icon="check-lg">确认编辑</outline-button>
+        </template>
+    </paper-modal>
 </template>
 
 <script>
@@ -24,8 +49,10 @@ import excelHelper from '../../components/Excel/ExcelHelper.js';
 import OutlineButton from '../../components/OutlineButton.vue';
 import SearchInput from '../../components/SearchInput.vue';
 import PaperTable from "../../components/PaperTable/PaperTable.vue";
+import PaperModal from '../../components/PaperModal.vue';
 import state from "../../components/PaperTable/Constants";
 import Pagination from "../../components/Pagination.vue";
+import VueSelect from "vue-multiselect";
 import { debounce } from "lodash";
 import Auth from '../../utils/Auth';
 export default {
@@ -39,6 +66,12 @@ export default {
             importingTable: {
                 header: [],
                 rows: []
+            },
+            roleEditor: {
+                title: '',
+                userId: -1,
+                roleList: [],
+                userRoleList: []
             }
         }
     },
@@ -74,10 +107,13 @@ export default {
         }, 800)
     },
     methods: {
-        ...mapActions({ requestList: "User/requestStaffList", requestImport: "User/requestImport", requestDelete: "User/requestDelete", requestExport: "User/requestExport" }),
+        ...mapActions({ requestList: "User/requestStaffList", requestImport: "User/requestImport", requestDelete: "User/requestDelete", requestExport: "User/requestExport", attachRole: "User/attachRole", requestRoleList: "User/requestRoleList", requestUserRoleList: "User/requestUserRoleList" }),
         downloadTemplate() {
             const template = [excelHelper.formatTableJsonToXlsxJson(this.$store.state.User.importTemplate)[1]];
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, template)), "template-staff-info.xlsx");
+        },
+        roleSelectorCustomLabel({ name, description }) {
+            return `${name} - ${description}`;
         },
         async importIt() {
             this.currentStatus = state.LOADING;
@@ -123,11 +159,27 @@ export default {
             for (let row of requestedRows) {
                 result.push({
                     ...row,
-                    edit: { type: 'btn', title: '编辑用户', icon: 'bi-pencil-square', color: 'var(--bs-primary)', click: this.callEdit },
+                    edit: { type: 'btn', title: '编辑用户的角色', icon: 'bi-pencil-square', color: 'var(--bs-primary)', click: this.callAttach },
                     delete: { type: 'btn', title: '移除用户', icon: 'bi-trash', color: 'var(--bs-danger)', click: this.callDelete }
                 })
             }
             return result;
+        },
+        async callAttach(row) {
+            this.roleEditor.title = '正在编辑' + row.name + '的角色';
+            this.roleEditor.userId = row.id;
+            await this.requestUserRoleList({ id: this.roleEditor.userId });
+            await this.requestRoleList();
+            this.roleEditor.roleList = this.$store.state.User.roleList;
+            this.roleEditor.userRoleList = this.$store.state.User.userRoleList;
+            this.$refs.editModal.open();
+        },
+        async attachIt() {
+            await this.attachRole({
+                id: this.roleEditor.userId,
+                roles: this.roleEditor.userRoleList
+            });
+            this.$refs.editModal.close();
         }
     },
     components: {
@@ -135,6 +187,8 @@ export default {
         OutlineButton,
         SearchInput,
         PaperTable,
+        PaperModal,
+        VueSelect,
         Pagination
     }
 }

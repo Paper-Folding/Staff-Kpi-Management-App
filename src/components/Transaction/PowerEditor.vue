@@ -71,6 +71,7 @@ export default {
                     },
                     { text: '导出查询权限允许的字段数据', name: 'export', dbid: 5 },
                     { text: '导入数据/批量插入', name: 'import', dbid: 6 },
+                    { text: '修改其他用户角色', name: 'attachRole', dbid: 7 },
                 ]
             },
             {
