@@ -30,6 +30,7 @@
         from authentication a,
              staff_info b
         where a.staff_info_id = b.id
+          and b.disabled = '0'
           and username = #{username};
     </select>
 </mapper>

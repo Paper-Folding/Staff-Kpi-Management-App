@@ -60,10 +60,9 @@ public class StaffInfoController {
         // 3. open backdoor for admin or officer
         if ("admin".equals(staffInfoRequest.getRole()) || "officer".equals(staffInfoRequest.getRole())) {
             allowedFields = List.of("*");
-        }
-        else {
+        } else {
             // 4. query user permission scope for current context(select for staff_info)
-            var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, type, "staff_info"));
+            var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "select", "staff_info"));
             if (permissionList.size() == 0)
                 return authorizationUtil.getForbiddenResponseEntity(request);
             // 5. extract permitted fields
@@ -84,7 +83,7 @@ public class StaffInfoController {
         return getMapping(staffInfoRequest, request, "select");
     }
 
-    @PostMapping("/get/export")
+    @PostMapping("/export")
     public ResponseEntity<?> exportStaffInfoList(@RequestBody StaffInfoRequest staffInfoRequest, HttpServletRequest request) {
         return getMapping(staffInfoRequest, request, "export");
     }
@@ -115,8 +114,7 @@ public class StaffInfoController {
         List<String> allowedFields;
         if ("admin".equals(staffInfoRequest.getRole()) || "officer".equals(staffInfoRequest.getRole())) {
             allowedFields = List.of("*");
-        }
-        else {
+        } else {
             var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "update", "staff_info"));
             if (permissionList.size() == 0)
                 return authorizationUtil.getForbiddenResponseEntity(request);
@@ -138,6 +136,11 @@ public class StaffInfoController {
             boolean allowed = authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoImportRequest.getRole(), null, "import", "staff_info"));
             if (!allowed)
                 return authorizationUtil.getForbiddenResponseEntity(request);
+        }
+        for (StaffInfoRequest each : staffInfoImportRequest.getList()) {
+            if (staffInfoMapper.checkIfNoDuplicate(each.getNo())) {
+                return new ErrorResponse("存在重复的编号，所有用户均未被导入！").responseEntity();
+            }
         }
         return new ModifyResponse(staffInfoMapper.batchAddStaff(staffInfoImportRequest.getList())).responseEntity();
     }

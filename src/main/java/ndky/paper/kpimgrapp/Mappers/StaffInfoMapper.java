@@ -30,4 +30,6 @@ public interface StaffInfoMapper extends UtilMapper {
     Integer attachRolesForUser(Long authenticationId, List<Role> roles);
 
     Integer batchAddStaff(List<StaffInfoRequest> staffInfoRequestList);
+
+    Boolean checkIfNoDuplicate(String no);
 }
