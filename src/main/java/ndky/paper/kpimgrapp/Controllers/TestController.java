@@ -1,5 +1,6 @@
 package ndky.paper.kpimgrapp.Controllers;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,4 +24,8 @@ public class TestController {
 //        else
 //            return roleUtil.getForbiddenResponseEntity(request);
 //    }
+    @GetMapping("/")
+    public String welcome(){
+        return "<h2>Kpi Mgr App Back End is Working....</h2>";
+    }
 }
