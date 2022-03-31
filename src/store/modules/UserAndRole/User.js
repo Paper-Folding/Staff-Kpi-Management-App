@@ -67,6 +67,17 @@ const actions = {
             rootState.notify(res.data.message);
             commit('staffList', { result: { header: {}, rows: [] }, total: 0 });
         }
+    },
+    async requestImport({ rootState }, params) {
+        let res = await request("post", "/staffInfo/import", {
+            role: localStorage.getItem("role"),
+            list: params.list
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            rootState.notify("导入成功！", 'success');
+        } else {
+            rootState.notify("导入失败，请检查是否有编号重复的用户！");
+        }
     }
 }
 

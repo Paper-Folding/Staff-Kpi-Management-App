@@ -5,13 +5,13 @@
         :color="ifFormatOk && !ifFileEmpty ? 'green' : 'red'"
         @click="callSelect"
     >{{ buttonText }}</outline-button>
-    <!-- <paper-table
-        v-if="tableChosen"
-        key-column="__index__"
-        :header="modelValue.header"
-        v-model="modelValue.rows"
-    ></paper-table> -->
-    <paper-modal ref="selectionModal" size="xl" :scrollable="true" :escDismiss="false">
+    <paper-modal
+        ref="selectionModal"
+        size="xl"
+        :scrollable="true"
+        :escDismiss="false"
+        :backdropDismiss="false"
+    >
         <template #title>{{ buttonText }} - 选择您要导入的工作簿</template>
         <template #body>
             <Tab keyColumn="id" v-model="tab.selected" :list="tab.list"></Tab>
@@ -42,7 +42,7 @@ export default {
     props: {
         modelValue: Object,
     },
-    setup(props) {
+    setup(props, context) {
         let selectedFile = ref(null),
             ifFormatOk = ref(true),
             ifFileEmpty = ref(false),
@@ -83,6 +83,7 @@ export default {
         // call when file selected
         let onFileSelected = async () => {
             if (uploader.value.files == null || uploader.value.files.length === 0) return;
+            selectionTableStatus.value = state.LOADING;
             selectedFile.value = uploader.value.files[0];
             ifFormatOk.value = checkFormat(selectedFile.value);
             if (!ifFormatOk.value)
@@ -97,6 +98,7 @@ export default {
                     }
                 });
                 tab.selected = tab.list[0];
+                selectionTableStatus.value = state.NORMAL;
                 selectionModal.value.show();
                 ifFileEmpty.value = false;
             } else {
@@ -119,11 +121,13 @@ export default {
             selectionModal.value.hide();
             uploader.value.value = null;
             selectedFile.value = null;
+            context.emit('cancelImport');
         }
 
         let confirm = () => {
             tableChosen.value = true;
             modalClose();
+            context.emit('confirmImport');
         }
 
         let cancel = () => {
@@ -155,7 +159,7 @@ export default {
             cancel
         }
     },
-    emits: ["update:modelValue"],
+    emits: ["update:modelValue", "cancelImport", "confirmImport"],
     components: {
         PaperTable,
         OutlineButton,

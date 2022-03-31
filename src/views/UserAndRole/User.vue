@@ -1,10 +1,9 @@
 <!-- 用户与权限 - 用户信息 staff_info -->
 <template>
     <div class="mt-3 mb-2 top">
-        <!-- <outline-button icon="cloud-upload" color="green">导入用户</outline-button> -->
         <div class="d-flex gap-3">
-            <outline-button @click="downloadTemplate">下载导入模板</outline-button>
-            <excel-importer v-model="importingTable"></excel-importer>
+            <outline-button color="blue" @click="downloadTemplate">下载导入模板</outline-button>
+            <excel-importer v-model="importingTable" @confirm-import="importIt"></excel-importer>
         </div>
         <search-input v-model="query" placeholder="键入以搜索"></search-input>
     </div>
@@ -74,10 +73,14 @@ export default {
         }, 800)
     },
     methods: {
-        ...mapActions({ requestList: "User/requestStaffList" }),
+        ...mapActions({ requestList: "User/requestStaffList", requestImport: "User/requestImport" }),
         downloadTemplate() {
             const template = [excelHelper.formatTableJsonToXlsxJson(this.$store.state.User.importTemplate)[1]];
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, template)), "template-staff-info.xlsx");
+        },
+        importIt() {
+            console.log(this.importingTable);
+            debugger
         }
     },
     components: {

@@ -39,10 +39,10 @@ let excelHelper = {
         source.forEach((row, index) => {
             if (index === 0 || row.length === 0)
                 return; // continue
-            let rowObj = {}, _row = row.filter(ele => ele), rowColCount = _row.length;
+            let rowObj = {}, rowColCount = row.length;
             rowObj["__index__"] = index - 1;
             for (let i = 0; i < colCount; i++)
-                rowObj[keys[i]] = i >= rowColCount || _row[i] == null ? '' : _row[i];
+                rowObj[keys[i]] = i >= rowColCount || row[i] == null ? '' : row[i];
             result.push(rowObj);
         });
         return result;
