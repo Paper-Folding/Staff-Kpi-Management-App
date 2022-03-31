@@ -24,7 +24,9 @@ const state = {
         idcard: '身份证号',
         phone: '办公电话',
         longPhone: '长号',
-        shortPhone: '短号'
+        shortPhone: '短号',
+        edit: '编辑',
+        delete: '移除'
     },
     importTemplate: {
         no: '工号',
@@ -47,6 +49,8 @@ const state = {
         longPhone: '长号',
         shortPhone: '短号'
     },
+    exportsData: [],
+    responseStatus: true
 }
 
 const getters = {
@@ -76,7 +80,29 @@ const actions = {
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify("导入成功！", 'success');
         } else {
-            rootState.notify("导入失败，请检查是否有编号重复的用户！");
+            rootState.notify(res.data.message);
+        }
+    },
+    async requestExport({ commit, rootState }) {
+        let res = await request("post", "/staffInfo/export", {
+            role: localStorage.getItem("role")
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            commit('export', res.data);
+        } else {
+            rootState.notify(res.data.message);
+            commit('export', false);
+        }
+    },
+    async requestDelete({ rootState }, params) {
+        let res = await request('delete', "/staffInfo", {
+            role: localStorage.getItem("role"),
+            id: params.id
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            rootState.notify("已删除", 'success');
+        } else {
+            rootState.notify(res.data.message);
         }
     }
 }
@@ -90,10 +116,27 @@ const mutations = {
             for (let head of data.result.header) {
                 result[head] = state.fieldsMapper[head];
             }
+            result.edit = '编辑';
+            result.delete = '移除';
             state.table.header = result;
         }
         state.table.rows = data.result.rows;
         state.total = data.total;
+    },
+    export(state, data) {
+        if (data === false) {
+            state.responseStatus = false;
+            return;
+        }
+        state.responseStatus = true;
+        state.exportsData = {
+            header: data.result.header.includes('*') ? Object.keys(state.importTemplate) : data.result.header,
+            rows: data.result.rows
+        }
+        for (let row of state.exportsData.rows) {
+            if ('id' in row)
+                delete row.id;
+        }
     }
 }
 

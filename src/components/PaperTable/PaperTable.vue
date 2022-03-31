@@ -125,6 +125,14 @@ table {
         display: block;
         overflow-x: auto;
         white-space: nowrap;
+
+        ::v-deep() {
+            td.button i {
+                position: initial;
+                transform: initial;
+                transform-origin: initial;
+            }
+        }
     }
 
     .cell-button {

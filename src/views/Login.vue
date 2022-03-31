@@ -13,7 +13,7 @@
                             <p class="description h4">请登录</p>
                             <div class="ms-xl-5 me-xl-5 ps-xl-5 pe-xl-5">
                                 <h5 class="text-danger" v-if="$route.query.msg === 'expired'">登录会话不存在或已过期， 请重新登录</h5>
-                                <h5 class="text-danger" v-if="validateFailed">用户名或密码有误，请核对并重试~</h5>
+                                <h5 class="text-danger" v-if="validateFailed">用户名或密码有误或账户被禁用，请核对并重试~</h5>
                                 <div class="form-group">
                                     <input type="text" v-model="username" class="form-control" :class="validUsername ? null : 'is-invalid'" placeholder="您的用户名" />
                                     <div class="invalid-feedback text-start mb-3 ms-3">无效的用户名</div>

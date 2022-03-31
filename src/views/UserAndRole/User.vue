@@ -4,6 +4,7 @@
         <div class="d-flex gap-3">
             <outline-button color="blue" @click="downloadTemplate">下载导入模板</outline-button>
             <excel-importer v-model="importingTable" @confirm-import="importIt"></excel-importer>
+            <outline-button color="green" @click="exportIt">导出</outline-button>
         </div>
         <search-input v-model="query" placeholder="键入以搜索"></search-input>
     </div>
@@ -33,7 +34,7 @@ export default {
             table: { header: {}, rows: [] },
             currentStatus: state.LOADING,
             curPage: 1,
-            per: 1,
+            per: 10,
             query: "",
             importingTable: {
                 header: [],
@@ -44,7 +45,7 @@ export default {
     async mounted() {
         await this.requestList({ page: this.curPage, amount: this.per });
         this.table.header = this.$store.state.User.table.header;
-        this.table.rows = this.$store.state.User.table.rows;
+        this.table.rows = this.sanitizeRows(this.$store.state.User.table.rows);
         if (this.table.rows.length === 0)
             this.currentStatus = state.NOTHING_LOADED;
         else
@@ -58,14 +59,14 @@ export default {
             this.currentStatus = state.LOADING;
             await this.requestList({ page: turnTo, amount: this.per, query: this.query });
             this.table.header = this.$store.state.User.table.header;
-            this.table.rows = this.$store.state.User.table.rows;
+            this.table.rows = this.sanitizeRows(this.$store.state.User.table.rows);
             this.currentStatus = state.NORMAL;
         },
         query: debounce(async function (newVal) {
             this.currentStatus = state.LOADING;
             await this.requestList({ page: this.curPage, amount: this.per, query: newVal });
             this.table.header = this.$store.state.User.table.header;
-            this.table.rows = this.$store.state.User.table.rows;
+            this.table.rows = this.sanitizeRows(this.$store.state.User.table.rows);
             if (this.table.rows.length === 0)
                 this.currentStatus = state.NOTHING_FOUND;
             else
@@ -73,14 +74,60 @@ export default {
         }, 800)
     },
     methods: {
-        ...mapActions({ requestList: "User/requestStaffList", requestImport: "User/requestImport" }),
+        ...mapActions({ requestList: "User/requestStaffList", requestImport: "User/requestImport", requestDelete: "User/requestDelete", requestExport: "User/requestExport" }),
         downloadTemplate() {
             const template = [excelHelper.formatTableJsonToXlsxJson(this.$store.state.User.importTemplate)[1]];
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, template)), "template-staff-info.xlsx");
         },
-        importIt() {
-            console.log(this.importingTable);
-            debugger
+        async importIt() {
+            this.currentStatus = state.LOADING;
+            await this.requestImport({
+                list: excelHelper.replaceKeyForTableJson(this.importingTable.rows, this.$store.state.User.importTemplate)
+            });
+            await this.requestList({ page: this.curPage, amount: this.per, query: this.query });
+            this.table.header = this.$store.state.User.table.header;
+            this.table.rows = this.sanitizeRows(this.$store.state.User.table.rows);
+            if (this.table.rows.length === 0)
+                this.currentStatus = state.NOTHING_FOUND;
+            else
+                this.currentStatus = state.NORMAL;
+        },
+        async callDelete(row) {
+            if (confirm(`确实要删除${row.name}用户吗？注意，此操作不可逆！`)) {
+                this.currentStatus = state.LOADING;
+                await this.requestDelete({
+                    id: row.id
+                });
+                await this.requestList({ page: this.curPage, amount: this.per, query: this.query });
+                this.table.header = this.$store.state.User.table.header;
+                this.table.rows = this.sanitizeRows(this.$store.state.User.table.rows);
+                if (this.table.rows.length === 0)
+                    this.currentStatus = state.NOTHING_FOUND;
+                else
+                    this.currentStatus = state.NORMAL;
+            }
+        },
+        async exportIt() {
+            await this.requestExport();
+            if (!this.$store.state.User.responseStatus)
+                return;
+            let exportData = excelHelper.formatTableJsonToXlsxJson(this.$store.state.User.exportsData.rows);
+            exportData[0] = this.$store.state.User.exportsData.header;
+            for (let i = 0; i < this.$store.state.User.exportsData.header.length; i++) {
+                exportData[0][i] = this.$store.state.User.importTemplate[exportData[0][i]];
+            }
+            excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, exportData)), "staff-info-exported.xlsx");
+        },
+        sanitizeRows(requestedRows) {
+            let result = [];
+            for (let row of requestedRows) {
+                result.push({
+                    ...row,
+                    edit: { type: 'btn', title: '编辑用户', icon: 'bi-pencil-square', color: 'var(--bs-primary)', click: this.callEdit },
+                    delete: { type: 'btn', title: '移除用户', icon: 'bi-trash', color: 'var(--bs-danger)', click: this.callDelete }
+                })
+            }
+            return result;
         }
     },
     components: {

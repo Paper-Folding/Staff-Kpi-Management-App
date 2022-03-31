@@ -5,10 +5,10 @@ let excelHelper = {
         return new Promise(resolve => {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const xlsxData = xlsx.read(new Uint8Array(e.target.result), { type: 'array' });
+                const xlsxData = xlsx.read(new Uint8Array(e.target.result), { type: 'array', cellText: false, cellDates: true });
                 let result = [];
                 for (let sheetname of xlsxData.SheetNames) {
-                    const sheet = xlsx.utils.sheet_to_json(xlsxData.Sheets[sheetname], { header: 1 });
+                    const sheet = xlsx.utils.sheet_to_json(xlsxData.Sheets[sheetname], { header: 1, raw: false, dateNF: 'yyyy-mm-dd HH:mm:ss' });
                     if (sheet == null || sheet.length === 0)
                         continue;
                     result.push({
@@ -42,7 +42,7 @@ let excelHelper = {
             let rowObj = {}, rowColCount = row.length;
             rowObj["__index__"] = index - 1;
             for (let i = 0; i < colCount; i++)
-                rowObj[keys[i]] = i >= rowColCount || row[i] == null ? '' : row[i];
+                rowObj[keys[i]] = i >= rowColCount || row[i] == null || row[i].trim() === "" ? null : row[i];
             result.push(rowObj);
         });
         return result;
@@ -105,7 +105,26 @@ let excelHelper = {
             a.click();
             window.URL.revokeObjectURL(url);
         }
-    })()
+    })(),
+    /**
+     * pass in 
+     * targetArr: [{a: 1, b: 2}]
+     * template: {g:'a', h:'b'}
+     * 
+     * @returns
+     * [{g: 1, h: 2}]
+     */
+    replaceKeyForTableJson(targetArr, template) {
+        let result = [];
+        for (let item of targetArr) {
+            let temp = {};
+            for (let key in template) {
+                temp[key] = item[template[key]];
+            }
+            result.push(temp);
+        }
+        return result;
+    }
 }
 
 export default excelHelper;
