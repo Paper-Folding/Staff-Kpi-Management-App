@@ -64,6 +64,10 @@
         ;
     </insert>
 
+    <delete id="detachRolesForUser">
+        delete from user_roles where authentication_id = ${authenticationId};
+    </delete>
+
     <insert id="batchAddStaff">
         insert into staff_info(no, name, gender, nation, birth, enroll_time, politic, major, level, level_unit,
         level_date, job_alias, research_direction, job, department, idcard, phone, long_phone,
@@ -95,6 +99,7 @@
     <select id="checkIfNoDuplicate" resultType="Boolean">
         select if(count(id) > 0, true, false)
         from staff_info
-        where no = #{no};
+        where disabled = '0'
+          and no = #{no};
     </select>
 </mapper>

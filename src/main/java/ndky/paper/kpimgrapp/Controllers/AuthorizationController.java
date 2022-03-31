@@ -27,6 +27,12 @@ public class AuthorizationController {
         return new QueryResponse(list, list.size()).responseEntity();
     }
 
+    @PostMapping("/get/role/all")
+    public ResponseEntity<?> queryAllRoles() {
+        var result = authorizationUtil.queryAllRoles();
+        return new QueryResponse(authorizationUtil.queryAllRoles(), result.size()).responseEntity();
+    }
+
     /**
      * Used for collect user permission info
      */

@@ -152,7 +152,13 @@ public class StaffInfoController {
         ResponseEntity<?> res = preCheck(username, staffInfoRequest);
         if (res != null)
             return res;
+        if (!"admin".equals(staffInfoRequest.getRole()) && !"officer".equals(staffInfoRequest.getRole())) {
+            boolean allowed = authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "attachRole", "staff_info"));
+            if (!allowed)
+                return authorizationUtil.getForbiddenResponseEntity(request);
+        }
         Long authId = authorizationUtil.getAuthenticationIdByStaffInfoId(staffInfoRequest.getId());
+        staffInfoMapper.detachRolesForUser(authId);
         return new ModifyResponse(staffInfoMapper.attachRolesForUser(authId, staffInfoRequest.getRoles())).responseEntity();
     }
 }

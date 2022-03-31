@@ -5,20 +5,32 @@
     <select id="queryRoles" resultType="Role">
         select c.*
         from authentication a,
+        staff_info d,
         user_roles b,
         role c
-        where a.id=b.authentication_id and
-        b.role_id = c.id
+        where a.id=b.authentication_id
+        and b.role_id = c.id
+        and d.id = a.staff_info_id
         <if test="authenticationId != null">
             and a.id = ${authenticationId}
         </if>
         <if test="username != null">
             and a.username = #{username}
         </if>
+        <if test="staffInfoId != null">
+            and d.id= #{staffInfoId}
+        </if>
         <if test="expired == null or expired == false">
             and if(c.expiration is null, true, (c.expiration > NOW()))
         </if>
         ;
+    </select>
+
+    <select id="queryAllRoles" resultType="Role">
+        select *
+        from role
+        where expiration is null
+           or expiration > NOW();
     </select>
 
     <select id="queryPermissions" resultType="UserPermission">

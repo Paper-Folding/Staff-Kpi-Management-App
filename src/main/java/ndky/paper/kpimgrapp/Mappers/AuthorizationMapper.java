@@ -14,11 +14,11 @@ public interface AuthorizationMapper {
     /**
      * query user's roles
      *
-     * @param authenticationId
-     * @param username
-     * @param expired          select expired? default is false
+     * @param expired select expired? default is false
      */
-    List<Role> queryRoles(Long authenticationId, String username, Boolean expired);
+    List<Role> queryRoles(Long authenticationId, String username, Long staffInfoId, Boolean expired);
+
+    List<Role> queryAllRoles();
 
     /**
      * query user permissions

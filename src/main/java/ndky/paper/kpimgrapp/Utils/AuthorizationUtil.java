@@ -33,9 +33,13 @@ public class AuthorizationUtil {
      * @return List<Role>
      */
     public List<Role> queryRoles(UserRoleRequest userRoleRequest) {
-        if (userRoleRequest.getAuthenticationId() == null && (userRoleRequest.getUsername() == null || "".equals(userRoleRequest.getUsername())))
+        if (userRoleRequest.getAuthenticationId() == null && (userRoleRequest.getUsername() == null || "".equals(userRoleRequest.getUsername())) && userRoleRequest.getStaffInfoId() == null)
             return new ArrayList<>();
-        return authorizationMapper.queryRoles(userRoleRequest.getAuthenticationId(), userRoleRequest.getUsername(), false);
+        return authorizationMapper.queryRoles(userRoleRequest.getAuthenticationId(), userRoleRequest.getUsername(), userRoleRequest.getStaffInfoId(), false);
+    }
+
+    public List<Role> queryAllRoles() {
+        return authorizationMapper.queryAllRoles();
     }
 
     /**
