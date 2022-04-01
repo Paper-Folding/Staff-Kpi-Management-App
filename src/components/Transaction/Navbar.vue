@@ -27,7 +27,7 @@
                     <template #popper>
                         <ul class="dropdown-menu show position-relative">
                             <li>
-                                <router-link class="dropdown-item" to="#">
+                                <router-link class="dropdown-item" to="/me">
                                     <i class="bi-person"></i>&nbsp;&nbsp;我的
                                 </router-link>
                             </li>

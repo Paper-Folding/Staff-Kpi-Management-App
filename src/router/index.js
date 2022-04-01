@@ -22,6 +22,12 @@ const routes = [
                 component: () => import('../views/Home.vue'),
             },
             ...UserAndRole,
+            {
+                path: '/me',
+                name: 'Me',
+                meta: { title: '我的个人信息' },
+                component: () => import('../views/Me.vue')
+            }
         ]
     },
     { path: '/:pathMatch(.*)*', meta: { title: 'Something Went Wrong' }, component: () => import('../views/FourZeroFour.vue') }

@@ -27,5 +27,11 @@ export default {
 <style lang="scss" scoped>
 .stage {
     margin: 0 3.5rem;
+    @media (max-width: 1168px) {
+        margin: 0 2rem;
+    }
+    @media (max-width: 768px) {
+        margin: 0 0.5rem;
+    }
 }
 </style>
