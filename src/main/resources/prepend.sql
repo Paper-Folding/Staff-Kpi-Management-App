@@ -11,6 +11,8 @@ INSERT INTO `dict_operation`
 VALUES (5, 'export', '导出数据/批量查询');
 INSERT INTO `dict_operation`
 VALUES (6, 'import', '导入数据/批量插入');
+INSERT INTO `dict_operation`
+VALUES (7, 'attachRole', '修改其他用户角色');
 
 -- generate dict_operation_object records
 delete
