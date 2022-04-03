@@ -46,6 +46,7 @@ CREATE TABLE `authentication`
     `staff_info_id` bigint                                                        NULL     DEFAULT NULL COMMENT '关联staff_info中的人员id',
     `username`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'unique',
     `password`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '',
+    `avatar`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT NULL COMMENT '头像路径',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `staff_info_id` (`staff_info_id`) USING BTREE,
     INDEX `username` (`username`) USING BTREE,

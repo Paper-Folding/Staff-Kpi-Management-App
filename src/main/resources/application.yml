@@ -17,6 +17,9 @@ mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
   mapper-locations: classpath:mybatis/Mappers/*.xml
 
+storage:
+  avatar: avatar
+
 paper:
   jwt:
     secret: LingLingsScarletShineInMyHeartForever

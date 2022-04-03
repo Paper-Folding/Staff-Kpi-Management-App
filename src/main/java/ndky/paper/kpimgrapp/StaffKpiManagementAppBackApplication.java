@@ -1,6 +1,8 @@
 package ndky.paper.kpimgrapp;
 
+import ndky.paper.kpimgrapp.Storage.AvatarStorageImpl;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -24,5 +26,10 @@ public class StaffKpiManagementAppBackApplication {
                         .allowedMethods("*");
             }
         };
+    }
+
+    @Bean
+    public CommandLineRunner initialize(AvatarStorageImpl avatarStorage) {
+        return args -> avatarStorage.createDirectory();
     }
 }
