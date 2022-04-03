@@ -13,13 +13,13 @@
         </template>
         <template #footer>
             <outline-button color="red" icon="none" @click="cropCancel">取消</outline-button>
-            <outline-button color="green" icon="check-lg" @click="cropSave">确认裁切</outline-button>
+            <outline-button color="green" icon="check-lg" @click="cropSave">确认并修改头像</outline-button>
         </template>
     </paper-modal>
 </template>
 
 <script>
-import { ref,onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import PaperModal from "../PaperModal.vue";
 import OutlineButton from "../OutlineButton.vue";
@@ -89,6 +89,7 @@ export default {
         const restoreInitial = () => {
             imageRaw = null;
             cropper.reset();
+            uploader.value.value = null;
             cropModal.value.close();
         }
         const cropCancel = () => {

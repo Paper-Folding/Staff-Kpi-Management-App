@@ -1,16 +1,66 @@
 <!-- DataRow is the base class of other type of rows. -->
 <template>
-    <RowString v-if="['str', 'string'].includes(row.type)" :left="row.left" :right="row.right" :borderBottom="row.borderBottom" />
-    <RowImage v-else-if="['img', 'image'].includes(row.type)" :left="row.left" :right="{ src: row.right.src, borderRadius: row.right.borderRadius, width: row.right.width }" :borderBottom="row.borderBottom" />
-    <RowSwitch v-else-if="['sw', 'switch'].includes(row.type)" :left="row.left" :right="row.right" :disabled="row.disabled" v-model="_modelValue" :borderBottom="row.borderBottom" />
-    <RowSelect v-else-if="['sl', 'select'].includes(row.type)" :left="row.left" :right="row.right" v-model="_modelValue" :borderBottom="row.borderBottom" />
-    <RowTag v-else-if="['tg', 'tag'].includes(row.type)" :left="row.left" :right="row.right" v-model="_modelValue" :borderBottom="row.borderBottom" @tag="onTagAdding" />
-    <RowRadio v-else-if="['rd', 'radio'].includes(row.type)" :left="row.left" :right="row.right" :disabled="row.disabled" v-model="_modelValue" :borderBottom="row.borderBottom" :appearance="row.appearance" />
-    <RowCheckBox v-else-if="['cb', 'checkbox'].includes(row.type)" :left="row.left" :right="row.right" v-model="_modelValue" :borderBottom="row.borderBottom" />
-    <RowInput v-else-if="['i', 'input'].includes(row.type)" :left="row.left" :right="row.right" :borderBottom="row.borderBottom" v-model="_modelValue" />
-    <tr v-else>
-        <td colspan="2"><h1 class="display-1">你传错值了，大胸台~~~</h1></td>
-    </tr>
+    <RowString
+        v-if="['str', 'string'].includes(row.type)"
+        :left="row.left"
+        :right="row.right"
+        :borderBottom="row.borderBottom"
+    />
+    <RowImage
+        v-else-if="['img', 'image'].includes(row.type)"
+        :left="row.left"
+        :right="{ src: row.right.src, borderRadius: row.right.borderRadius, width: row.right.width }"
+        :borderBottom="row.borderBottom"
+    />
+    <RowSwitch
+        v-else-if="['sw', 'switch'].includes(row.type)"
+        :left="row.left"
+        :right="row.right"
+        :disabled="row.disabled"
+        v-model="_modelValue"
+        :borderBottom="row.borderBottom"
+    />
+    <RowSelect
+        v-else-if="['sl', 'select'].includes(row.type)"
+        :left="row.left"
+        :right="row.right"
+        v-model="_modelValue"
+        :borderBottom="row.borderBottom"
+    />
+    <RowTag
+        v-else-if="['tg', 'tag'].includes(row.type)"
+        :left="row.left"
+        :right="row.right"
+        v-model="_modelValue"
+        :borderBottom="row.borderBottom"
+        @tag="onTagAdding"
+    />
+    <RowRadio
+        v-else-if="['rd', 'radio'].includes(row.type)"
+        :left="row.left"
+        :right="row.right"
+        :disabled="row.disabled"
+        v-model="_modelValue"
+        :borderBottom="row.borderBottom"
+        :appearance="row.appearance"
+    />
+    <RowCheckBox
+        v-else-if="['cb', 'checkbox'].includes(row.type)"
+        :left="row.left"
+        :right="row.right"
+        v-model="_modelValue"
+        :borderBottom="row.borderBottom"
+    />
+    <RowInput
+        v-else-if="['i', 'input'].includes(row.type)"
+        :left="row.left"
+        :right="row.right"
+        :borderBottom="row.borderBottom"
+        v-model="_modelValue"
+    />
+    <RowCustom v-else :left="row.left" :borderBottom="row.borderBottom">
+        <slot></slot>
+    </RowCustom>
 </template>
 
 <script>
@@ -128,7 +178,7 @@
  *      },
  *      borderBottom: "[a boolean value]"       // if bottom line should be generated, default is true
  * }
- * PLUS: v-model for a fileObject, if initial user has an uploaded image, pass in its image's url string
+ * PLUS: v-model for a fil
  * e.g. <Row v-model="image" :row="{ type: 'su', left: 'sss', right: { width: '10em', limit: 1, borderRadius: '50%' } }" />
  */
 import RowString from "./RowString.vue";
@@ -139,6 +189,7 @@ import RowSwitch from "./RowSwitch.vue";
 import RowTag from "./RowTag.vue";
 import RowSelect from "./RowSelect.vue";
 import RowInput from "./RowInput.vue";
+import RowCustom from './RowCustom.vue';
 export default {
     name: "Row",
     props: {
@@ -157,6 +208,7 @@ export default {
         RowSelect,
         RowInput,
         RowRadio,
+        RowCustom
     },
     computed: {
         _modelValue: {

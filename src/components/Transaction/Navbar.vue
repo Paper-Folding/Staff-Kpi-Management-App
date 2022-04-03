@@ -93,7 +93,7 @@ export default {
         }
     },
     created() {
-        this.avatarSrc = import.meta.env.VITE_API_URL + '/avatar/' + Auth.getLoggedUser().username;
+        this.avatarSrc = import.meta.env.VITE_API_URL + '/me/avatar/' + Auth.getLoggedUser().username;
     },
     methods: {
         ...mapActions({ logoff: "Login/logoff", requestRole: "Navbar/requestUserRoleDetails" }),

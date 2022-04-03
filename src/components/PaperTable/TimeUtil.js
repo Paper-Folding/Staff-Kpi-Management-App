@@ -1,4 +1,6 @@
 function formatDate(date, format = "YYYY-MM-DD hh:mm:ss") {
+    if (date == null || date === "")
+        return "";
     let _date;
     if (typeof date === 'string')
         _date = new Date(date);
