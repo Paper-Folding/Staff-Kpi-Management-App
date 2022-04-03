@@ -1,21 +1,24 @@
 <template>
     <reversed-table left-width="25%" class="mt-4">
-        <div class="avatar-container" title="编辑头像">
+        <div class="avatar-container" title="编辑头像" @click="$refs.avatarUploader.call()">
             <img src="../assets/images/smile Ling.jpg" class="avatar" alt />
             <div class="avatar-middle">
                 <i class="bi-pencil-square"></i>
             </div>
         </div>
     </reversed-table>
+    <avatar-uploader ref="avatarUploader"></avatar-uploader>
 </template>
 
 <script>
 import ReversedTable from "../components/reversed-table/DataTable.vue";
 import Row from "../components/reversed-table/Row.vue";
+import AvatarUploader from "../components/Transaction/AvatarUploader.vue";
 export default {
     components: {
         ReversedTable,
-        Row
+        Row,
+        AvatarUploader
     }
 }
 </script>

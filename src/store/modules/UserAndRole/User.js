@@ -1,6 +1,5 @@
 /** Just a template, delete me once project done developing. */
 import request from "../../../utils/Ajax";
-import Auth from "../../../utils/Auth";
 
 const state = {
     table: { header: {}, rows: [] },
@@ -12,7 +11,7 @@ const state = {
         gender: '性别',
         nation: '民族',
         birth: { text: '诞辰', time: "YYYY-MM-DD" },
-        enrollTime: { text: '入坑时间', time: "YYYY-MM-DD" },
+        enrollTime: { text: '入职时间', time: "YYYY-MM-DD" },
         politic: '政治面貌',
         major: '专业',
         level: '学位',
@@ -35,7 +34,7 @@ const state = {
         gender: '性别',
         nation: '民族',
         birth: '诞辰',
-        enrollTime: '入坑时间',
+        enrollTime: '入职时间',
         politic: '政治面貌',
         major: '专业',
         level: '学位',
