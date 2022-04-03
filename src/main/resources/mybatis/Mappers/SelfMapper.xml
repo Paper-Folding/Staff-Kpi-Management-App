@@ -29,4 +29,25 @@
         ;
     </update>
 
+    <select id="getInfo" resultType="StaffInfo">
+        select a.*
+        from staff_info a,
+        authentication b
+        where a.id = b.staff_info_id
+        <if test="authenticationId != null">
+            and b.id = ${authenticationId}
+        </if>
+        <if test="username != null">
+            and b.username = #{username}
+        </if>
+        limit 1
+        ;
+    </select>
+
+    <update id="updateInfo">
+        update staff_info
+        set ${dueUpdateKey} = #{dueUpdateValue}
+        where id = ${staffInfoId};
+    </update>
+
 </mapper>

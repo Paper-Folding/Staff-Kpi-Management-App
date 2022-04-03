@@ -103,4 +103,8 @@ public class AuthorizationUtil {
     public Long getAuthenticationIdByStaffInfoId(Long StaffInfoId) {
         return authorizationMapper.getAuthenticationIdByStaffInfoId(StaffInfoId);
     }
+
+    public Long getStaffInfoIdByAuthentication(Long authenticationId, String username) {
+        return authorizationMapper.getStaffInfoIdByAuthentication(authenticationId, username);
+    }
 }

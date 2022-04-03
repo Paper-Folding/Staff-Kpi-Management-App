@@ -162,4 +162,18 @@
         from authentication
         where staff_info_id = ${staffInfoId};
     </select>
+
+    <select id="getStaffInfoIdByAuthentication" resultType="Long">
+        select staff_info_id
+        from authentication
+        <where>
+            <if test="authenticationId != null">
+                id = ${authenticationId}
+            </if>
+            <if test="username != null">
+                username = #{username}
+            </if>
+        </where>
+        ;
+    </select>
 </mapper>

@@ -41,4 +41,7 @@ public interface AuthorizationMapper {
     List<String> queryTableFields(String tableName, List<String> fieldsIgnore);
 
     Long getAuthenticationIdByStaffInfoId(Long staffInfoId);
+
+    Long getStaffInfoIdByAuthentication(Long authenticationId, String username);
+
 }
