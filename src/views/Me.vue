@@ -1,20 +1,34 @@
 <template>
     <reversed-table left-width="25%" class="mt-4">
         <div class="avatar-container" title="编辑头像" @click="$refs.avatarUploader.call()">
-            <img src="../assets/images/smile Ling.jpg" class="avatar" alt />
+            <img :src="avatarSrc" class="avatar" ref="avatar" />
             <div class="avatar-middle">
                 <i class="bi-pencil-square"></i>
             </div>
         </div>
     </reversed-table>
-    <avatar-uploader ref="avatarUploader"></avatar-uploader>
+    <avatar-uploader ref="avatarUploader" @crop-done="saveAvatar"></avatar-uploader>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import ReversedTable from "../components/reversed-table/DataTable.vue";
 import Row from "../components/reversed-table/Row.vue";
 import AvatarUploader from "../components/Transaction/AvatarUploader.vue";
+import Auth from '../utils/Auth';
 export default {
+    data() {
+        return {
+            avatarSrc: import.meta.env.VITE_API_URL + '/avatar/' + Auth.getLoggedUser().username
+        }
+    },
+    methods: {
+        ...mapActions({ requestUpdateAvatar: "Me/requestUpdateAvatar" }),
+        saveAvatar(newAvatar) {
+            this.$refs.avatar.src = URL.createObjectURL(newAvatar);
+            this.requestUpdateAvatar(newAvatar);
+        }
+    },
     components: {
         ReversedTable,
         Row,
@@ -61,7 +75,7 @@ export default {
         top: 50%;
         left: 50%;
         opacity: 0;
-        transform: translate(80%, 80%);
+        transform: translate(60%, 60%);
         text-align: center;
         i {
             font-size: 2.5rem;

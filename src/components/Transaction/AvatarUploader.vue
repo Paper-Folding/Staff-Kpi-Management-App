@@ -19,13 +19,12 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref,onMounted } from "vue";
+import { useStore } from "vuex";
 import PaperModal from "../PaperModal.vue";
 import OutlineButton from "../OutlineButton.vue";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.min.css";
-import { useStore } from "vuex";
-import { onMounted } from '@vue/runtime-core';
 export default {
     props: {
         limitSize: {
@@ -39,9 +38,8 @@ export default {
     },
     setup(props, context) {
         const store = useStore();
-        let imageRaw;
+        let cropper, imageRaw;
         const uploader = ref(null), cropperTarget = ref(null), cropModal = ref(null);
-        let cropper;
         onMounted(() => {
             cropper = new Cropper(cropperTarget.value, {
                 aspectRatio: 1 / 1,
@@ -62,7 +60,14 @@ export default {
             return fileObj ? (/\.(jpeg|jpg|bmp|png|tif)$/i.test(fileObj.name)) : true;
         }
         const getCroppedImage = () => {
-
+            if (cropper && imageRaw) {
+                let croppedImageStr = window.atob(cropper.getCroppedCanvas().toDataURL(imageRaw.type).split(",")[1]),
+                    length = croppedImageStr.length;
+                let arr = new Uint8Array(length);
+                for (let i = 0; i < length; i++) arr[i] = croppedImageStr.charCodeAt(i);
+                return new File([arr], imageRaw.name, { type: imageRaw.type });
+            }
+            return null;
         }
         const onImageSelected = () => {
             if (uploader.value.files == null || uploader.value.files.length === 0)
@@ -81,11 +86,17 @@ export default {
             cropper.replace(blob);
             cropModal.value.show();
         }
+        const restoreInitial = () => {
+            imageRaw = null;
+            cropper.reset();
+            cropModal.value.close();
+        }
         const cropCancel = () => {
-
+            restoreInitial();
         }
         const cropSave = () => {
-
+            context.emit("cropDone", getCroppedImage());
+            restoreInitial();
         }
         return {
             // data
@@ -95,9 +106,13 @@ export default {
             cropModal,
             cropperTarget,
             // methods
-            call
+            call,
+            onImageSelected,
+            cropCancel,
+            cropSave
         }
-    }
+    },
+    emits: ["cropDone"],
 }
 </script>
 

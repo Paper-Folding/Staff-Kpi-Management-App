@@ -23,7 +23,7 @@
                     :hideTriggers="triggers => [...triggers, 'click']"
                     :skidding="-40"
                 >
-                    <img :src="imgSrc" class="avatar" />
+                    <img :src="avatarSrc" class="avatar" />
                     <template #popper>
                         <ul class="dropdown-menu show position-relative">
                             <li>
@@ -76,7 +76,6 @@
 </template>
 
 <script>
-import imgSrc from "../../assets/images/default-avatar.jpg";
 import { Menu as VMenu } from 'floating-vue';
 import "floating-vue/dist/style.css";
 import "vue-multiselect/dist/vue-multiselect.css";
@@ -94,7 +93,7 @@ export default {
         }
     },
     created() {
-        this.imgSrc = imgSrc;
+        this.avatarSrc = import.meta.env.VITE_API_URL + '/avatar/' + Auth.getLoggedUser().username;
     },
     methods: {
         ...mapActions({ logoff: "Login/logoff", requestRole: "Navbar/requestUserRoleDetails" }),
