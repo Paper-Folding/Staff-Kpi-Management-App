@@ -2,9 +2,8 @@
     <reversed-table left-width="25%" class="mt-4">
         <tr>
             <td>
-                <div class="avatar-container" title="编辑头像" @click="$refs.avatarUploader.call()">
+                <div class="avatar-container" title="更换头像" @click="$refs.avatarUploader.call()">
                     <VMenu
-                        strategy="fixed"
                         :triggers="['focus']"
                         :showTriggers="triggers => [...triggers, 'hover', 'click']"
                         :hideTriggers="triggers => [...triggers, 'click']"
@@ -18,7 +17,7 @@
                             <div class="p-2 d-flex gap-2">
                                 <button class="btn btn-light" @click="$refs.avatarUploader.call()">
                                     <i class="bi-image-alt"></i>
-                                    选择头像
+                                    更改头像
                                 </button>
                                 <button class="btn btn-dark" @click="restoreAvatar">
                                     <i class="bi-arrow-clockwise"></i>
@@ -169,11 +168,13 @@
 <script>
 import { Menu as VMenu } from 'floating-vue';
 import { mapActions } from 'vuex';
+
 import ReversedTable from "../components/reversed-table/DataTable.vue";
 import Row from "../components/reversed-table/Row.vue";
 import LabelInput from '../components/LabelInput.vue';
 import LabelSelect from '../components/LabelSelect.vue';
 import LabelDatePicker from '../components/LabelDatePicker.vue';
+
 import AvatarUploader from "../components/Transaction/AvatarUploader.vue";
 import Auth from '../utils/Auth';
 import Maid from '../utils/Maid';
@@ -190,7 +191,6 @@ export default {
     async mounted() {
         await this.requestMeInfo();
         this.me = this.$store.state.Me.meInfo;
-        console.log(this.me);
     },
     methods: {
         ...mapActions({ requestUpdateAvatar: "Me/requestUpdateAvatar", requestMeInfo: "Me/requestMeInfo", requestUpdateMeInfo: "Me/requestUpdateMeInfo" }),
@@ -199,9 +199,11 @@ export default {
             this.requestUpdateAvatar(newAvatar);
         },
         async restoreAvatar() {
-            await this.requestUpdateAvatar(null);
-            this.$refs.avatar.src = null;
-            this.$refs.avatar.src = this.avatarSrc;
+            if (confirm('确实要重置回默认头像吗？')) {
+                await this.requestUpdateAvatar(null);
+                this.$refs.avatar.src = null;
+                this.$refs.avatar.src = this.avatarSrc;
+            }
         }
     },
     components: {

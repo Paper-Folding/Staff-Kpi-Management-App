@@ -25,8 +25,14 @@ const routes = [
             {
                 path: '/me',
                 name: 'Me',
-                meta: { title: '我的个人信息' },
+                meta: { title: '关于我' },
                 component: () => import('../views/Me.vue')
+            },
+            {
+                path: '/contest',
+                name: 'Contest',
+                meta: { title: '竞赛管理' },
+                component: () => import('../views/Contest.vue')
             }
         ]
     },

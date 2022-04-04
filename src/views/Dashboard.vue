@@ -19,7 +19,6 @@ export default {
     components: {
         SideMenu,
         Navbar
-
     }
 }
 </script>

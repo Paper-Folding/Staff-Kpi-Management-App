@@ -87,13 +87,13 @@
                 v-if="modalEditor.mode === 'edit'"
                 color="red"
                 icon="check-lg"
-            >确认修改</outline-button>
+            >完成修改</outline-button>
             <outline-button
                 @click="addIt"
                 v-if="modalEditor.mode === 'add'"
                 color="green"
                 icon="check-lg"
-            >确认添加</outline-button>
+            >完成添加</outline-button>
         </template>
     </paper-modal>
 </template>

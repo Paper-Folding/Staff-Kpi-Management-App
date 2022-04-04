@@ -53,6 +53,7 @@ export default {
     min-width: 5rem;
     outline: none;
     border: none;
+    appearance: none;
     padding-left: 0.25rem;
     font-size: 1.15em;
     border-bottom: transparent 2px solid;
@@ -80,6 +81,7 @@ export default {
 
         &:hover,
         &:focus {
+            cursor: initial;
             border-bottom: none !important;
         }
     }

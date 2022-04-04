@@ -6,7 +6,7 @@ const state = {
     total: 0,
     fieldsMapper: {
         id: { hidden: true },
-        no: { text: '工号' },
+        no: '工号',
         name: '姓名',
         gender: '性别',
         nation: '民族',

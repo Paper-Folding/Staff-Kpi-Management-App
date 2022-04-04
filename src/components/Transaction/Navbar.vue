@@ -23,7 +23,7 @@
                     :hideTriggers="triggers => [...triggers, 'click']"
                     :skidding="-40"
                 >
-                    <img :src="avatarSrc" class="avatar" />
+                    <img :src="avatarSrc" class="avatar" @click="$router.push('/me')" />
                     <template #popper>
                         <ul class="dropdown-menu show position-relative">
                             <li>

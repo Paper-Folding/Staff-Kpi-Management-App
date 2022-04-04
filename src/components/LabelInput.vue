@@ -78,6 +78,7 @@ export default {
 
         &:hover,
         &:focus {
+            cursor: initial;
             border-bottom: none !important;
         }
     }

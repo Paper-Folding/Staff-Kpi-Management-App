@@ -5,6 +5,7 @@ import Menu from "./modules/Menu.js";
 import Role from './modules/UserAndRole/Role.js';
 import User from './modules/UserAndRole/User.js';
 import Me from './modules/Me.js';
+import Contest from './modules/Contest.js';
 
 export default createStore({
     state() {
@@ -19,6 +20,7 @@ export default createStore({
         Menu,
         Role,
         User,
-        Me
+        Me,
+        Contest
     }
 })

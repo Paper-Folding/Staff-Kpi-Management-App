@@ -17,4 +17,21 @@ export default class Maid {
             return '...';
         return targetStr.length <= size ? targetStr : targetStr.substring(0, size - 3) + '...';
     }
+
+    /**
+     * a safer and evo version of Object.keys
+     * @param target an object or an array of objects
+     * @returns e.g. target = [{x:1, y:2}, {z:1}, {x:8}] ===> ['x','y','z']
+     */
+    static keys(target) {
+        if (target == null || (typeof target !== 'object'))
+            return [];
+        if (Array.isArray(target)) {
+            let temp = {};
+            for (let item of target)
+                Object.assign(temp, item);
+            return Object.keys(temp);
+        }
+        return Object.keys(target);
+    }
 }

@@ -129,7 +129,7 @@ export default {
                 this.currentStatus = state.NORMAL;
         },
         async callDelete(row) {
-            if (confirm(`确实要删除${row.name}用户吗？注意，此操作不可逆！`)) {
+            if (confirm(`确实要删除${(row.name || ('id为' + row.id + '的'))}用户吗？注意，此操作不可逆！`)) {
                 this.currentStatus = state.LOADING;
                 await this.requestDelete({
                     id: row.id
@@ -166,7 +166,7 @@ export default {
             return result;
         },
         async callAttach(row) {
-            this.roleEditor.title = '正在编辑' + row.name + '的角色';
+            this.roleEditor.title = '正在编辑' + (row.name || ('id为' + row.id + '的用户')) + '的角色';
             this.roleEditor.userId = row.id;
             await this.requestUserRoleList({ id: this.roleEditor.userId });
             await this.requestRoleList();

@@ -11,6 +11,7 @@ const state = {
                 { title: "角色与权限", icon: "bi-key", href: '/rolemgr', badge: { element: 'i', class: 'bi-question-circle', help: '定义并管理全站角色及所属权限' } },
             ]
         },
+        { title: "竞赛管理", icon: "bi-journal-bookmark-fill", href: '/contest' },
         { title: "登出", icon: "bi-door-open", logoffBtn: true },
     ]
 }

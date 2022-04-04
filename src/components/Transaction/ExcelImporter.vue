@@ -11,6 +11,7 @@
         :scrollable="true"
         :escDismiss="false"
         :backdropDismiss="false"
+        :closeBtn="false"
     >
         <template #title>{{ buttonText }} - 选择您要导入的工作簿</template>
         <template #body>
