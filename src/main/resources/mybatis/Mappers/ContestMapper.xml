@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ndky.paper.kpimgrapp.Mappers.ContestMapper">
+    <select id="selectList" resultType="Contest">
+        select
+        <foreach collection="selectFieldsNames" item="field" separator=",">
+            ${field}
+        </foreach>
+        from contest
+        left join staff_info a on contest.tutor_staff_info_id = a.id
+        left join staff_info b on contest.add_staff_info_id = b.id
+        <if test="query != null">
+            where contest.type = #{query}
+            or contest.name like '%' #{query} '%'
+            or contest.students like '%' #{query} '%'
+            or contest.prize = #{query}
+            or contest.level like '%' #{query} '%'
+        </if>
+        <if test="length != null and length != 0">
+            limit ${from}, ${length}
+        </if>
+        ;
+    </select>
+
+    <select id="selectListTotal" resultType="Long">
+        select count(id) from contest
+        <if test="query != null">
+            where type = #{query}
+            or name like '%' #{query} '%'
+            or students like '%' #{query} '%'
+            or prize = #{query}
+            or level like '%' #{query} '%'
+        </if>
+        ;
+    </select>
+
+    <select id="selectOne" resultType="Contest">
+        select
+        <foreach collection="selectFieldsNames" item="field" separator=",">
+            ${field}
+        </foreach>
+        from contest
+        left join staff_info a on contest.tutor_staff_info_id = a.id
+        left join staff_info b on contest.add_staff_info_id = b.id
+        where contest.id = ${id}
+        limit 1;
+    </select>
+
+    <insert id="insertOne">
+        insert into contest(no, type, name, students, tutor_staff_info_id, prize, level, award_time, certificate,
+                            add_time, add_staff_info_id)
+        values (#{no}, #{type}, #{name}, #{students}, ${tutorStaffInfoId}, #{prize}, #{level}, #{awardTime},
+                #{certificate},
+                now(), ${addStaffInfoId});
+    </insert>
+
+    <insert id="insertMultiple">
+        insert into contest(no, type, name, students, tutor_staff_info_id, prize, level, award_time, certificate,
+        add_time, add_staff_info_id)
+        values
+        <foreach collection="contestRequestList" item="it" open="(" close=")" separator="),(">
+            #{it.no},
+            #{it.type},
+            #{it.name},
+            #{it.students},
+            ${it.tutorStaffInfoId},
+            #{it.prize},
+            #{it.level},
+            #{it.awardTime},
+            #{it.certificate},
+            now(),
+            ${it.addStaffInfoId}
+        </foreach>
+        ;
+    </insert>
+
+    <delete id="deleteOne">
+        delete
+        from contest
+        where id = ${id};
+    </delete>
+
+    <update id="updateContest">
+        update contest
+        set ${dueUpdateKey} = #{dueUpdateValue}
+        where id = ${contestId};
+    </update>
+</mapper>

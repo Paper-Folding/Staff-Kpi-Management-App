@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.RoleMapper">
     <select id="existsRole" resultType="Boolean">
         select (if(count(id) = 0, false, true)) as result
@@ -13,16 +13,17 @@
                 and name = #{roleName}
             </if>
         </where>
+        ;
     </select>
 
     <resultMap id="roleDetail" type="Role">
-        <id property="id" column="id" />
-        <result property="name" column="name" />
-        <result property="description" column="description" />
-        <result property="expiration" column="expiration" />
-        <result property="creatorId" column="creator_authorization_id" />
-        <result property="creatorName" column="creatorName" />
-        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole" />
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="expiration" column="expiration"/>
+        <result property="creatorId" column="creator_authorization_id"/>
+        <result property="creatorName" column="creatorName"/>
+        <collection property="roleScopes" column="id" ofType="RoleScope" select="selectRoleScopeForRole"/>
     </resultMap>
 
     <select id="selectRole" resultMap="roleDetail">

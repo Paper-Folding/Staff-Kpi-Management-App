@@ -3,9 +3,11 @@ package ndky.paper.kpimgrapp.Utils;
 import ndky.paper.kpimgrapp.Mappers.AuthorizationMapper;
 import ndky.paper.kpimgrapp.Models.Role;
 import ndky.paper.kpimgrapp.Models.UserPermission;
+import ndky.paper.kpimgrapp.Request.BaseQueryRequest;
 import ndky.paper.kpimgrapp.Request.UserPermissionRequest;
 import ndky.paper.kpimgrapp.Request.UserRoleRequest;
 import ndky.paper.kpimgrapp.Response.AccessDeniedResponse;
+import ndky.paper.kpimgrapp.Response.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -106,5 +108,23 @@ public class AuthorizationUtil {
 
     public Long getStaffInfoIdByAuthentication(Long authenticationId, String username) {
         return authorizationMapper.getStaffInfoIdByAuthentication(authenticationId, username);
+    }
+
+    /**
+     * Make sure a role provided within a request is valid
+     *
+     * @param baseQueryRequest a base query request body
+     * @param request          HttpServletRequest
+     * @return if invalid return an access denied response while null if valid
+     */
+    public ResponseEntity<?> ensureRoleIsValidForRequest(BaseQueryRequest baseQueryRequest, HttpServletRequest request) {
+        String username = getUsernameFromRequest(request);
+        // 1. check if role field is present, this is used for returning role permitted fields
+        if (baseQueryRequest.getRole() == null || "".equals(baseQueryRequest.getRole()))
+            return new ErrorResponse("No role is provided.").responseEntity();
+        // 2. check if logged user has provided role
+        if (!userHasRole(null, username, null, baseQueryRequest.getRole()))
+            return new ErrorResponse("Requesting user does not have such a role.").responseEntity();
+        return null;
     }
 }

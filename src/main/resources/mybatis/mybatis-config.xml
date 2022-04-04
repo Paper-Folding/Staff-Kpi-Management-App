@@ -14,5 +14,7 @@
         <typeAlias type="ndky.paper.kpimgrapp.Models.StaffInfo" alias="StaffInfo"/>
         <!-- AuthorizationMapper -->
         <typeAlias type="ndky.paper.kpimgrapp.Models.UserPermission" alias="UserPermission"/>
+        <!-- Contest -->
+        <typeAlias type="ndky.paper.kpimgrapp.Models.Contest" alias="Contest"/>
     </typeAliases>
 </configuration>
