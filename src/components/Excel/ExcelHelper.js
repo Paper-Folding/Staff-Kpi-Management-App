@@ -40,7 +40,6 @@ let excelHelper = {
             if (index === 0 || row.length === 0)
                 return; // continue
             let rowObj = {}, rowColCount = row.length;
-            rowObj["__index__"] = index - 1;
             for (let i = 0; i < colCount; i++)
                 rowObj[keys[i]] = i >= rowColCount || row[i] == null || row[i].trim() === "" ? null : row[i];
             result.push(rowObj);

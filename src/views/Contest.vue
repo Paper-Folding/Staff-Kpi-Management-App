@@ -21,15 +21,11 @@
         <template #body>
             <reversed-table leftWidth="25%">
                 <RTRow :row="{ left: '编号' }">
-                    <label-input
-                        v-model="modal.row.no"
-                        @on-confirm="requestUpdate({ no: modal.row.no })"
-                        disabled
-                    ></label-input>
+                    <label-input v-model="modal.row.no" disabled></label-input>
                 </RTRow>
                 <RTRow :row="{ left: '类型' }">
                     <label-select
-                        :disabled="modal.disabled"
+                        :disabled="modal.mode !== 'edit'"
                         v-model="modal.row.type"
                         :list="[{ text: '学生竞赛', value: '学生竞赛' }, { text: '教师获奖', value: '教师获奖' }]"
                         @on-confirm="requestUpdate({ type: modal.row.type })"
@@ -39,19 +35,70 @@
                     <label-input
                         v-model="modal.row.name"
                         @on-confirm="requestUpdate({ name: modal.row.name })"
-                        :disabled="modal.disabled"
+                        :disabled="modal.mode !== 'edit'"
                     ></label-input>
                 </RTRow>
                 <RTRow :row="{ left: '参赛学生' }">
                     <paper-table
-                        :header="Maid.keys(modal.row.students)"
-                        :modelValue="modal.row.students"
-                        :status="0"
+                        :header="modal.stuTable.header"
+                        :modelValue="modal.stuTable.rows"
+                        :status="modal.studentsTableStatus"
                     ></paper-table>
                     <excel-importer
+                        v-if="modal.mode === 'edit'"
                         v-model="modal.importingStudents"
-                        @confirm-import="modal.row.students = modal.importingStudents.rows"
+                        @confirm-import="onStudentsConfirmImport"
+                        text="导入学生列表"
                     ></excel-importer>
+                </RTRow>
+                <RTRow :row="{ left: '指导/获奖教师' }">
+                    <label-select
+                        :disabled="modal.mode !== 'edit'"
+                        v-model="modal.selectedTutor.item"
+                        :list="modal.selectedTutor.list"
+                        @on-confirm="requestUpdate({ tutorNo: modal.row.tutorNo })"
+                    ></label-select>
+                </RTRow>
+                <RTRow :row="{ left: '奖项' }">
+                    <label-input
+                        v-model="modal.row.prize"
+                        @on-confirm="requestUpdate({ prize: modal.row.prize })"
+                        :disabled="modal.mode !== 'edit'"
+                    ></label-input>
+                </RTRow>
+                <RTRow :row="{ left: '级别' }">
+                    <label-select
+                        :disabled="modal.mode !== 'edit'"
+                        v-model="modal.row.level"
+                        :list="[{ text: '国家级', value: '国家级' }, { text: '省部级', value: '省部级' }, { text: '市厅级', value: '市厅级' }, { text: '局级', value: '局级' }, { text: '校级', value: '校级' }, { text: '自导自演级', value: '自导自演级' }]"
+                        @on-confirm="requestUpdate({ type: modal.row.type })"
+                    ></label-select>
+                </RTRow>
+                <RTRow :row="{ left: '得奖时间' }">
+                    <label-date-picker
+                        :disabled="modal.mode !== 'edit'"
+                        type="date"
+                        v-model="modal.row.awardTime"
+                        @on-confirm="requestUpdateMeInfo({ awardTime: Maid.formatDate(modal.row.awardTime, 'YYYY-MM-DD') })"
+                    ></label-date-picker>
+                </RTRow>
+                <RTRow :row="{ left: '获奖证书' }">
+                    <file-uploader
+                        :disabled="modal.mode !== 'edit'"
+                        ref="certUploader"
+                        @confirmed="uploadCert"
+                        :certificate="modal.row.certificate"
+                        :contestId="modal.row.id"
+                    ></file-uploader>
+                </RTRow>
+                <RTRow :row="{ left: '登记时间' }">
+                    <label-input
+                        :modelValue="Maid.formatDate(modal.row.addTime, 'YYYY-MM-DD')"
+                        disabled
+                    ></label-input>
+                </RTRow>
+                <RTRow :row="{ left: '登记人' }">
+                    <label-input :modelValue="modal.row.adderName" disabled></label-input>
                 </RTRow>
             </reversed-table>
         </template>
@@ -74,8 +121,9 @@ import excelHelper from '../components/Excel/ExcelHelper.js';
 import OutlineButton from '../components/OutlineButton.vue';
 import SearchInput from '../components/SearchInput.vue';
 import PaperTable from "../components/PaperTable/PaperTable.vue";
-import PaperModal from '../components/PaperModal.vue';
 import state from "../components/PaperTable/Constants";
+import PaperModal from '../components/PaperModal.vue';
+import FileUploader from '../components/Transaction/FileUploader.vue';
 
 import ReversedTable from '../components/reversed-table/DataTable.vue';
 import RTRow from "../components/reversed-table/Row.vue";
@@ -102,9 +150,18 @@ export default {
             modal: {
                 title: '',
                 mode: '',
-                disabled: false,
                 row: this.$store.state.Contest.contestTemplate,
                 importingStudents: { header: [], rows: [] }, // students list to import
+                stuTable: {
+                    header: [],
+                    rows: [],
+                    status: state.LOADING
+                },
+                selectedTutor: {
+                    item: '',
+                    list: [],
+                },
+                certSrc: ''
             }
         }
     },
@@ -143,17 +200,37 @@ export default {
         }, 800)
     },
     methods: {
-        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne" }),
+        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUploadCert: "Contest/requestUploadCert" }),
         downloadTemplate() {
             const template = [excelHelper.formatTableJsonToXlsxJson(this.$store.state.Contest.importTemplate)[1]];
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, template)), "template-contest.xlsx");
         },
         async seeDetail({ id }) {
+            this.modal.row = this.$store.state.Contest.contestTemplate;
             await this.requestOne({ id });
             this.modal.title = '查看详情';
-            this.modal.disabled = true;
+            this.modal.mode = 'view';
             this.modal.row = this.$store.state.Contest.contest;
+            this.modal.stuTable = {
+                header: Maid.keys(this.modal.row.students),
+                rows: this.modal.row.students,
+                status: state.NORMAL
+            }
+            this.modal.selectedTutor.list = [{ value: this.modal.row.tutorNo, text: this.modal.row.tutorNo + ' - ' + this.modal.row.tutorName }];
+            this.modal.selectedTutor.item = this.modal.row.tutorNo;
+            this.modal.certSrc = import.meta.env.VITE_API_URL + '/contest/cert/' + this.modal.row.id;
             this.$refs.modal.open();
+        },
+        async onStudentsConfirmImport() {
+            this.modal.stuTable = {
+                header: [],
+                rows: [],
+                status: state.LOADING
+            }
+            await setTimeout(() => { }, 100);
+            this.modal.stuTable.header = Maid.keys(this.modal.importingStudents.rows);
+            this.modal.stuTable.rows = this.modal.importingStudents.rows;
+            this.modal.stuTable.status = state.NORMAL;
         },
         sanitizeRows(requestedRows) {
             let result = [];
@@ -166,6 +243,12 @@ export default {
             }
             return result;
         },
+        uploadCert(file) {
+            this.requestUploadCert({
+                cert: file,
+                id: this.modal.row.id
+            });
+        }
     },
     components: {
         ExcelImporter,
@@ -178,7 +261,8 @@ export default {
         RTRow,
         LabelInput,
         LabelSelect,
-        LabelDatePicker
+        LabelDatePicker,
+        FileUploader
     }
 }
 </script>

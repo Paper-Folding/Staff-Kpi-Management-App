@@ -79,6 +79,7 @@ export default {
         background: transparent;
         border-bottom: none !important;
         color: black;
+        cursor: initial;
 
         &:hover,
         &:focus {

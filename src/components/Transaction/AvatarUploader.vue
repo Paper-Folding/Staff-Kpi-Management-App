@@ -4,7 +4,7 @@
         ref="uploader"
         hidden
         @change="onImageSelected"
-        accept="image/png, image/jpeg, image/bmp, image/jpg, image/tif"
+        accept="image/gif, image/png, image/jpeg, image/bmp, image/jpg, image/tif"
     />
     <paper-modal ref="cropModal" size="lg">
         <template #title>裁切图像</template>
@@ -57,7 +57,7 @@ export default {
             return fileObj ? (fileObj.size <= props.limitSize * 1024 * 1024) : true;
         }
         const checkFormat = fileObj => {
-            return fileObj ? (/\.(jpeg|jpg|bmp|png|tif)$/i.test(fileObj.name)) : true;
+            return fileObj ? (/\.(gif|jpeg|jpg|bmp|png|tif)$/i.test(fileObj.name)) : true;
         }
         const getCroppedImage = () => {
             if (cropper && imageRaw) {
@@ -100,8 +100,6 @@ export default {
             restoreInitial();
         }
         return {
-            // data
-
             // refs
             uploader,
             cropModal,

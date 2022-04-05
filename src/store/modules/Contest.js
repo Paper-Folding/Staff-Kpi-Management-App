@@ -82,7 +82,21 @@ const actions = {
             rootState.notify(res.data.message);
             commit('contest', {});
         }
-    }
+    },
+    async requestUploadCert({ rootState }, params) {
+        let formData = new FormData();
+        formData.append('cert', params.cert);
+        formData.append('role', localStorage.getItem("role"));
+        formData.append('contestId', params.id);
+        let res = await request('post', '/contest/uploadCert', formData, true, {
+            'Content-Type': 'multipart/form-data'
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            rootState.notify('证书上传喽~', 'success');
+        } else {
+            rootState.notify(res.data.message);
+        }
+    },
 }
 
 const mutations = {
@@ -102,7 +116,7 @@ const mutations = {
         state.total = data.total;
     },
     contest(state, data) {
-        state.contest = Object.assign(state.contestTemplate, { ...data.result, students: JSON.parse(data.result.students) });
+        state.contest = Object.assign({}, state.contestTemplate, { ...data.result, students: JSON.parse(data.result.students || '[]') });
     }
 }
 

@@ -42,6 +42,10 @@ export default {
     name: "ExcelImporter",
     props: {
         modelValue: Object,
+        text: {
+            type: String,
+            default: '导入用户'
+        }
     },
     setup(props, context) {
         let selectedFile = ref(null),
@@ -51,7 +55,7 @@ export default {
             tableChosen = ref(false),
             selectionTableStatus = ref(state.NORMAL);
         const buttonTextHelper = {
-            INITIAL: "导入用户",
+            INITIAL: props.text,
             SELECTED: filename => filename,
             WRONG_FORMAT: "仅支持xls/xlsx格式的文件",
             EMPTY: "文件无数据"

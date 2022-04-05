@@ -1,7 +1,7 @@
 <template>
-    <reversed-table left-width="25%" class="mt-4">
-        <tr>
-            <td>
+    <div class="mt-4 w-100">
+        <div class="row">
+            <div class="col-3">
                 <div class="avatar-container" title="更换头像" @click="$refs.avatarUploader.call()">
                     <VMenu
                         :triggers="['focus']"
@@ -27,9 +27,9 @@
                         </template>
                     </VMenu>
                 </div>
-            </td>
-            <td class="ps-xl-1 ps-lg-1 ps-3">
-                <h1>侬的个人信息(可肆意编辑)</h1>
+            </div>
+            <div class="col-9">
+                <h1>您的个人信息(肆意编辑)</h1>
                 <reversed-table left-width="25%">
                     <Row :row="{ type: 'str', left: '工号', right: me.no }"></Row>
                     <Row :row="{ left: '姓名' }">
@@ -159,9 +159,10 @@
                         ></label-input>
                     </Row>
                 </reversed-table>
-            </td>
-        </tr>
-    </reversed-table>
+            </div>
+        </div>
+    </div>
+
     <avatar-uploader ref="avatarUploader" @crop-done="saveAvatar"></avatar-uploader>
 </template>
 
@@ -220,28 +221,28 @@ export default {
 
 <style lang="scss" scoped>
 .avatar-container {
-    @media (min-width: 1280px) {
-        width: 260px;
-        height: 260px;
-    }
+    // @media (min-width: 1280px) {
+    //     width: 260px;
+    //     height: 260px;
+    // }
     position: relative;
     cursor: pointer;
 
     .avatar {
         padding: 0;
-        width: 260px;
-        height: 260px;
+        width: 15vw;
+        height: 15vw;
         border-radius: 100%;
         border: 2px rgb(235, 235, 235) solid;
         transition: 0.5s ease;
-        @media (max-width: 1168px) {
-            width: 180px;
-            height: 180px;
-        }
-        @media (max-width: 768px) {
-            width: 100px;
-            height: 100px;
-        }
+        // @media (max-width: 1168px) {
+        //     width: 180px;
+        //     height: 180px;
+        // }
+        // @media (max-width: 768px) {
+        //     width: 100px;
+        //     height: 100px;
+        // }
     }
 
     &:hover {
@@ -263,16 +264,16 @@ export default {
         transform: translate(80%, 80%);
         text-align: center;
         i {
-            font-size: 2.5rem;
+            font-size: 2.5em;
         }
         @media (max-width: 1168px) {
-            transform: translate(180%, 100%);
+            transform: translate(140%, 70%);
             i {
                 font-size: 2rem;
             }
         }
         @media (max-width: 768px) {
-            transform: translate(150%, 50%);
+            transform: translate(120%,20%);
             i {
                 font-size: 1.5rem;
             }

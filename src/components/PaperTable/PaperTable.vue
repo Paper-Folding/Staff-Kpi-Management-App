@@ -86,7 +86,7 @@ export default {
             else
                 this.expanded = true;
             return this.expanded;
-        }
+        },
     },
     computed: {
         keys() {
