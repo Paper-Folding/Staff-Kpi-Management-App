@@ -17,6 +17,8 @@ const state = {
         edit: '编辑',
         delete: '移除'
     },
+    // records fields that are allowed by current user selected role
+    allowedFields: [],
     // used for response of requesting one contest
     contest: {},
     contestTemplate: {
@@ -50,6 +52,7 @@ const state = {
         adderNo: '登记人编号'
     },
     responseStatus: true,
+    staffList: [], // for select
 }
 
 const getters = {
@@ -97,17 +100,40 @@ const actions = {
             rootState.notify(res.data.message);
         }
     },
+    async requestStaffList({ commit }) {
+        let res = await request('post', '/contest/get/staffList', {
+            role: localStorage.getItem("role")
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            commit('staffList', res.data);
+        }
+    },
+    async requestUpdate({ rootState }, params) {
+        let res = await request('put', 'contest', {
+            role: localStorage.getItem("role"),
+            ...params
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            rootState.notify('修改居然成功了....', 'success');
+        } else {
+            rootState.notify(res.message);
+        }
+    }
 }
 
 const mutations = {
     contestList(state, data) {
         if (data.result.header.includes('*')) {
             state.table.header = state.fieldsMapper;
+            state.allowedFields = Object.keys(state.contestTemplate);
         } else {
             let result = {};
             for (let head of data.result.header) {
-                result[head] = state.fieldsMapper[head];
+                if (head in state.fieldsMapper) {
+                    result[head] = state.fieldsMapper[head];
+                }
             }
+            state.allowedFields = data.result.header;
             result.edit = '编辑';
             result.delete = '移除';
             state.table.header = result;
@@ -117,6 +143,9 @@ const mutations = {
     },
     contest(state, data) {
         state.contest = Object.assign({}, state.contestTemplate, { ...data.result, students: JSON.parse(data.result.students || '[]') });
+    },
+    staffList(state, data) {
+        state.staffList = data.result;
     }
 }
 

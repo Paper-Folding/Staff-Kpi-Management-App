@@ -87,6 +87,9 @@ export default {
         let target = ref(null), modal = null;
         onMounted(() => {
             modal = new Modal(target.value);
+            target.value.addEventListener('hide.bs.modal', e => {
+                context.emit('onClose', e);
+            })
         });
         const close = () => {
             modal?.hide();
@@ -119,7 +122,7 @@ export default {
     components: {
         OutlineButton
     },
-    emits: ["modalCancelled", "modalConfirmed"]
+    emits: ["modalCancelled", "modalConfirmed", "onClose"]
 }
 </script>
 

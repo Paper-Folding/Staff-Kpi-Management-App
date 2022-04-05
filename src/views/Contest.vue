@@ -16,7 +16,7 @@
         @row-click="seeDetail"
     ></paper-table>
     <pagination v-model="curPage" v-bind="{ total, per, showAmount: 10 }"></pagination>
-    <paper-modal ref="modal" size="lg">
+    <paper-modal ref="modal" size="lg" @onClose="refreshTable">
         <template #title>{{ modal.title }}</template>
         <template #body>
             <reversed-table leftWidth="25%">
@@ -28,13 +28,13 @@
                         :disabled="modal.mode !== 'edit'"
                         v-model="modal.row.type"
                         :list="[{ text: '学生竞赛', value: '学生竞赛' }, { text: '教师获奖', value: '教师获奖' }]"
-                        @on-confirm="requestUpdate({ type: modal.row.type })"
+                        @on-confirm="requestUpdate({ id: modal.row.id, type: modal.row.type })"
                     ></label-select>
                 </RTRow>
                 <RTRow :row="{ left: '名称' }">
                     <label-input
                         v-model="modal.row.name"
-                        @on-confirm="requestUpdate({ name: modal.row.name })"
+                        @on-confirm="requestUpdate({ id: modal.row.id, name: modal.row.name })"
                         :disabled="modal.mode !== 'edit'"
                     ></label-input>
                 </RTRow>
@@ -56,13 +56,13 @@
                         :disabled="modal.mode !== 'edit'"
                         v-model="modal.selectedTutor.item"
                         :list="modal.selectedTutor.list"
-                        @on-confirm="requestUpdate({ tutorNo: modal.row.tutorNo })"
+                        @on-confirm="requestUpdate({ id: modal.row.id, tutorNo: modal.selectedTutor.item })"
                     ></label-select>
                 </RTRow>
                 <RTRow :row="{ left: '奖项' }">
                     <label-input
                         v-model="modal.row.prize"
-                        @on-confirm="requestUpdate({ prize: modal.row.prize })"
+                        @on-confirm="requestUpdate({ id: modal.row.id, prize: modal.row.prize })"
                         :disabled="modal.mode !== 'edit'"
                     ></label-input>
                 </RTRow>
@@ -71,7 +71,7 @@
                         :disabled="modal.mode !== 'edit'"
                         v-model="modal.row.level"
                         :list="[{ text: '国家级', value: '国家级' }, { text: '省部级', value: '省部级' }, { text: '市厅级', value: '市厅级' }, { text: '局级', value: '局级' }, { text: '校级', value: '校级' }, { text: '自导自演级', value: '自导自演级' }]"
-                        @on-confirm="requestUpdate({ type: modal.row.type })"
+                        @on-confirm="requestUpdate({ id: modal.row.id, level: modal.row.level })"
                     ></label-select>
                 </RTRow>
                 <RTRow :row="{ left: '得奖时间' }">
@@ -79,7 +79,7 @@
                         :disabled="modal.mode !== 'edit'"
                         type="date"
                         v-model="modal.row.awardTime"
-                        @on-confirm="requestUpdateMeInfo({ awardTime: Maid.formatDate(modal.row.awardTime, 'YYYY-MM-DD') })"
+                        @on-confirm="requestUpdate({ id: modal.row.id, 'award_time': Maid.formatDate(modal.row.awardTime, 'YYYY-MM-DD') })"
                     ></label-date-picker>
                 </RTRow>
                 <RTRow :row="{ left: '获奖证书' }">
@@ -104,12 +104,6 @@
         </template>
         <template #footer>
             <outline-button color="blue" data-bs-dismiss="modal" icon="none">关闭</outline-button>
-            <outline-button
-                v-if="modal.mode === 'edit'"
-                @click="attachIt"
-                color="red"
-                icon="check-lg"
-            >完成修改</outline-button>
         </template>
     </paper-modal>
 </template>
@@ -200,7 +194,7 @@ export default {
         }, 800)
     },
     methods: {
-        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUploadCert: "Contest/requestUploadCert" }),
+        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUploadCert: "Contest/requestUploadCert", requestStaffList: "Contest/requestStaffList", requestUpdate: "Contest/requestUpdate" }),
         downloadTemplate() {
             const template = [excelHelper.formatTableJsonToXlsxJson(this.$store.state.Contest.importTemplate)[1]];
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, template)), "template-contest.xlsx");
@@ -227,17 +221,46 @@ export default {
                 rows: [],
                 status: state.LOADING
             }
-            await setTimeout(() => { }, 100);
+            await this.requestUpdate({ id: this.modal.row.id, students: JSON.stringify(this.modal.importingStudents.rows) })
             this.modal.stuTable.header = Maid.keys(this.modal.importingStudents.rows);
             this.modal.stuTable.rows = this.modal.importingStudents.rows;
             this.modal.stuTable.status = state.NORMAL;
+        },
+        async callEdit({ id }) {
+            this.modal.row = this.$store.state.Contest.contestTemplate;
+            await this.requestOne({ id });
+            this.modal.title = '编辑竞赛';
+            this.modal.mode = 'edit';
+            this.modal.row = this.$store.state.Contest.contest;
+            this.modal.stuTable = {
+                header: Maid.keys(this.modal.row.students),
+                rows: this.modal.row.students,
+                status: state.NORMAL
+            }
+            await this.requestStaffList();
+            this.modal.selectedTutor.list = this.$store.state.Contest.staffList.length === 0 ? [{ value: this.modal.row.tutorNo, text: this.modal.row.tutorNo + ' - ' + this.modal.row.tutorName }] : this.$store.state.Contest.staffList.map(ele => ({ value: ele.no, text: ele.no + ' - ' + ele.name }));
+            this.modal.selectedTutor.item = this.modal.row.tutorNo;
+            this.modal.certSrc = import.meta.env.VITE_API_URL + '/contest/cert/' + this.modal.row.id;
+            this.$refs.modal.open();
+        },
+        async refreshTable() {
+            if (this.modal.mode !== 'edit')
+                return;
+            this.currentStatus = state.LOADING;
+            await this.requestList({ page: this.curPage, amount: this.per, query: this.query });
+            this.table.header = this.$store.state.Contest.table.header;
+            this.table.rows = this.sanitizeRows(this.$store.state.Contest.table.rows);
+            if (this.table.rows.length === 0)
+                this.currentStatus = state.NOTHING_LOADED;
+            else
+                this.currentStatus = state.NORMAL;
         },
         sanitizeRows(requestedRows) {
             let result = [];
             for (let row of requestedRows) {
                 result.push({
                     ...row,
-                    edit: { type: 'btn', title: '编辑', icon: 'bi-pencil-square', color: 'var(--bs-primary)', click: this.callAttach },
+                    edit: { type: 'btn', title: '编辑', icon: 'bi-pencil-square', color: 'var(--bs-primary)', click: this.callEdit },
                     delete: { type: 'btn', title: '删除', icon: 'bi-trash', color: 'var(--bs-danger)', click: this.callDelete }
                 });
             }
