@@ -19,6 +19,7 @@ mybatis:
 
 storage:
   avatar: avatar
+  cert: contestCert
 
 paper:
   jwt:

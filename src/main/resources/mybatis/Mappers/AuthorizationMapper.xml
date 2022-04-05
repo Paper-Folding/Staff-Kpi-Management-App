@@ -142,7 +142,7 @@
             and e.table_name = #{tableName}
         </if>
         <if test="columnName != null">
-            and e.column_name = #{column_name}
+            and (e.column_name = #{columnName} or e.column_name = '*')
         </if>
         ;
     </select>

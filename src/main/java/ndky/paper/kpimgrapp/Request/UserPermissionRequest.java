@@ -29,6 +29,18 @@ public class UserPermissionRequest {
     }
 
     // request combination two
+    public UserPermissionRequest(Long authenticationId, String username, Long roleId, String roleName, Long operationId, String operationName, String tableName, String columnName) {
+        this.authenticationId = authenticationId;
+        this.username = username;
+        this.roleId = roleId;
+        this.roleName = roleName;
+        this.operationId = operationId;
+        this.operationName = operationName;
+        this.tableName = tableName;
+        this.columnName = columnName;
+    }
+
+    // request combination three
     public UserPermissionRequest(Long authenticationId, String username, Long roleId, String roleName, Long operationId, String operationName, Long objectId, String tableName, String columnName) {
         this.authenticationId = authenticationId;
         this.username = username;

@@ -35,8 +35,9 @@ public class BaseQueryRequest {
         return role;
     }
 
-    public void setRole(String role) {
+    public BaseQueryRequest setRole(String role) {
         this.role = role;
+        return this;
     }
 
     public Integer getPage() {

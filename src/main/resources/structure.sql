@@ -94,7 +94,7 @@ CREATE TABLE `contest`
     `prize`               varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci         NULL DEFAULT '' COMMENT '获奖奖项',
     `level`               varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci          NULL DEFAULT '' COMMENT '获奖级别',
     `award_time`          date                                                                  NULL DEFAULT NULL COMMENT '获奖时间',
-    `certificate`         varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci         NULL DEFAULT NULL COMMENT '获奖证书（pdf文件，存储存放路径）',
+    `certificate`         json                                                                  NULL COMMENT '获奖证书（pdf文件，存储存放路径）,以{\"store\":\"xxx.xxx\",\"ori\":\"xxx.xxx\"}存储，分别表示存储文件名和原文件名',
     `add_time`            datetime                                                              NULL DEFAULT NULL COMMENT '登记时间',
     `add_staff_info_id`   bigint                                                                NULL DEFAULT NULL COMMENT '登记人id',
     PRIMARY KEY (`id`) USING BTREE,

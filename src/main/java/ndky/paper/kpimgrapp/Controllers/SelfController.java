@@ -6,6 +6,7 @@ import ndky.paper.kpimgrapp.Response.ModifyResponse;
 import ndky.paper.kpimgrapp.Response.QueryResponse;
 import ndky.paper.kpimgrapp.Storage.AvatarStorageImpl;
 import ndky.paper.kpimgrapp.Utils.AuthorizationUtil;
+import ndky.paper.kpimgrapp.Utils.Maid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -15,9 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * A controller to upload avatar, alter self info, etc...
@@ -53,8 +52,11 @@ public class SelfController {
             selfMapper.updateAvatarFileName(null, requestUsername, "");
             return new ModifyResponse(-1).responseEntity();
         }
+        // check avatar ext
+        if (!Maid.validFileExtension(avatar.getOriginalFilename(), ".jpg", ".jpeg", ".gif", ".png", ".bmp", ".tif"))
+            return new ErrorResponse("File does not have a valid extension!").responseEntity();
         // upload avatar and update avatar filename
-        String newFileName = UUID.randomUUID().toString() + new Date().getTime() + avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf("."));
+        String newFileName = Maid.getUniqueString() + Maid.getFilenameExt(avatar.getOriginalFilename());
         avatarStorage.storeFile(avatar, newFileName);
         return new ModifyResponse(selfMapper.updateAvatarFileName(null, requestUsername, newFileName)).responseEntity();
     }

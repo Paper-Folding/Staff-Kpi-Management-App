@@ -5,6 +5,7 @@ import ndky.paper.kpimgrapp.Request.ContestRequest;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface ContestMapper {
@@ -15,7 +16,7 @@ public interface ContestMapper {
     /**
      * select one contest by contest id
      */
-    Contest selectOne(Long id, List<String> selectFieldsNames);
+    Optional<Contest> selectOne(Long id, List<String> selectFieldsNames);
 
     Integer insertOne(ContestRequest contestRequest);
 

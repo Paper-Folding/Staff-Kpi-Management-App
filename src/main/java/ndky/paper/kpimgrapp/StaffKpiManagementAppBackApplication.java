@@ -1,6 +1,7 @@
 package ndky.paper.kpimgrapp;
 
 import ndky.paper.kpimgrapp.Storage.AvatarStorageImpl;
+import ndky.paper.kpimgrapp.Storage.CertificateStorageImpl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -29,7 +30,10 @@ public class StaffKpiManagementAppBackApplication {
     }
 
     @Bean
-    public CommandLineRunner initialize(AvatarStorageImpl avatarStorage) {
-        return args -> avatarStorage.createDirectory();
+    public CommandLineRunner initialize(AvatarStorageImpl avatarStorage, CertificateStorageImpl certificateStorage) {
+        return args -> {
+            avatarStorage.createDirectory();
+            certificateStorage.createDirectory();
+        };
     }
 }
