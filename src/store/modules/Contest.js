@@ -116,7 +116,7 @@ const actions = {
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('修改居然成功了....', 'success');
         } else {
-            rootState.notify(res.message);
+            rootState.notify(res.data.message);
         }
     }
 }

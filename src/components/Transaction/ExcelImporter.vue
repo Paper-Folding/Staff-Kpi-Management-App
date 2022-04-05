@@ -1,6 +1,7 @@
 <template>
     <input type="file" hidden ref="uploader" @change="onFileSelected" accept=".xls, .xlsx" />
     <outline-button
+        :style="$attrs.style"
         icon="file-earmark-spreadsheet"
         :color="ifFormatOk && !ifFileEmpty ? 'green' : 'red'"
         @click="callSelect"

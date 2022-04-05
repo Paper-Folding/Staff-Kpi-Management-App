@@ -49,6 +49,7 @@
                         v-model="modal.importingStudents"
                         @confirm-import="onStudentsConfirmImport"
                         text="导入学生列表"
+                        style="transform:scale(0.9)"
                     ></excel-importer>
                 </RTRow>
                 <RTRow :row="{ left: '指导/获奖教师' }">
@@ -255,6 +256,9 @@ export default {
             else
                 this.currentStatus = state.NORMAL;
         },
+        callDelete({ id }) {
+
+        },
         sanitizeRows(requestedRows) {
             let result = [];
             for (let row of requestedRows) {
@@ -265,6 +269,11 @@ export default {
                 });
             }
             return result;
+        },
+        exportIt() {
+
+        },
+        importIt() {
         },
         uploadCert(file) {
             this.requestUploadCert({
