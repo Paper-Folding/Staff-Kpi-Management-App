@@ -110,6 +110,10 @@ public class AuthorizationUtil {
         return authorizationMapper.getStaffInfoIdByAuthentication(authenticationId, username);
     }
 
+    public Long getStaffInfoIdByStaffNo(String staffNo) {
+        return authorizationMapper.getStaffInfoIdByStaffNo(staffNo);
+    }
+
     /**
      * Make sure a role provided within a request is valid
      *

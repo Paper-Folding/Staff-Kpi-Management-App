@@ -1,6 +1,7 @@
 package ndky.paper.kpimgrapp.Mappers;
 
 import ndky.paper.kpimgrapp.Models.Contest;
+import ndky.paper.kpimgrapp.Models.StaffInfo;
 import ndky.paper.kpimgrapp.Request.ContestRequest;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -24,5 +25,7 @@ public interface ContestMapper {
 
     Integer deleteOne(ContestRequest contestRequest);
 
-    Integer updateContest(Long contestId, String dueUpdateKey, String dueUpdateValue);
+    Integer updateContest(Long contestId, String contestNo, String dueUpdateKey, String dueUpdateValue);
+
+    List<StaffInfo> selectStaffInfoListForSelect();
 }

@@ -85,6 +85,20 @@
     <update id="updateContest">
         update contest
         set ${dueUpdateKey} = #{dueUpdateValue}
-        where id = ${contestId};
+        <where>
+            <if test="contestId != null">
+                id = ${contestId}
+            </if>
+            <if test="contestNo != null">
+                no = #{contestNo}
+            </if>
+        </where>
+        ;
     </update>
+
+    <select id="selectStaffInfoListForSelect" resultType="StaffInfo">
+        select id, no, name
+        from staff_info
+        where disabled = '0';
+    </select>
 </mapper>

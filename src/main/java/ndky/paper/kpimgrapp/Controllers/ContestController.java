@@ -142,17 +142,17 @@ public class ContestController {
         if (!allowed)
             return authorizationUtil.getForbiddenResponseEntity(request);
         var oldCertificate = getCertificateFromDataBase(contestId);
-        if (oldCertificate == null)
-            return new ErrorResponse("Contest with id:" + contestId + " is not present!").responseEntity();
-        if (!"".equals(oldCertificate.get("store")))
-            certificateStorage.deleteOneFile(oldCertificate.get("store"));
+        if (oldCertificate != null) {
+            if (!"".equals(oldCertificate.get("store")))
+                certificateStorage.deleteOneFile(oldCertificate.get("store"));
+        }
         String newFileName = Maid.getUniqueString() + Maid.getFilenameExt(cert.getOriginalFilename());
         certificateStorage.storeFile(cert, newFileName);
         Map<String, String> newCertificate = new HashMap<>();
         newCertificate.put("store", newFileName);
         newCertificate.put("ori", cert.getOriginalFilename());
         try {
-            return new ModifyResponse(contestMapper.updateContest(contestId, "certificate", objectMapper.writeValueAsString(newCertificate))).responseEntity();
+            return new ModifyResponse(contestMapper.updateContest(contestId, null, "certificate", objectMapper.writeValueAsString(newCertificate))).responseEntity();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -170,5 +170,42 @@ public class ContestController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLEncoder.encode(certificate.get("ori"), StandardCharsets.UTF_8) + "\"")
                 .body(resource);
+    }
+
+    // request for select staff list
+    @PostMapping("/get/staffList")
+    public ResponseEntity<?> getStaffInfoSelectList(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
+        ResponseEntity<?> res = authorizationUtil.ensureRoleIsValidForRequest(contestRequest, request);
+        if (res != null)
+            return res;
+        String username = authorizationUtil.getUsernameFromRequest(request);
+        boolean allowed = "admin".equals(contestRequest.getRole()) || "officer".equals(contestRequest.getRole()) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, "update", "contest", "tutor_staff_info_id")) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, "insert", "contest"));
+        if (!allowed)
+            return new QueryResponse(new ArrayList<String>(), 0).responseEntity();
+        var staffs = contestMapper.selectStaffInfoListForSelect();
+        return new QueryResponse(staffs, staffs.size()).responseEntity();
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateContest(@RequestBody Map<String, String> data, HttpServletRequest request) {
+        ResponseEntity<?> res = authorizationUtil.ensureRoleIsValidForRequest(new BaseQueryRequest().setRole(data.get("role")), request);
+        if (res != null)
+            return res;
+        String username = authorizationUtil.getUsernameFromRequest(request);
+        var temp = data.keySet().stream().filter(ele -> !"role".equals(ele) && !"id".equals(ele) && !"no".equals(ele)).collect(Collectors.toList());
+        String key, value;
+        if (temp.size() > 0) {
+            key = temp.get(0);
+            value = data.get(key);
+        } else
+            return new ErrorResponse("Something went wrong with the request, are you forget to pass in a field and its target value?").responseEntity();
+        if ("tutorNo".equals(key)) {
+            key = "tutor_staff_info_id";
+            value = authorizationUtil.getStaffInfoIdByStaffNo(value).toString();
+        }
+        boolean allowed = "admin".equals(data.get("role")) || "officer".equals(data.get("role")) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, data.get("role"), null, "update", "contest", key));
+        if (!allowed)
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        return new ModifyResponse(contestMapper.updateContest(data.get("id") == null ? null : Long.parseLong(data.get("id")), data.get("no"), key, value)).responseEntity();
     }
 }

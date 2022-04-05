@@ -176,4 +176,11 @@
         </where>
         ;
     </select>
+
+    <select id="getStaffInfoIdByStaffNo" resultType="Long">
+        select id
+        from staff_info
+        where disabled = '0'
+          and no = #{staffNo};
+    </select>
 </mapper>

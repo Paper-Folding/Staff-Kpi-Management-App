@@ -44,4 +44,6 @@ public interface AuthorizationMapper {
 
     Long getStaffInfoIdByAuthentication(Long authenticationId, String username);
 
+    Long getStaffInfoIdByStaffNo(String staffNo);
+
 }
