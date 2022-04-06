@@ -71,7 +71,7 @@ const actions = {
             commit('staffList', res.data);
         } else {
             rootState.notify(res.data.message);
-            commit('staffList', { result: { header: {}, rows: [] }, total: 0 });
+            commit('staffList', { result: { header: [], rows: [] }, total: 0 });
         }
     },
     async requestImport({ rootState }, params) {

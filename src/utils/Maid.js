@@ -19,7 +19,7 @@ export default class Maid {
     }
 
     /**
-     * a safer and evo version of Object.keys
+     * a safer and evo version of Object.keys and also can be a Array.keys
      * @param target an object or an array of objects
      * @returns e.g. target = [{x:1, y:2}, {z:1}, {x:8}] ===> ['x','y','z']
      */

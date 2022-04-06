@@ -1,4 +1,5 @@
 import * as xlsx from "xlsx";
+import Maid from "../../utils/Maid";
 
 let excelHelper = {
     convertExcelFileObjectToXslxJson(fileObject) {
@@ -68,9 +69,12 @@ let excelHelper = {
             temp.push(source);
         else
             temp = source;
-        result.push(Object.keys(temp[0]));
+        result.push(Maid.keys(temp));
         temp.forEach(ele => {
-            result.push(Object.values(ele));
+            let arr = [];
+            for (let key of result[0])
+                arr.push(ele[key] ?? '');
+            result.push(arr);
         });
         return result;
     },
