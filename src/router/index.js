@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import auth from "../utils/Auth.js";
+import store from '../store';
 import UserAndRole from './UserAndRole.js';
 
 const routes = [
@@ -31,7 +32,7 @@ const routes = [
             {
                 path: '/contest',
                 name: 'Contest',
-                meta: { title: '竞赛管理' },
+                meta: { title: '竞赛管理', permission: 'contest' },
                 component: () => import('../views/Contest.vue')
             }
         ]
@@ -58,5 +59,15 @@ router.beforeEach((to, from, next) => {
     } else
         next();
 });
+
+router.afterEach((to, from) => {
+    if ('permission' in to.meta) {
+        store.dispatch('Util/requestPermissionList', {
+            username: auth.getLoggedUser().username,
+            roleName: localStorage.getItem('role'),
+            tableName: to.meta.permission
+        });
+    }
+})
 
 export default router;

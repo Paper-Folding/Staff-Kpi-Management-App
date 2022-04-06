@@ -1,4 +1,5 @@
 import formateDate from "../components/PaperTable/TimeUtil.js";
+import store from "../store";
 
 export default class Maid {
     static formatDate = formateDate;
@@ -34,4 +35,21 @@ export default class Maid {
         }
         return Object.keys(target);
     }
+
+    /**
+     * Check from permissionList that if a specific operation/permission is meeted
+     * 
+     * @param operationName 'select', 'insert' and so on
+     * @param fieldName default is '*' 
+     * @returns true if meeted while false otherwise
+     */
+    static permissionMeeted(operationName, fieldName = '*') {
+        const pList = store.state.Util.permissionList;
+        if (pList === '*')
+            return true;
+        return pList.filter(ele => ele.operationName === operationName && ele.fieldName === fieldName).length > 0;
+    }
+
+    // call global notify component directly
+    static notify = store.state.notify;
 }

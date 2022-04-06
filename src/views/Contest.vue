@@ -2,7 +2,8 @@
 <template>
     <div class="mt-3 mb-2 top">
         <div class="d-flex gap-3">
-            <outline-button color="blue" @click="downloadTemplate">下载导入模板</outline-button>
+            <outline-button color="green" @click="callAdd">手动添加</outline-button>
+            <outline-button icon="download" color="blue" @click="downloadTemplate">下载导入模板</outline-button>
             <excel-importer v-model="importingTable" @confirm-import="importIt"></excel-importer>
             <outline-button color="green" @click="exportIt">导出</outline-button>
         </div>
@@ -25,7 +26,7 @@
                 </RTRow>
                 <RTRow :row="{ left: '类型' }">
                     <label-select
-                        :disabled="modal.mode !== 'edit'"
+                        :disabled="modal.mode === 'view'"
                         v-model="modal.row.type"
                         :list="[{ text: '学生竞赛', value: '学生竞赛' }, { text: '教师获奖', value: '教师获奖' }]"
                         @on-confirm="requestUpdate({ id: modal.row.id, type: modal.row.type })"
@@ -35,7 +36,7 @@
                     <label-input
                         v-model="modal.row.name"
                         @on-confirm="requestUpdate({ id: modal.row.id, name: modal.row.name })"
-                        :disabled="modal.mode !== 'edit'"
+                        :disabled="modal.mode === 'view'"
                     ></label-input>
                 </RTRow>
                 <RTRow :row="{ left: '参赛学生' }">
@@ -45,7 +46,7 @@
                         :status="modal.studentsTableStatus"
                     ></paper-table>
                     <excel-importer
-                        v-if="modal.mode === 'edit'"
+                        v-if="modal.mode !== 'view'"
                         v-model="modal.importingStudents"
                         @confirm-import="onStudentsConfirmImport"
                         text="导入学生列表"
@@ -54,7 +55,7 @@
                 </RTRow>
                 <RTRow :row="{ left: '指导/获奖教师' }">
                     <label-select
-                        :disabled="modal.mode !== 'edit'"
+                        :disabled="modal.mode === 'view'"
                         v-model="modal.selectedTutor.item"
                         :list="modal.selectedTutor.list"
                         @on-confirm="requestUpdate({ id: modal.row.id, tutorNo: modal.selectedTutor.item })"
@@ -64,12 +65,12 @@
                     <label-input
                         v-model="modal.row.prize"
                         @on-confirm="requestUpdate({ id: modal.row.id, prize: modal.row.prize })"
-                        :disabled="modal.mode !== 'edit'"
+                        :disabled="modal.mode === 'view'"
                     ></label-input>
                 </RTRow>
                 <RTRow :row="{ left: '级别' }">
                     <label-select
-                        :disabled="modal.mode !== 'edit'"
+                        :disabled="modal.mode === 'view'"
                         v-model="modal.row.level"
                         :list="[{ text: '国家级', value: '国家级' }, { text: '省部级', value: '省部级' }, { text: '市厅级', value: '市厅级' }, { text: '局级', value: '局级' }, { text: '校级', value: '校级' }, { text: '自导自演级', value: '自导自演级' }]"
                         @on-confirm="requestUpdate({ id: modal.row.id, level: modal.row.level })"
@@ -77,7 +78,7 @@
                 </RTRow>
                 <RTRow :row="{ left: '得奖时间' }">
                     <label-date-picker
-                        :disabled="modal.mode !== 'edit'"
+                        :disabled="modal.mode === 'view'"
                         type="date"
                         v-model="modal.row.awardTime"
                         @on-confirm="requestUpdate({ id: modal.row.id, 'award_time': Maid.formatDate(modal.row.awardTime, 'YYYY-MM-DD') })"
@@ -85,7 +86,7 @@
                 </RTRow>
                 <RTRow :row="{ left: '获奖证书' }">
                     <file-uploader
-                        :disabled="modal.mode !== 'edit'"
+                        :disabled="modal.mode === 'view'"
                         ref="certUploader"
                         @confirmed="uploadCert"
                         :certificate="modal.row.certificate"
@@ -245,7 +246,7 @@ export default {
             this.$refs.modal.open();
         },
         async refreshTable() {
-            if (this.modal.mode !== 'edit')
+            if (this.modal.mode === 'view')
                 return;
             this.currentStatus = state.LOADING;
             await this.requestList({ page: this.curPage, amount: this.per, query: this.query });
@@ -255,6 +256,25 @@ export default {
                 this.currentStatus = state.NOTHING_LOADED;
             else
                 this.currentStatus = state.NORMAL;
+        },
+        async callAdd() {
+            if (!Maid.permissionMeeted('insert')) {
+                Maid.notify('您没有权限手动添加竞赛');
+                return;
+            }
+            this.modal.row = this.$store.state.Contest.contestTemplate;
+            this.modal.title = '添加一条竞赛记录';
+            this.modal.mode = 'add';
+            this.modal.stuTable = {
+                header: [],
+                rows: [],
+                state: state.NORMAL
+            };
+            await this.requestStaffList();
+            this.modal.selectedTutor.list = this.$store.state.Contest.staffList.length === 0 ? [{ value: this.modal.row.tutorNo, text: this.modal.row.tutorNo + ' - ' + this.modal.row.tutorName }] : this.$store.state.Contest.staffList.map(ele => ({ value: ele.no, text: ele.no + ' - ' + ele.name }));
+            this.modal.selectedTutor.item = '';
+            this.modal.certSrc = '';
+            this.$refs.modal.open();
         },
         callDelete({ id }) {
 

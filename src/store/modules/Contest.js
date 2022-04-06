@@ -109,6 +109,8 @@ const actions = {
         }
     },
     async requestUpdate({ rootState }, params) {
+        if (params == null || Object.keys(params).length === 0)
+            return;
         let res = await request('put', 'contest', {
             role: localStorage.getItem("role"),
             ...params

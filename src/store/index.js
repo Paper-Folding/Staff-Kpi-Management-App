@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import Util from './modules/Util.js';
 import Login from "./modules/Login.js";
 import Navbar from './modules/Navbar.js';
 import Menu from "./modules/Menu.js";
@@ -15,6 +16,7 @@ export default createStore({
         }
     },
     modules: {
+        Util,
         Login,
         Navbar,
         Menu,

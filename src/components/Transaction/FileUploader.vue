@@ -113,6 +113,7 @@ export default {
         }
         const onConfirmed = () => {
             context.emit("confirmed", fileRaw.value);
+            restoreInitial();
         }
         const openFile = () => {
             window.open(fileLink.value);
