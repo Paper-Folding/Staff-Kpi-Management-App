@@ -3,17 +3,15 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ndky.paper.kpimgrapp.Mappers.SelfMapper">
     <select id="getAvatarFileName" resultType="String">
-        select avatar
-        from authentication
-        <where>
-            <if test="authenticationId != null">
-                id = ${authenticationId}
-            </if>
-            <if test="username != null">
-                and username = #{username}
-            </if>
-        </where>
-        ;
+        select a.avatar
+        from authentication a, staff_info b where a.staff_info_id = b.id and b.disabled = '0'
+        <if test="authenticationId != null">
+            and a.id = ${authenticationId}
+        </if>
+        <if test="username != null">
+            and a.username = #{username}
+        </if>
+        limit 1;
     </select>
 
     <update id="updateAvatarFileName">
@@ -33,7 +31,7 @@
         select a.*
         from staff_info a,
         authentication b
-        where a.id = b.staff_info_id
+        where a.id = b.staff_info_id and a.disabled = '0'
         <if test="authenticationId != null">
             and b.id = ${authenticationId}
         </if>
