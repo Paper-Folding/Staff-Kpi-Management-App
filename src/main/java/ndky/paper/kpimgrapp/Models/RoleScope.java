@@ -5,7 +5,7 @@ import java.util.Objects;
 public class RoleScope {
     private long operationId;
     private long objectId;
-    private String tableName,columnName;
+    private String tableName, columnName;
 
     public RoleScope() {
     }

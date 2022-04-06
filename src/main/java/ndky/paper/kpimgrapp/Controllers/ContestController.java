@@ -30,12 +30,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/contest")
 public class ContestController {
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private ContestMapper contestMapper;
-
     @Autowired
     private AuthorizationUtil authorizationUtil;
-
     @Autowired
     private CertificateStorageImpl certificateStorage;
 
@@ -52,8 +51,7 @@ public class ContestController {
         // backdoor for admin or officer
         if ("admin".equals(contestRequest.getRole()) || "officer".equals(contestRequest.getRole())) {
             allowedFields = new ArrayList<>(List.of("contest.*"));
-        }
-        else {
+        } else {
             // query user permission scope for current context(select for contest)
             var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, operationName, "contest"));
             if (permissionList.size() == 0)
@@ -84,6 +82,8 @@ public class ContestController {
         if (res != null)
             return res;
         String username = authorizationUtil.getUsernameFromRequest(request);
+        if ("/export".equals(url) && !authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, "export", "contest")))
+            return authorizationUtil.getForbiddenResponseEntity(request);
         List<String> allowedFields = generateAllowedFields(contestRequest, username, "select");
         if (allowedFields == null)
             return authorizationUtil.getForbiddenResponseEntity(request);
@@ -94,8 +94,7 @@ public class ContestController {
                 return new QueryResponse(contest.get(), 1).responseEntity();
             else
                 return new ErrorResponse(contestRequest.getId() + " is not present!").responseEntity();
-        }
-        else {
+        } else {
             return new TableResponse(allowedFields.stream().map(ele -> {
                 String temp = Maid.mapUnderCoreStringToCamelCase(ele, false);
                 return temp.contains(" as ") ? temp.substring(temp.indexOf(" as ") + 4) : temp.substring(temp.indexOf(".") + 1);
@@ -118,8 +117,34 @@ public class ContestController {
         return getMapping(contestRequest, request, "/get");
     }
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @DeleteMapping
+    public ResponseEntity<?> deleteOneContest(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
+        ResponseEntity<?> res = authorizationUtil.ensureRoleIsValidForRequest(contestRequest, request);
+        if (res != null)
+            return res;
+        String username = authorizationUtil.getUsernameFromRequest(request);
+        boolean allowed = "admin".equals(contestRequest.getRole()) || "officer".equals(contestRequest.getRole()) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, "delete", "contest"));
+        if (!allowed)
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        return new ModifyResponse(contestMapper.deleteOne(contestRequest)).responseEntity();
+    }
 
+//    @PostMapping("/import")
+//    public ResponseEntity<?> importContestList(@RequestBody ContestImportRequest contestImportRequest,HttpServletRequest request) {
+//        // @todo
+//    }
+
+//    @PostMapping("/add")
+//    public ResponseEntity<?> addOneContest(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
+//        // @todo
+//    }
+
+    /**
+     * get certificate store name and original file from database
+     *
+     * @param contestId which contest to get
+     * @return a map contains store and ori as its key
+     */
     private Map<String, String> getCertificateFromDataBase(Long contestId) {
         var certOp = contestMapper.selectOne(contestId, Arrays.asList("contest.id", "contest.certificate"));
         if (certOp.isEmpty())
@@ -130,8 +155,7 @@ public class ContestController {
         try {
             return objectMapper.readValue(certificate, new TypeReference<>() {
             });
-        }
-        catch (JsonProcessingException ignored) {
+        } catch (JsonProcessingException ignored) {
         }
         return null;
     }
@@ -161,8 +185,7 @@ public class ContestController {
         newCertificate.put("ori", cert.getOriginalFilename());
         try {
             return new ModifyResponse(contestMapper.updateContest(contestId, null, "certificate", objectMapper.writeValueAsString(newCertificate))).responseEntity();
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
         return new ErrorResponse("Server error!").responseEntity();
@@ -206,8 +229,7 @@ public class ContestController {
         if (temp.size() > 0) {
             key = temp.get(0);
             value = data.get(key);
-        }
-        else
+        } else
             return new ErrorResponse("Something went wrong with the request, are you forget to pass in a field and its target value?").responseEntity();
         if ("tutorNo".equals(key)) {
             key = "tutor_staff_info_id";

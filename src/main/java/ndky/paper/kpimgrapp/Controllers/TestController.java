@@ -15,7 +15,7 @@ public class TestController {
 //        return "hello";
 //    }
 
-//    // 非固定权限的api，需要api自行检查是否满足权限
+    //    // 非固定权限的api，需要api自行检查是否满足权限
 //    @PutMapping("/updatesth")
 //    public ResponseEntity<?> updatesth(HttpServletRequest request) {
 //        // 1. 通过用户名获取权限
@@ -25,7 +25,7 @@ public class TestController {
 //            return roleUtil.getForbiddenResponseEntity(request);
 //    }
     @GetMapping("/")
-    public String welcome(){
+    public String welcome() {
         return "<h2>Kpi Mgr App Back End is Working....</h2>";
     }
 }

@@ -41,6 +41,8 @@ public class StaffInfoController {
         if ("admin".equals(staffInfoRequest.getRole()) || "officer".equals(staffInfoRequest.getRole())) {
             allowedFields = List.of("*");
         } else {
+            if (type.equals("export") && !authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "export", "staff_info")))
+                return authorizationUtil.getForbiddenResponseEntity(request);
             // 4. query user permission scope for current context(select for staff_info)
             var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "select", "staff_info"));
             if (permissionList.size() == 0)
@@ -74,14 +76,11 @@ public class StaffInfoController {
         if (res != null)
             return res;
         String username = authorizationUtil.getUsernameFromRequest(request); // user who is requesting
-        // 3. open backdoor
-        if (!"admin".equals(staffInfoRequest.getRole()) && !"officer".equals(staffInfoRequest.getRole())) {
-            // 4. query user permission scope for current context(delete for staff_info)
-            boolean allowed = authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "delete", "staff_info"));
-            if (!allowed)
-                return authorizationUtil.getForbiddenResponseEntity(request);
-        }
-        // 5. perform transaction
+        // query user permission scope for current context(delete for staff_info) (open back door for admin or officer)
+        boolean allowed = "admin".equals(staffInfoRequest.getRole()) || "officer".equals(staffInfoRequest.getRole()) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "delete", "staff_info"));
+        if (!allowed)
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        // perform transaction
         return new ModifyResponse(staffInfoMapper.deleteStaff(staffInfoRequest)).responseEntity();
     }
 
@@ -112,11 +111,9 @@ public class StaffInfoController {
         if (res != null)
             return res;
         String username = authorizationUtil.getUsernameFromRequest(request); // user who is requesting
-        if (!"admin".equals(staffInfoImportRequest.getRole()) && !"officer".equals(staffInfoImportRequest.getRole())) {
-            boolean allowed = authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoImportRequest.getRole(), null, "import", "staff_info"));
-            if (!allowed)
-                return authorizationUtil.getForbiddenResponseEntity(request);
-        }
+        boolean allowed = "admin".equals(staffInfoImportRequest.getRole()) || "officer".equals(staffInfoImportRequest.getRole()) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoImportRequest.getRole(), null, "import", "staff_info"));
+        if (!allowed)
+            return authorizationUtil.getForbiddenResponseEntity(request);
         for (StaffInfoRequest each : staffInfoImportRequest.getList()) {
             if (staffInfoMapper.checkIfNoDuplicate(each.getNo())) {
                 return new ErrorResponse("存在重复的编号，所有用户均未被导入！").responseEntity();
@@ -132,11 +129,9 @@ public class StaffInfoController {
         if (res != null)
             return res;
         String username = authorizationUtil.getUsernameFromRequest(request); // user who is requesting
-        if (!"admin".equals(staffInfoRequest.getRole()) && !"officer".equals(staffInfoRequest.getRole())) {
-            boolean allowed = authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "attachRole", "staff_info"));
-            if (!allowed)
-                return authorizationUtil.getForbiddenResponseEntity(request);
-        }
+        boolean allowed = "admin".equals(staffInfoRequest.getRole()) || "officer".equals(staffInfoRequest.getRole()) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, staffInfoRequest.getRole(), null, "attachRole", "staff_info"));
+        if (!allowed)
+            return authorizationUtil.getForbiddenResponseEntity(request);
         Long authId = authorizationUtil.getAuthenticationIdByStaffInfoId(staffInfoRequest.getId());
         staffInfoMapper.detachRolesForUser(authId);
         return new ModifyResponse(staffInfoMapper.attachRolesForUser(authId, staffInfoRequest.getRoles())).responseEntity();
