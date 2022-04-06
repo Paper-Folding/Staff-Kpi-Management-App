@@ -86,7 +86,7 @@ import Auth from '../../utils/Auth';
 export default {
     data() {
         return {
-            roleDisplay: localStorage.getItem('role'), // role in navbar
+            roleDisplay: '', // role being displayed in navbar
             username: Auth.getLoggedUser().realName,
             role: null, // role in selector
             roleList: [],
@@ -94,6 +94,16 @@ export default {
     },
     created() {
         this.avatarSrc = import.meta.env.VITE_API_URL + '/me/avatar/' + Auth.getLoggedUser().username;
+    },
+    mounted() {
+        // explain code below with Chinese: 防串号，如果用户换着号登，必须确保登录后用户所获得的角色是他们所拥有的；另外如果直接把下面的代码放到登录那边，隐藏功能记住用户上次登录的角色就会无效。
+        const curRole = localStorage.getItem('role'), weakRoleList = Auth.getLoggedUser().roles;
+        if (weakRoleList.includes(curRole)) {
+            if (curRole === 'initial' && weakRoleList.length > 1)
+                localStorage.setItem('role', weakRoleList[0] === 'initial' ? weakRoleList[1] : weakRoleList[0]);
+        } else
+            localStorage.setItem('role', weakRoleList.length > 1 ? (weakRoleList[0] === 'initial' ? weakRoleList[1] : weakRoleList[0]) : weakRoleList[0]);
+        this.roleDisplay = localStorage.getItem('role');
     },
     methods: {
         ...mapActions({ logoff: "Login/logoff", requestRole: "Navbar/requestUserRoleDetails" }),
@@ -106,7 +116,8 @@ export default {
         },
         async requestUserRoles() {
             await this.requestRole();
-            this.roleList = this.$store.state.Navbar.roleList;
+            // do not show initial role if user have role other than initial
+            this.roleList = this.$store.state.Navbar.roleList.length > 1 ? this.$store.state.Navbar.roleList.filter(ele => ele.name !== 'initial') : this.$store.state.Navbar.roleList;
             this.role = this.$store.state.Navbar.role;
         },
         changeRole() {

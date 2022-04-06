@@ -35,8 +35,8 @@ const mutations = {
     loginSuccess(state, response) {
         jsCookie.set('loggedUser', JSON.stringify({ ...response, token: response.type + ' ' + response.token, code: undefined, type: undefined }), { expires: 1 / 48 }); // 1/48 = 30min to expire
         let roleStored = localStorage.getItem('role');
-        if (roleStored == null || !response.roles.includes(roleStored)) // if local stored did not exist
-            localStorage.setItem('role', response.roles[0]); // select first role in requested role list
+        if (roleStored == null || !response.roles.includes(roleStored)) // if local stored role did not exist
+            localStorage.setItem('role', response.roles[0] === 'initial' && response.roles.length > 1 ? response.roles[1] : response.roles[0]); // select a role which is initial if requested role list has only initial role otherwise select the role that is not initial from requested role list
         state.logined = true;
     },
     loginFailure(state) {
