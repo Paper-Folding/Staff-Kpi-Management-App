@@ -52,7 +52,8 @@ public class ContestController {
         // backdoor for admin or officer
         if ("admin".equals(contestRequest.getRole()) || "officer".equals(contestRequest.getRole())) {
             allowedFields = new ArrayList<>(List.of("contest.*"));
-        } else {
+        }
+        else {
             // query user permission scope for current context(select for contest)
             var permissionList = authorizationUtil.queryPermissions(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, operationName, "contest"));
             if (permissionList.size() == 0)
@@ -78,8 +79,7 @@ public class ContestController {
         return allowedFields;
     }
 
-    @PostMapping("/get/all")
-    public ResponseEntity<?> getContestList(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
+    public ResponseEntity<?> getMapping(ContestRequest contestRequest, HttpServletRequest request, String url) {
         ResponseEntity<?> res = authorizationUtil.ensureRoleIsValidForRequest(contestRequest, request);
         if (res != null)
             return res;
@@ -88,27 +88,34 @@ public class ContestController {
         if (allowedFields == null)
             return authorizationUtil.getForbiddenResponseEntity(request);
         // query for response
-        return new TableResponse(allowedFields.stream().map(ele -> {
-            String temp = Maid.mapUnderCoreStringToCamelCase(ele, false);
-            return temp.contains(" as ") ? temp.substring(temp.indexOf(" as ") + 4) : temp.substring(temp.indexOf(".") + 1);
-        }).collect(Collectors.toList()), contestMapper.selectList(contestRequest.getStartPos(), contestRequest.getCount(), contestRequest.getQuery(), allowedFields), contestMapper.selectListTotal(contestRequest.getQuery())).responseEntity();
+        if ("/get".equals(url)) {
+            var contest = contestMapper.selectOne(contestRequest.getId(), allowedFields);
+            if (contest.isPresent())
+                return new QueryResponse(contest.get(), 1).responseEntity();
+            else
+                return new ErrorResponse(contestRequest.getId() + " is not present!").responseEntity();
+        }
+        else {
+            return new TableResponse(allowedFields.stream().map(ele -> {
+                String temp = Maid.mapUnderCoreStringToCamelCase(ele, false);
+                return temp.contains(" as ") ? temp.substring(temp.indexOf(" as ") + 4) : temp.substring(temp.indexOf(".") + 1);
+            }).collect(Collectors.toList()), contestMapper.selectList(contestRequest.getStartPos(), "/export".equals(url) ? 0 : contestRequest.getCount(), contestRequest.getQuery(), allowedFields), contestMapper.selectListTotal(contestRequest.getQuery())).responseEntity();
+        }
+    }
+
+    @PostMapping("/get/all")
+    public ResponseEntity<?> getContestList(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
+        return getMapping(contestRequest, request, "/get/all");
+    }
+
+    @PostMapping("/export")
+    public ResponseEntity<?> exportContest(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
+        return getMapping(contestRequest, request, "/export");
     }
 
     @PostMapping("/get")
     public ResponseEntity<?> getOneContest(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
-        ResponseEntity<?> res = authorizationUtil.ensureRoleIsValidForRequest(contestRequest, request);
-        if (res != null)
-            return res;
-        String username = authorizationUtil.getUsernameFromRequest(request);
-        List<String> allowedFields = generateAllowedFields(contestRequest, username, "select");
-        if (allowedFields == null)
-            return authorizationUtil.getForbiddenResponseEntity(request);
-        // query for response
-        var contest = contestMapper.selectOne(contestRequest.getId(), allowedFields);
-        if (contest.isPresent())
-            return new QueryResponse(contest.get(), 1).responseEntity();
-        else
-            return new ErrorResponse(contestRequest.getId() + " is not present!").responseEntity();
+        return getMapping(contestRequest, request, "/get");
     }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -123,7 +130,8 @@ public class ContestController {
         try {
             return objectMapper.readValue(certificate, new TypeReference<>() {
             });
-        } catch (JsonProcessingException ignored) {
+        }
+        catch (JsonProcessingException ignored) {
         }
         return null;
     }
@@ -153,7 +161,8 @@ public class ContestController {
         newCertificate.put("ori", cert.getOriginalFilename());
         try {
             return new ModifyResponse(contestMapper.updateContest(contestId, null, "certificate", objectMapper.writeValueAsString(newCertificate))).responseEntity();
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             e.printStackTrace();
         }
         return new ErrorResponse("Server error!").responseEntity();
@@ -197,7 +206,8 @@ public class ContestController {
         if (temp.size() > 0) {
             key = temp.get(0);
             value = data.get(key);
-        } else
+        }
+        else
             return new ErrorResponse("Something went wrong with the request, are you forget to pass in a field and its target value?").responseEntity();
         if ("tutorNo".equals(key)) {
             key = "tutor_staff_info_id";
