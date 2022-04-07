@@ -198,7 +198,7 @@ export default {
                     roleScopes: []
                 },
                 roleNoExpire: true,
-                title: '添加角色(增删改查你还要啥标题？🙄)'
+                title: '添加角色'
             }
             this.$refs.modal.open();
         },
