@@ -16,7 +16,7 @@
     "js-cookie": "^3.0.1",
     "lodash": "^4.17.21",
     "cropperjs": "^1.5.12",
-    "sass": "^1.49.11",
+    "sass": "^1.50.0",
     "vue": "^3.2.25",
     "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.0.14",
