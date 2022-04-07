@@ -134,10 +134,46 @@ public class ContestController {
 //        // @todo
 //    }
 
-//    @PostMapping("/add")
-//    public ResponseEntity<?> addOneContest(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
-//        // @todo
-//    }
+    @PostMapping
+    public ResponseEntity<?> addOneContest(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
+        ResponseEntity<?> res = authorizationUtil.ensureRoleIsValidForRequest(contestRequest, request);
+        if (res != null)
+            return res;
+        String username = authorizationUtil.getUsernameFromRequest(request);
+        boolean allowed = "admin".equals(contestRequest.getRole()) || "officer".equals(contestRequest.getRole()) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, "insert", "contest"));
+        if (!allowed)
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        contestRequest.setAddStaffInfoId(authorizationUtil.getStaffInfoIdByAuthentication(null, username));
+        return new ModifyResponse(contestMapper.insertOne(contestRequest)).responseEntity();
+    }
+
+    private ResponseEntity<?> checkUploadedCertificateValid(MultipartFile cert) {
+        if (cert == null || cert.getSize() == 0 || "".equals(cert.getOriginalFilename()))
+            return new ErrorResponse("Certificate is empty file!").responseEntity();
+        if (!Maid.validFileExtension(cert.getOriginalFilename(), ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".gif", ".png", ".bmp", ".tif"))
+            return new ErrorResponse("File does not have a valid extension!").responseEntity();
+        return null;
+    }
+
+    @PostMapping("/uploadCert")
+    public ResponseEntity<?> uploadCertificateOnly(MultipartFile cert, @RequestParam String role, HttpServletRequest request) {
+        ResponseEntity<?> res = checkUploadedCertificateValid(cert);
+        if (res != null)
+            return res;
+        res = authorizationUtil.ensureRoleIsValidForRequest(new BaseQueryRequest().setRole(role), request);
+        if (res != null)
+            return res;
+        String username = authorizationUtil.getUsernameFromRequest(request);
+        boolean allowed = "admin".equals(role) || "officer".equals(role) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, role, null, "insert", "contest", "certificate"));
+        if (!allowed)
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        String newFileName = Maid.getUniqueString() + Maid.getFilenameExt(cert.getOriginalFilename());
+        certificateStorage.storeFile(cert, newFileName);
+        Map<String, String> newCertificate = new HashMap<>();
+        newCertificate.put("store", newFileName);
+        newCertificate.put("ori", cert.getOriginalFilename());
+        return new QueryResponse(newCertificate, -1).responseEntity();
+    }
 
     /**
      * get certificate store name and original file from database
@@ -160,17 +196,16 @@ public class ContestController {
         return null;
     }
 
-    @PostMapping("/uploadCert")
-    public ResponseEntity<?> uploadCertificate(MultipartFile cert, @RequestParam String role, @RequestParam Long contestId, HttpServletRequest request) {
-        if (cert == null || cert.getSize() == 0 || "".equals(cert.getOriginalFilename()))
-            return new ErrorResponse("Certificate is empty file!").responseEntity();
-        if (!Maid.validFileExtension(cert.getOriginalFilename(), ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".gif", ".png", ".bmp", ".tif"))
-            return new ErrorResponse("File does not have a valid extension!").responseEntity();
-        ResponseEntity<?> res = authorizationUtil.ensureRoleIsValidForRequest(new BaseQueryRequest().setRole(role), request);
+    @PostMapping("/updateCert")
+    public ResponseEntity<?> updateCertificate(MultipartFile cert, @RequestParam String role, @RequestParam Long contestId, HttpServletRequest request) {
+        ResponseEntity<?> res = checkUploadedCertificateValid(cert);
+        if (res != null)
+            return res;
+        res = authorizationUtil.ensureRoleIsValidForRequest(new BaseQueryRequest().setRole(role), request);
         if (res != null)
             return res;
         String username = authorizationUtil.getUsernameFromRequest(request);
-        boolean allowed = "admin".equals(role) || "officer".equals(role) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, role, null, "update", "contest", "certificate")) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, role, null, "insert", "contest"));
+        boolean allowed = "admin".equals(role) || "officer".equals(role) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, role, null, "update", "contest", "certificate"));
         if (!allowed)
             return authorizationUtil.getForbiddenResponseEntity(request);
         var oldCertificate = getCertificateFromDataBase(contestId);
