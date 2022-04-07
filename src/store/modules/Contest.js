@@ -91,7 +91,7 @@ const actions = {
         formData.append('cert', params.cert);
         formData.append('role', localStorage.getItem("role"));
         formData.append('contestId', params.id);
-        let res = await request('post', '/contest/uploadCert', formData, true, {
+        let res = await request('post', '/contest/updateCert', formData, true, {
             'Content-Type': 'multipart/form-data'
         });
         if (res.status === 200 && res.data.code === 200) {
