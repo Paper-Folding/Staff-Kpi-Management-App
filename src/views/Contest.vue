@@ -21,14 +21,20 @@
         <template #title>{{ modal.title }}</template>
         <template #body>
             <reversed-table leftWidth="25%">
-                <RTRow :row="{ left: '编号' }">
+                <RTRow
+                    v-if="(modal.mode === 'view' && Maid.permissionMeeted('select', 'no')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'no')) || modal.mode === 'add'"
+                    :row="{ left: '编号' }"
+                >
                     <label-input
                         v-model="modal.row.no"
                         :hideButton="modal.mode === 'add'"
                         :disabled="modal.mode !== 'add'"
                     ></label-input>
                 </RTRow>
-                <RTRow :row="{ left: '类型' }">
+                <RTRow
+                    v-if="(modal.mode === 'view' && Maid.permissionMeeted('select', 'type')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'type')) || modal.mode === 'add'"
+                    :row="{ left: '类型' }"
+                >
                     <label-select
                         v-model="modal.row.type"
                         :list="[{ text: '学生竞赛', value: '学生竞赛' }, { text: '教师获奖', value: '教师获奖' }]"
@@ -37,7 +43,10 @@
                         @on-confirm="requestUpdate({ id: modal.row.id, type: modal.row.type })"
                     ></label-select>
                 </RTRow>
-                <RTRow :row="{ left: '名称' }">
+                <RTRow
+                    v-if="(modal.mode === 'view' && Maid.permissionMeeted('select', 'name')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'name')) || modal.mode === 'add'"
+                    :row="{ left: '名称' }"
+                >
                     <label-input
                         v-model="modal.row.name"
                         @on-confirm="requestUpdate({ id: modal.row.id, name: modal.row.name })"
@@ -45,11 +54,14 @@
                         :disabled="modal.mode === 'view'"
                     ></label-input>
                 </RTRow>
-                <RTRow :row="{ left: '参赛学生' }">
+                <RTRow
+                    v-if="modal.row.type === '学生竞赛' && ((modal.mode === 'view' && Maid.permissionMeeted('select', 'students')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'students')) || modal.mode === 'add')"
+                    :row="{ left: '参赛学生' }"
+                >
                     <paper-table
                         :header="modal.stuTable.header"
                         :modelValue="modal.stuTable.rows"
-                        :status="modal.studentsTableStatus"
+                        :status="modal.stuTable.status"
                     ></paper-table>
                     <excel-importer
                         v-if="modal.mode !== 'view'"
@@ -59,7 +71,10 @@
                         style="transform:scale(0.9)"
                     ></excel-importer>
                 </RTRow>
-                <RTRow :row="{ left: '指导/获奖教师' }">
+                <RTRow
+                    v-if="showTutor"
+                    :row="{ left: modal.row.type === '学生竞赛' ? '指导教师' : '获奖教师' }"
+                >
                     <label-select
                         v-model="modal.selectedTutor.item"
                         :list="modal.selectedTutor.list"
@@ -68,7 +83,10 @@
                         @on-confirm="requestUpdate({ id: modal.row.id, tutorNo: modal.selectedTutor.item })"
                     ></label-select>
                 </RTRow>
-                <RTRow :row="{ left: '奖项' }">
+                <RTRow
+                    v-if="(modal.mode === 'view' && Maid.permissionMeeted('select', 'prize')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'prize')) || modal.mode === 'add'"
+                    :row="{ left: '奖项' }"
+                >
                     <label-input
                         v-model="modal.row.prize"
                         :hideButton="modal.mode === 'add'"
@@ -76,7 +94,10 @@
                         @on-confirm="requestUpdate({ id: modal.row.id, prize: modal.row.prize })"
                     ></label-input>
                 </RTRow>
-                <RTRow :row="{ left: '级别' }">
+                <RTRow
+                    v-if="(modal.mode === 'view' && Maid.permissionMeeted('select', 'level')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'level')) || modal.mode === 'add'"
+                    :row="{ left: '级别' }"
+                >
                     <label-select
                         v-model="modal.row.level"
                         :list="[{ text: '国家级', value: '国家级' }, { text: '省部级', value: '省部级' }, { text: '市厅级', value: '市厅级' }, { text: '局级', value: '局级' }, { text: '校级', value: '校级' }, { text: '自导自演级', value: '自导自演级' }]"
@@ -85,7 +106,10 @@
                         @on-confirm="requestUpdate({ id: modal.row.id, level: modal.row.level })"
                     ></label-select>
                 </RTRow>
-                <RTRow :row="{ left: '得奖时间' }">
+                <RTRow
+                    v-if="(modal.mode === 'view' && Maid.permissionMeeted('select', 'award_time')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'award_time')) || modal.mode === 'add'"
+                    :row="{ left: '得奖时间' }"
+                >
                     <label-date-picker
                         type="date"
                         v-model="modal.row.awardTime"
@@ -94,7 +118,10 @@
                         @on-confirm="requestUpdate({ id: modal.row.id, 'award_time': Maid.formatDate(modal.row.awardTime, 'YYYY-MM-DD') })"
                     ></label-date-picker>
                 </RTRow>
-                <RTRow :row="{ left: '获奖证书' }">
+                <RTRow
+                    v-if="(modal.mode === 'view' && Maid.permissionMeeted('select', 'certificate')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'certificate')) || modal.mode === 'add'"
+                    :row="{ left: '获奖证书' }"
+                >
                     <file-uploader
                         ref="certUploader"
                         :contestId="modal.row.id"
@@ -105,13 +132,19 @@
                         @selected="storeCertTemporarily"
                     ></file-uploader>
                 </RTRow>
-                <RTRow v-if="modal.mode !== 'add'" :row="{ left: '登记时间' }">
+                <RTRow
+                    v-if="modal.mode !== 'add' && ((modal.mode === 'view' && Maid.permissionMeeted('select', 'add_time')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'add_time')))"
+                    :row="{ left: '登记时间' }"
+                >
                     <label-input
                         :modelValue="Maid.formatDate(modal.row.addTime, 'YYYY-MM-DD')"
                         disabled
                     ></label-input>
                 </RTRow>
-                <RTRow v-if="modal.mode !== 'add'" :row="{ left: '登记人' }">
+                <RTRow
+                    v-if="modal.mode !== 'add' && ((modal.mode === 'view' && Maid.permissionMeeted('select', 'add_staff_info_id')) || (modal.mode === 'edit' && Maid.permissionMeeted('update', 'add_staff_info_id')))"
+                    :row="{ left: '登记人' }"
+                >
                     <label-input :modelValue="modal.row.adderName" disabled></label-input>
                 </RTRow>
             </reversed-table>
@@ -169,7 +202,7 @@ export default {
                 stuTable: {
                     header: [],
                     rows: [],
-                    status: state.LOADING
+                    status: state.NORMAL
                 },
                 selectedTutor: {
                     item: '',
@@ -193,7 +226,20 @@ export default {
             this.currentStatus = state.NORMAL;
     },
     computed: {
-        ...mapGetters({ total: "Contest/getTotal" })
+        ...mapGetters({ total: "Contest/getTotal" }),
+        showTutor() {
+            if (this.modal.row.type == null || this.modal.row.type === '') {
+                return false;
+            }
+            switch (this.modal.mode) {
+                case 'view':
+                    return Maid.permissionMeeted('select', 'tutor_staff_info_id');
+                case 'add':
+                    return true;
+                case 'edit':
+                    return Maid.permissionMeeted('update', 'tutor_staff_info_id');
+            }
+        }
     },
     watch: {
         async curPage(turnTo) {
@@ -215,7 +261,7 @@ export default {
         }, 800)
     },
     methods: {
-        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUpdateCert: "Contest/requestUpdateCert", requestStaffList: "Contest/requestStaffList", requestUpdate: "Contest/requestUpdate", requestUploadCert: "Contest/requestUploadCert", requestAdd: "Contest/requestAdd", requestDelete: "Contest/requestDelete" }),
+        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUpdateCert: "Contest/requestUpdateCert", requestStaffList: "Contest/requestStaffList", requestUpdate: "Contest/requestUpdate", requestUploadCert: "Contest/requestUploadCert", requestAdd: "Contest/requestAdd", requestDelete: "Contest/requestDelete", requestExport: "Contest/requestExport" }),
         downloadTemplate() {
             const template = [excelHelper.formatTableJsonToXlsxJson(this.$store.state.Contest.importTemplate)[1]];
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, template)), "template-contest.xlsx");
@@ -294,7 +340,7 @@ export default {
             }
             this.modal.stuTable.header = [];
             this.modal.stuTable.rows = [];
-            this.modal.stuTable.status = state.LOADING;
+            this.modal.stuTable.status = state.NORMAL;
 
             this.modal.row = this.$store.state.Contest.contestTemplate;
             this.modal.title = '添加一条竞赛记录';
@@ -347,8 +393,16 @@ export default {
             }
             return result;
         },
-        exportIt() {
-
+        async exportIt() {
+            await this.requestExport();
+            if (!this.$store.state.Contest.responseStatus)
+                return;
+            let exportData = excelHelper.formatTableJsonToXlsxJson(this.$store.state.Contest.exportsData.rows);
+            exportData[0] = this.$store.state.Contest.exportsData.header;
+            for (let i = 0; i < this.$store.state.Contest.exportsData.header.length; i++) {
+                exportData[0][i] = this.$store.state.Contest.exportTemplate[exportData[0][i]];
+            }
+            excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, exportData)), "contest-exported.xlsx");
         },
         importIt() {
         },

@@ -2,6 +2,7 @@
     <div style="margin-top:0.15rem">
         <input
             :type="$attrs.type"
+            :class="hideButton ? 'showUnderLine' : ''"
             :placeholder="$attrs.placeholder"
             class="paper-input"
             :disabled="$attrs.disabled"
@@ -70,6 +71,10 @@ export default {
     font-size: 1.15em;
     border-bottom: transparent 2px solid;
     transition: all 0.2s ease;
+
+    &.showUnderLine {
+        border-bottom: rgb(168, 168, 168) 2px solid;
+    }
 
     &:hover {
         cursor: pointer;

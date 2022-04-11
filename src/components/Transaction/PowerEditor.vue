@@ -110,6 +110,7 @@ export default {
                         dbid: 4,
                         children: [
                             { text: '编号(no)', name: 'no' },
+                            { text: '竞赛类型', name: 'type' },
                             { text: '名称', name: 'name' },
                             { text: '参赛学生', name: 'students' },
                             { text: '指导/获奖教师', name: 'tutor_staff_info_id' },

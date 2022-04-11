@@ -49,7 +49,7 @@ const state = {
         longPhone: '长号',
         shortPhone: '短号'
     },
-    exportsData: [],
+    exportsData: {},
     responseStatus: true,
     roleList: [],
     userRoleList: []
@@ -78,7 +78,7 @@ const actions = {
         let res = await request("post", "/staffInfo/import", {
             role: localStorage.getItem("role"),
             list: params.list
-        });
+        }, true, {}, 100000);
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify("导入成功！", 'success');
         } else {
@@ -88,7 +88,7 @@ const actions = {
     async requestExport({ commit, rootState }) {
         let res = await request("post", "/staffInfo/export", {
             role: localStorage.getItem("role")
-        });
+        }, true, {}, 100000);
         if (res.status === 200 && res.data.code === 200) {
             commit('export', res.data);
         } else {

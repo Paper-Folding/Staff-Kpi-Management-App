@@ -2,6 +2,7 @@
     <div style="margin-top:0.15rem">
         <select
             class="paper-input"
+            :class="hideButton ? 'showUnderLine' : ''"
             :placeholder="$attrs.placeholder"
             :disabled="$attrs.disabled"
             v-model="value"
@@ -69,6 +70,10 @@ export default {
     font-size: 1.15em;
     border-bottom: transparent 2px solid;
     transition: all 0.2s ease;
+
+    &.showUnderLine {
+        border-bottom: rgb(168, 168, 168) 2px solid;
+    }
 
     &:hover {
         cursor: pointer;

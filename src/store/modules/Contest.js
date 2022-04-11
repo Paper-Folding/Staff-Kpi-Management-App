@@ -41,19 +41,32 @@ const state = {
     },
     // used for download template
     importTemplate: {
-        type: '类型',
         no: '编号',
+        type: '类型',
         name: '名称',
         tutorNo: '指导/获奖教师编号',
         prize: '奖项',
         level: '级别',
+        awardTime: '获奖时间'
+    },
+    exportTemplate: {
+        no: '编号',
+        type: '类型',
+        name: '名称',
+        students: '参赛学生',
+        tutorNo: '指导/获奖教师编号',
+        tutorName: '指导/获奖教师名字',
+        prize: '奖项',
+        level: '级别',
         awardTime: '获奖时间',
         addTime: '登记时间',
-        adderNo: '登记人编号'
+        adderNo: "登记人编号",
+        adderName: "登记人姓名"
     },
     responseStatus: true,
     staffList: [], // for select
-    uploadedCertInfo: {}
+    uploadedCertInfo: {},
+    exportsData: {}, // for export
 }
 
 const getters = {
@@ -94,7 +107,7 @@ const actions = {
         formData.append('contestId', params.id);
         let res = await request('post', '/contest/updateCert', formData, true, {
             'Content-Type': 'multipart/form-data'
-        });
+        }, 100000);
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('证书已更新', 'success');
         } else {
@@ -128,7 +141,7 @@ const actions = {
         formData.append('role', localStorage.getItem("role"));
         let res = await request("post", "/contest/uploadCert", formData, true, {
             'Content-Type': 'multipart/form-data'
-        });
+        }, 100000);
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('证书已上传', 'success');
             commit('uploadCert', res.data);
@@ -160,6 +173,17 @@ const actions = {
             rootState.notify('删除了,现在你满意了吧~', 'success');
         } else {
             rootState.notify(res.data.message);
+        }
+    },
+    async requestExport({ commit, rootState }) {
+        let res = await request('post', "/contest/export", {
+            role: localStorage.getItem("role")
+        }, true, {}, 100000);
+        if (res.status === 200 && res.data.code === 200) {
+            commit('export', res.data);
+        } else {
+            rootState.notify(res.data.message);
+            commit('export', false);
         }
     }
 }
@@ -196,6 +220,25 @@ const mutations = {
         else {
             state.responseStatus = true;
             state.uploadedCertInfo = JSON.stringify(data.result);
+        }
+    },
+    export(state, data) {
+        if (data === false) {
+            state.responseStatus = false;
+            return;
+        }
+        state.responseStatus = true;
+        state.exportsData = {
+            header: data.result.header.includes('*') ? Object.keys(state.importTemplate) : data.result.header,
+            rows: data.result.rows
+        }
+        for (let row of state.exportsData.rows) {
+            if ('id' in row)
+                delete row.id;
+            if ('tutorStaffInfoId' in row)
+                delete row.tutorStaffInfoId;
+            if ('addStaffInfoId' in row)
+                delete row.addStaffInfoId;
         }
     }
 }
