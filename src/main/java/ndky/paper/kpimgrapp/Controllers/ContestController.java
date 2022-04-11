@@ -126,6 +126,12 @@ public class ContestController {
         boolean allowed = "admin".equals(contestRequest.getRole()) || "officer".equals(contestRequest.getRole()) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, "delete", "contest"));
         if (!allowed)
             return authorizationUtil.getForbiddenResponseEntity(request);
+        var cert = getCertificateFromDataBase(contestRequest.getId());
+        if (cert != null) {
+            String storeCertFilename = cert.get("store");
+            if (storeCertFilename != null && !"".equals(storeCertFilename))
+                certificateStorage.deleteOneFile(storeCertFilename);
+        }
         return new ModifyResponse(contestMapper.deleteOne(contestRequest)).responseEntity();
     }
 
@@ -144,6 +150,7 @@ public class ContestController {
         if (!allowed)
             return authorizationUtil.getForbiddenResponseEntity(request);
         contestRequest.setAddStaffInfoId(authorizationUtil.getStaffInfoIdByAuthentication(null, username));
+        contestRequest.setTutorStaffInfoId(authorizationUtil.getStaffInfoIdByStaffNo(contestRequest.getTutorNo()));
         return new ModifyResponse(contestMapper.insertOne(contestRequest)).responseEntity();
     }
 
@@ -172,7 +179,7 @@ public class ContestController {
         Map<String, String> newCertificate = new HashMap<>();
         newCertificate.put("store", newFileName);
         newCertificate.put("ori", cert.getOriginalFilename());
-        return new QueryResponse(newCertificate, -1).responseEntity();
+        return new QueryResponse(newCertificate, 1).responseEntity();
     }
 
     /**
