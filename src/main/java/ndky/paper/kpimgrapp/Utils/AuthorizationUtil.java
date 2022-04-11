@@ -76,6 +76,8 @@ public class AuthorizationUtil {
             return false;
         if (userPermissionRequest.getRoleId() == null && (userPermissionRequest.getRoleName() == null || userPermissionRequest.getRoleName().equals("")))
             return false;
+        if ("admin".equals(userPermissionRequest.getRoleName()) || "officer".equals(userPermissionRequest.getRoleName()) || (userPermissionRequest.getRoleId() != null && (userPermissionRequest.getRoleId() == 1 || userPermissionRequest.getRoleId() == 2)))
+            return true;
         return authorizationMapper.userExistsPermission(userPermissionRequest);
     }
 

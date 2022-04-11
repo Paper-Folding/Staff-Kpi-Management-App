@@ -85,7 +85,7 @@ public class ContestController {
         if ("/export".equals(url) && !authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, contestRequest.getRole(), null, "export", "contest")))
             return authorizationUtil.getForbiddenResponseEntity(request);
         List<String> allowedFields = generateAllowedFields(contestRequest, username, "select");
-        if (allowedFields == null)
+        if (allowedFields == null || allowedFields.size() == 0)
             return authorizationUtil.getForbiddenResponseEntity(request);
         // query for response
         if ("/get".equals(url)) {
