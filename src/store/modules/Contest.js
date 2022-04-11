@@ -33,7 +33,7 @@ const state = {
         prize: "",
         level: "",
         awardTime: "",
-        certificate: "",
+        certificate: "{}",
         addTime: "",
         addStaffInfoId: -1,
         adderNo: "",
@@ -53,6 +53,7 @@ const state = {
     },
     responseStatus: true,
     staffList: [], // for select
+    uploadedCertInfo: {}
 }
 
 const getters = {
@@ -71,7 +72,7 @@ const actions = {
             commit('contestList', res.data);
         } else {
             rootState.notify(res.data.message);
-            commit('contestList', { result: { header: {}, rows: [] }, total: 0 });
+            commit('contestList', { result: { header: [], rows: [] }, total: 0 });
         }
     },
     async requestOne({ commit, rootState }, params) {
@@ -86,7 +87,7 @@ const actions = {
             commit('contest', {});
         }
     },
-    async requestUploadCert({ rootState }, params) {
+    async requestUpdateCert({ rootState }, params) {
         let formData = new FormData();
         formData.append('cert', params.cert);
         formData.append('role', localStorage.getItem("role"));
@@ -95,7 +96,7 @@ const actions = {
             'Content-Type': 'multipart/form-data'
         });
         if (res.status === 200 && res.data.code === 200) {
-            rootState.notify('证书上传喽~', 'success');
+            rootState.notify('证书已更新', 'success');
         } else {
             rootState.notify(res.data.message);
         }
@@ -111,12 +112,52 @@ const actions = {
     async requestUpdate({ rootState }, params) {
         if (params == null || Object.keys(params).length === 0)
             return;
-        let res = await request('put', 'contest', {
+        let res = await request('put', '/contest', {
             role: localStorage.getItem("role"),
             ...params
         });
         if (res.status === 200 && res.data.code === 200) {
             rootState.notify('修改居然成功了....', 'success');
+        } else {
+            rootState.notify(res.data.message);
+        }
+    },
+    async requestUploadCert({ rootState, commit }, params) {
+        let formData = new FormData();
+        formData.append('cert', params.cert);
+        formData.append('role', localStorage.getItem("role"));
+        let res = await request("post", "/contest/uploadCert", formData, true, {
+            'Content-Type': 'multipart/form-data'
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            rootState.notify('证书已上传', 'success');
+            commit('uploadCert', res.data);
+        } else {
+            rootState.notify(res.data.message);
+            commit('uploadCert', null);
+        }
+    },
+    async requestAdd({ rootState, state }, params) {
+        params.students = JSON.stringify(typeof params.students !== 'string' ? params.students : []);
+        let res = await request("post", "/contest", {
+            role: localStorage.getItem("role"),
+            ...params
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            state.responseStatus = true;
+            rootState.notify('已添加！', 'success');
+        } else {
+            state.responseStatus = false;
+            rootState.notify(res.data.message);
+        }
+    },
+    async requestDelete({ rootState }, params) {
+        let res = await request('delete', "/contest", {
+            role: localStorage.getItem("role"),
+            id: params.id
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            rootState.notify('删除了,现在你满意了吧~', 'success');
         } else {
             rootState.notify(res.data.message);
         }
@@ -148,6 +189,14 @@ const mutations = {
     },
     staffList(state, data) {
         state.staffList = data.result;
+    },
+    uploadCert(state, data) {
+        if (data == null)
+            state.responseStatus = false;
+        else {
+            state.responseStatus = true;
+            state.uploadedCertInfo = JSON.stringify(data.result);
+        }
     }
 }
 

@@ -25,6 +25,7 @@
         >选择文件以覆盖上传</outline-button>
         <div v-else>
             <outline-button
+                v-if="!instantEmit"
                 icon="cloud-arrow-up-fill"
                 style="transform:scale(0.9)"
                 color="green"
@@ -52,6 +53,12 @@ export default {
             default: 20
         },
         disabled: {
+            type: Boolean,
+            default: false
+        },
+        // false: a direct upload button will be shown, once click it emitting file instantly
+        // true: a direct upload button will not be shown, once file selected, it will be emitted instantly via @selected
+        instantEmit: {
             type: Boolean,
             default: false
         },
@@ -101,11 +108,12 @@ export default {
             if (fileRaw.value != null) {
                 fileName.value = fileRaw.value.name ?? '';
                 fileLink.value = URL.createObjectURL(fileRaw.value);
-                context.emit("selected", fileRaw.value);
+                if (props.instantEmit)
+                    context.emit("selected", fileRaw.value);
             }
         }
         const fileExt = computed(() => {
-            return fileName.value.substring(fileName.value.lastIndexOf('.') + 1)
+            return fileName.value ? fileName.value.substring(fileName.value.lastIndexOf('.') + 1) : '';
         });
         const restoreInitial = () => {
             fileRaw.value = null;

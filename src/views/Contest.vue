@@ -22,13 +22,18 @@
         <template #body>
             <reversed-table leftWidth="25%">
                 <RTRow :row="{ left: '编号' }">
-                    <label-input v-model="modal.row.no" disabled></label-input>
+                    <label-input
+                        v-model="modal.row.no"
+                        :hideButton="modal.mode === 'add'"
+                        :disabled="modal.mode !== 'add'"
+                    ></label-input>
                 </RTRow>
                 <RTRow :row="{ left: '类型' }">
                     <label-select
-                        :disabled="modal.mode === 'view'"
                         v-model="modal.row.type"
                         :list="[{ text: '学生竞赛', value: '学生竞赛' }, { text: '教师获奖', value: '教师获奖' }]"
+                        :hideButton="modal.mode === 'add'"
+                        :disabled="modal.mode === 'view'"
                         @on-confirm="requestUpdate({ id: modal.row.id, type: modal.row.type })"
                     ></label-select>
                 </RTRow>
@@ -36,6 +41,7 @@
                     <label-input
                         v-model="modal.row.name"
                         @on-confirm="requestUpdate({ id: modal.row.id, name: modal.row.name })"
+                        :hideButton="modal.mode === 'add'"
                         :disabled="modal.mode === 'view'"
                     ></label-input>
                 </RTRow>
@@ -55,57 +61,69 @@
                 </RTRow>
                 <RTRow :row="{ left: '指导/获奖教师' }">
                     <label-select
-                        :disabled="modal.mode === 'view'"
                         v-model="modal.selectedTutor.item"
                         :list="modal.selectedTutor.list"
+                        :hideButton="modal.mode === 'add'"
+                        :disabled="modal.mode === 'view'"
                         @on-confirm="requestUpdate({ id: modal.row.id, tutorNo: modal.selectedTutor.item })"
                     ></label-select>
                 </RTRow>
                 <RTRow :row="{ left: '奖项' }">
                     <label-input
                         v-model="modal.row.prize"
-                        @on-confirm="requestUpdate({ id: modal.row.id, prize: modal.row.prize })"
+                        :hideButton="modal.mode === 'add'"
                         :disabled="modal.mode === 'view'"
+                        @on-confirm="requestUpdate({ id: modal.row.id, prize: modal.row.prize })"
                     ></label-input>
                 </RTRow>
                 <RTRow :row="{ left: '级别' }">
                     <label-select
-                        :disabled="modal.mode === 'view'"
                         v-model="modal.row.level"
                         :list="[{ text: '国家级', value: '国家级' }, { text: '省部级', value: '省部级' }, { text: '市厅级', value: '市厅级' }, { text: '局级', value: '局级' }, { text: '校级', value: '校级' }, { text: '自导自演级', value: '自导自演级' }]"
+                        :hideButton="modal.mode === 'add'"
+                        :disabled="modal.mode === 'view'"
                         @on-confirm="requestUpdate({ id: modal.row.id, level: modal.row.level })"
                     ></label-select>
                 </RTRow>
                 <RTRow :row="{ left: '得奖时间' }">
                     <label-date-picker
-                        :disabled="modal.mode === 'view'"
                         type="date"
                         v-model="modal.row.awardTime"
+                        :hideButton="modal.mode === 'add'"
+                        :disabled="modal.mode === 'view'"
                         @on-confirm="requestUpdate({ id: modal.row.id, 'award_time': Maid.formatDate(modal.row.awardTime, 'YYYY-MM-DD') })"
                     ></label-date-picker>
                 </RTRow>
                 <RTRow :row="{ left: '获奖证书' }">
                     <file-uploader
-                        :disabled="modal.mode === 'view'"
                         ref="certUploader"
-                        @confirmed="uploadCert"
-                        :certificate="modal.row.certificate"
                         :contestId="modal.row.id"
+                        :certificate="modal.row.certificate"
+                        :disabled="modal.mode === 'view'"
+                        @confirmed="uploadCert"
+                        :instantEmit="modal.mode === 'add'"
+                        @selected="storeCertTemporarily"
                     ></file-uploader>
                 </RTRow>
-                <RTRow :row="{ left: '登记时间' }">
+                <RTRow v-if="modal.mode !== 'add'" :row="{ left: '登记时间' }">
                     <label-input
                         :modelValue="Maid.formatDate(modal.row.addTime, 'YYYY-MM-DD')"
                         disabled
                     ></label-input>
                 </RTRow>
-                <RTRow :row="{ left: '登记人' }">
+                <RTRow v-if="modal.mode !== 'add'" :row="{ left: '登记人' }">
                     <label-input :modelValue="modal.row.adderName" disabled></label-input>
                 </RTRow>
             </reversed-table>
         </template>
         <template #footer>
             <outline-button color="blue" data-bs-dismiss="modal" icon="none">关闭</outline-button>
+            <outline-button
+                color="green"
+                @click="confirmAdd"
+                v-if="modal.mode === 'add'"
+                icon="check-lg"
+            >确认添加</outline-button>
         </template>
     </paper-modal>
 </template>
@@ -157,7 +175,8 @@ export default {
                     item: '',
                     list: [],
                 },
-                certSrc: ''
+                certSrc: '',
+                certFile: null
             }
         }
     },
@@ -196,57 +215,68 @@ export default {
         }, 800)
     },
     methods: {
-        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUploadCert: "Contest/requestUploadCert", requestStaffList: "Contest/requestStaffList", requestUpdate: "Contest/requestUpdate" }),
+        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUpdateCert: "Contest/requestUpdateCert", requestStaffList: "Contest/requestStaffList", requestUpdate: "Contest/requestUpdate", requestUploadCert: "Contest/requestUploadCert", requestAdd: "Contest/requestAdd", requestDelete: "Contest/requestDelete" }),
         downloadTemplate() {
             const template = [excelHelper.formatTableJsonToXlsxJson(this.$store.state.Contest.importTemplate)[1]];
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, template)), "template-contest.xlsx");
         },
         async seeDetail({ id }) {
+            this.modal.stuTable.header = [];
+            this.modal.stuTable.rows = [];
+            this.modal.stuTable.status = state.LOADING;
+
             this.modal.row = this.$store.state.Contest.contestTemplate;
             await this.requestOne({ id });
             this.modal.title = '查看详情';
             this.modal.mode = 'view';
             this.modal.row = this.$store.state.Contest.contest;
-            this.modal.stuTable = {
-                header: Maid.keys(this.modal.row.students),
-                rows: this.modal.row.students,
-                status: state.NORMAL
-            }
+
+            this.modal.stuTable.header = Maid.keys(this.modal.row.students);
+            this.modal.stuTable.rows = this.modal.row.students;
+            this.modal.stuTable.status = state.NORMAL;
+
             this.modal.selectedTutor.list = [{ value: this.modal.row.tutorNo, text: this.modal.row.tutorNo + ' - ' + this.modal.row.tutorName }];
             this.modal.selectedTutor.item = this.modal.row.tutorNo;
             this.modal.certSrc = import.meta.env.VITE_API_URL + '/contest/cert/' + this.modal.row.id;
             this.$refs.modal.open();
         },
         async onStudentsConfirmImport() {
-            this.modal.stuTable = {
-                header: [],
-                rows: [],
-                status: state.LOADING
-            }
-            await this.requestUpdate({ id: this.modal.row.id, students: JSON.stringify(this.modal.importingStudents.rows) })
+            this.modal.stuTable.header = [];
+            this.modal.stuTable.rows = [];
+            this.modal.stuTable.status = state.LOADING;
+
+            if (this.modal.mode === 'edit')
+                await this.requestUpdate({ id: this.modal.row.id, students: JSON.stringify(this.modal.importingStudents.rows) });
+            else
+                await setTimeout(() => { }, 100);
+
             this.modal.stuTable.header = Maid.keys(this.modal.importingStudents.rows);
             this.modal.stuTable.rows = this.modal.importingStudents.rows;
             this.modal.stuTable.status = state.NORMAL;
         },
         async callEdit({ id }) {
+            this.modal.stuTable.header = [];
+            this.modal.stuTable.rows = [];
+            this.modal.stuTable.status = state.LOADING;
+
             this.modal.row = this.$store.state.Contest.contestTemplate;
             await this.requestOne({ id });
             this.modal.title = '编辑竞赛';
             this.modal.mode = 'edit';
             this.modal.row = this.$store.state.Contest.contest;
-            this.modal.stuTable = {
-                header: Maid.keys(this.modal.row.students),
-                rows: this.modal.row.students,
-                status: state.NORMAL
-            }
+
+            this.modal.stuTable.header = Maid.keys(this.modal.row.students);
+            this.modal.stuTable.rows = this.modal.row.students;
+            this.modal.stuTable.status = state.NORMAL;
+
             await this.requestStaffList();
             this.modal.selectedTutor.list = this.$store.state.Contest.staffList.length === 0 ? [{ value: this.modal.row.tutorNo, text: this.modal.row.tutorNo + ' - ' + this.modal.row.tutorName }] : this.$store.state.Contest.staffList.map(ele => ({ value: ele.no, text: ele.no + ' - ' + ele.name }));
             this.modal.selectedTutor.item = this.modal.row.tutorNo;
             this.modal.certSrc = import.meta.env.VITE_API_URL + '/contest/cert/' + this.modal.row.id;
             this.$refs.modal.open();
         },
-        async refreshTable() {
-            if (this.modal.mode === 'view')
+        async refreshTable(_, force = false) {
+            if (!force && this.modal.mode === 'view')
                 return;
             this.currentStatus = state.LOADING;
             await this.requestList({ page: this.curPage, amount: this.per, query: this.query });
@@ -262,22 +292,49 @@ export default {
                 Maid.notify('您没有权限手动添加竞赛');
                 return;
             }
+            this.modal.stuTable.header = [];
+            this.modal.stuTable.rows = [];
+            this.modal.stuTable.status = state.LOADING;
+
             this.modal.row = this.$store.state.Contest.contestTemplate;
             this.modal.title = '添加一条竞赛记录';
             this.modal.mode = 'add';
-            this.modal.stuTable = {
-                header: [],
-                rows: [],
-                state: state.NORMAL
-            };
+
             await this.requestStaffList();
             this.modal.selectedTutor.list = this.$store.state.Contest.staffList.length === 0 ? [{ value: this.modal.row.tutorNo, text: this.modal.row.tutorNo + ' - ' + this.modal.row.tutorName }] : this.$store.state.Contest.staffList.map(ele => ({ value: ele.no, text: ele.no + ' - ' + ele.name }));
             this.modal.selectedTutor.item = '';
             this.modal.certSrc = '';
             this.$refs.modal.open();
         },
-        callDelete({ id }) {
-
+        storeCertTemporarily(cert) {
+            this.modal.certFile = cert;
+        },
+        async confirmAdd() {
+            if (this.modal.row.id && this.modal.row.id !== -1)
+                return;
+            let params = JSON.parse(JSON.stringify(this.modal.row));
+            params.students = this.modal.stuTable.rows;
+            params.tutorNo = this.modal.selectedTutor.item;
+            if (this.modal.certFile == null)
+                await this.requestAdd(params);
+            else {
+                await this.requestUploadCert({
+                    cert: this.modal.certFile
+                });
+                if (this.$store.state.Contest.responseStatus) {
+                    params.certificate = this.$store.state.Contest.uploadedCertInfo;
+                    await this.requestAdd(params);
+                    if (this.$store.state.Contest.responseStatus) {
+                        this.$refs.modal.close();
+                    }
+                }
+            }
+        },
+        async callDelete({ id, no }) {
+            if (confirm(`确实要删除编号为 ${no} 的竞赛信息吗?此操作不可逆，并会删除之前上传的相关的证书文件`)) {
+                await this.requestDelete({ id });
+                this.refreshTable(null, true);
+            }
         },
         sanitizeRows(requestedRows) {
             let result = [];
@@ -296,7 +353,7 @@ export default {
         importIt() {
         },
         uploadCert(file) {
-            this.requestUploadCert({
+            this.requestUpdateCert({
                 cert: file,
                 id: this.modal.row.id
             });

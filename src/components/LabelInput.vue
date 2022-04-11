@@ -7,12 +7,14 @@
             :disabled="$attrs.disabled"
             v-model="value"
         />
-        <button @click="confirm" title="确认" class="latter btn btn-outline-success">
-            <i class="bi-check-lg"></i>
-        </button>
-        <button @click="cancel" title="取消更改" class="latter btn btn-outline-danger">
-            <i class="bi-x-lg"></i>
-        </button>
+        <template v-if="!hideButton && !$attrs.disabled">
+            <button @click="confirm" title="确认" class="latter btn btn-outline-success">
+                <i class="bi-check-lg"></i>
+            </button>
+            <button @click="cancel" title="取消更改" class="latter btn btn-outline-danger">
+                <i class="bi-x-lg"></i>
+            </button>
+        </template>
     </div>
 </template>
 
@@ -20,6 +22,10 @@
 export default {
     props: {
         modelValue: [Number, String],
+        hideButton: {
+            type: Boolean,
+            default: false
+        }
     },
     data() {
         return {
@@ -40,6 +46,11 @@ export default {
     watch: {
         modelValue(newVal) {
             this.value = newVal;
+        },
+        value(newVal) {
+            if (this.hideButton) {
+                this.$emit('update:modelValue', newVal);
+            }
         }
     },
     emits: ["update:modelValue", "onConfirm"]
