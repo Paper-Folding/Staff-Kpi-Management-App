@@ -64,12 +64,12 @@
             #{it.no},
             #{it.type},
             #{it.name},
-            #{it.students},
+            '[]',
             ${it.tutorStaffInfoId},
             #{it.prize},
             #{it.level},
             #{it.awardTime},
-            #{it.certificate},
+            '{}',
             now(),
             ${it.addStaffInfoId}
         </foreach>

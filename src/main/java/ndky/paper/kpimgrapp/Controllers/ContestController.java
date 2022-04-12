@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ndky.paper.kpimgrapp.Mappers.ContestMapper;
 import ndky.paper.kpimgrapp.Request.BaseQueryRequest;
+import ndky.paper.kpimgrapp.Request.ContestImportRequest;
 import ndky.paper.kpimgrapp.Request.ContestRequest;
 import ndky.paper.kpimgrapp.Request.UserPermissionRequest;
 import ndky.paper.kpimgrapp.Response.ErrorResponse;
@@ -135,10 +136,23 @@ public class ContestController {
         return new ModifyResponse(contestMapper.deleteOne(contestRequest)).responseEntity();
     }
 
-//    @PostMapping("/import")
-//    public ResponseEntity<?> importContestList(@RequestBody ContestImportRequest contestImportRequest,HttpServletRequest request) {
-//        // @todo
-//    }
+    @PostMapping("/import")
+    public ResponseEntity<?> importContestList(@RequestBody ContestImportRequest contestImportRequest, HttpServletRequest request) {
+        ResponseEntity<?> res = authorizationUtil.ensureRoleIsValidForRequest(contestImportRequest, request);
+        if (res != null)
+            return res;
+        String username = authorizationUtil.getUsernameFromRequest(request);
+        boolean allowed = "admin".equals(contestImportRequest.getRole()) || "officer".equals(contestImportRequest.getRole()) || authorizationUtil.userHasPermission(new UserPermissionRequest(null, username, null, contestImportRequest.getRole(), null, "import", "contest"));
+        if (!allowed)
+            return authorizationUtil.getForbiddenResponseEntity(request);
+        Long adderStaffInfoId = authorizationUtil.getStaffInfoIdByAuthentication(null, username);
+        for (ContestRequest contestRequest : contestImportRequest.getList()) {
+            contestRequest.setAddStaffInfoId(adderStaffInfoId);
+            Long tutorStaffInfoId = authorizationUtil.getStaffInfoIdByStaffNo(contestRequest.getTutorNo());
+            contestRequest.setTutorStaffInfoId(tutorStaffInfoId);
+        }
+        return new ModifyResponse(contestMapper.insertMultiple(contestImportRequest.getList())).responseEntity();
+    }
 
     @PostMapping
     public ResponseEntity<?> addOneContest(@RequestBody ContestRequest contestRequest, HttpServletRequest request) {
