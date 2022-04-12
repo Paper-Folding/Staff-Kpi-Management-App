@@ -59,6 +59,7 @@ const state = {
         prize: '奖项',
         level: '级别',
         awardTime: '获奖时间',
+        certificate: '获奖证书文件地址',
         addTime: '登记时间',
         adderNo: "登记人编号",
         adderName: "登记人姓名"
@@ -228,11 +229,16 @@ const mutations = {
             return;
         }
         state.responseStatus = true;
+        const allKeys = Object.keys(state.exportTemplate);
         state.exportsData = {
-            header: data.result.header.includes('*') ? Object.keys(state.importTemplate) : data.result.header,
+            header: data.result.header.includes('*') ? allKeys : data.result.header.filter(ele => allKeys.includes(ele)),
             rows: data.result.rows
         }
         for (let row of state.exportsData.rows) {
+            if ('certificate' in row && 'store' in JSON.parse(row.certificate))
+                row.certificate = import.meta.env.VITE_API_URL + '/contest/cert/' + row.id;
+            else
+                row.certificate = '';
             if ('id' in row)
                 delete row.id;
             if ('tutorStaffInfoId' in row)

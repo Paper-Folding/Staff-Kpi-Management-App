@@ -59,8 +59,12 @@ let excelHelper = {
      * to
      * [ [ "id", "name" ], [ 1, "Ling" ] ]
      * Note that it can be only applied to one table.
+     * 
+     * @param source sample: [ { "id":1, "name": "Ling" }, { "id": 2, "name": "Tianyi" }, { "id": 3, "name": "Paper" } ]
+     * @param header included fields, if you do not provide, I will call Maid.keys to generate fields
+     * @param ignoreFields excluded fields
      */
-    formatTableJsonToXlsxJson(source) {
+    formatTableJsonToXlsxJson(source, header = [], ...ignoreFields) {
         let result = [];
         if (Array.isArray(source) && source.length === 0)
             return result;
@@ -69,11 +73,17 @@ let excelHelper = {
             temp.push(source);
         else
             temp = source;
-        result.push(Maid.keys(temp));
+        if (header.length > 0)
+            result.push(header.filter(ele => !ignoreFields.includes(ele)));
+        else
+            result.push(Maid.keys(temp).filter(ele => !ignoreFields.includes(ele)));
         temp.forEach(ele => {
             let arr = [];
-            for (let key of result[0])
+            for (let key of result[0]) {
+                if (ignoreFields.includes(key))
+                    continue;
                 arr.push(ele[key] ?? '');
+            }
             result.push(arr);
         });
         return result;

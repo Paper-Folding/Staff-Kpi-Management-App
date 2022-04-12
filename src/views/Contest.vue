@@ -394,11 +394,12 @@ export default {
             return result;
         },
         async exportIt() {
+            debugger
             await this.requestExport();
             if (!this.$store.state.Contest.responseStatus)
                 return;
-            let exportData = excelHelper.formatTableJsonToXlsxJson(this.$store.state.Contest.exportsData.rows);
-            exportData[0] = this.$store.state.Contest.exportsData.header;
+            let exportData = excelHelper.formatTableJsonToXlsxJson(this.$store.state.Contest.exportsData.rows, this.$store.state.Contest.exportsData.header);
+            // map header to Chinese
             for (let i = 0; i < this.$store.state.Contest.exportsData.header.length; i++) {
                 exportData[0][i] = this.$store.state.Contest.exportTemplate[exportData[0][i]];
             }
