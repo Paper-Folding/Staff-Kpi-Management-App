@@ -46,6 +46,10 @@ export default {
         text: {
             type: String,
             default: '导入用户'
+        },
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
     setup(props, context) {
@@ -83,7 +87,8 @@ export default {
         }
         // open file selection dialog
         let callSelect = () => {
-            uploader.value.click();
+            if (!props.disabled)
+                uploader.value.click();
         }
         let tab = reactive({ selected: null, list: [] });
         // call when file selected

@@ -4,7 +4,7 @@
         <div class="d-flex gap-3">
             <outline-button color="green" @click="callAdd">手动添加</outline-button>
             <outline-button icon="download" color="blue" @click="downloadTemplate">下载导入模板</outline-button>
-            <excel-importer v-model="importingTable" @confirm-import="importIt"></excel-importer>
+            <excel-importer text="导入竞赛" v-model="importingTable" @confirm-import="importIt"></excel-importer>
             <outline-button color="green" @click="exportIt">导出</outline-button>
         </div>
         <search-input v-model="query" placeholder="键入以搜索"></search-input>
@@ -261,7 +261,7 @@ export default {
         }, 800)
     },
     methods: {
-        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUpdateCert: "Contest/requestUpdateCert", requestStaffList: "Contest/requestStaffList", requestUpdate: "Contest/requestUpdate", requestUploadCert: "Contest/requestUploadCert", requestAdd: "Contest/requestAdd", requestDelete: "Contest/requestDelete", requestExport: "Contest/requestExport" }),
+        ...mapActions({ requestList: "Contest/requestList", requestOne: "Contest/requestOne", requestUpdateCert: "Contest/requestUpdateCert", requestStaffList: "Contest/requestStaffList", requestUpdate: "Contest/requestUpdate", requestUploadCert: "Contest/requestUploadCert", requestAdd: "Contest/requestAdd", requestDelete: "Contest/requestDelete", requestExport: "Contest/requestExport", requestImport: "Contest/requestImport" }),
         downloadTemplate() {
             const template = [excelHelper.formatTableJsonToXlsxJson(this.$store.state.Contest.importTemplate)[1]];
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, template)), "template-contest.xlsx");
@@ -361,8 +361,11 @@ export default {
             let params = JSON.parse(JSON.stringify(this.modal.row));
             params.students = this.modal.stuTable.rows;
             params.tutorNo = this.modal.selectedTutor.item;
-            if (this.modal.certFile == null)
+            if (this.modal.certFile == null) {
                 await this.requestAdd(params);
+                if (this.$store.state.Contest.responseStatus)
+                    this.$refs.modal.close();
+            }
             else {
                 await this.requestUploadCert({
                     cert: this.modal.certFile
@@ -370,15 +373,15 @@ export default {
                 if (this.$store.state.Contest.responseStatus) {
                     params.certificate = this.$store.state.Contest.uploadedCertInfo;
                     await this.requestAdd(params);
-                    if (this.$store.state.Contest.responseStatus) {
+                    if (this.$store.state.Contest.responseStatus)
                         this.$refs.modal.close();
-                    }
                 }
             }
         },
         async callDelete({ id, no }) {
             if (confirm(`确实要删除编号为 ${no} 的竞赛信息吗?此操作不可逆，并会删除之前上传的相关的证书文件`)) {
                 await this.requestDelete({ id });
+                this.curPage = 1;
                 this.refreshTable(null, true);
             }
         },
@@ -394,7 +397,6 @@ export default {
             return result;
         },
         async exportIt() {
-            debugger
             await this.requestExport();
             if (!this.$store.state.Contest.responseStatus)
                 return;
@@ -405,7 +407,12 @@ export default {
             }
             excelHelper.saveBlobAs(excelHelper.convertWorkbookToBlob(excelHelper.createNewWorkbook({ Author: Auth.getLoggedUser().realName }, exportData)), "contest-exported.xlsx");
         },
-        importIt() {
+        async importIt() {
+            this.currentStatus = state.LOADING;
+            await this.requestImport({
+                list: excelHelper.replaceKeyForTableJson(this.importingTable.rows, this.$store.state.Contest.importTemplate)
+            });
+            await this.refreshTable(null, true);
         },
         uploadCert(file) {
             this.requestUpdateCert({
