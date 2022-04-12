@@ -8,7 +8,7 @@
                     <a
                         href="javascript:void(0)"
                         class="link-secondary text-decoration-none"
-                        @click="openUpRoleModal"
+                        @click="openUpModal('role')"
                     >
                         &nbsp;&nbsp;&nbsp;
                         <i class="bi-arrow-left-right"></i>切换角色
@@ -35,9 +35,18 @@
                                 <a
                                     class="dropdown-item"
                                     href="javascript:void(0)"
-                                    @click="openUpRoleModal"
+                                    @click="openUpModal('role')"
                                 >
                                     <i class="bi-arrow-left-right"></i>&nbsp;&nbsp;切换角色
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="javascript:void(0)"
+                                    @click="openUpModal('password')"
+                                >
+                                    <i class="bi-key"></i>&nbsp;&nbsp;修改登录密码
                                 </a>
                             </li>
                             <li>
@@ -55,11 +64,12 @@
         size="md"
         ref="modal"
         @modal-cancelled="$refs.modal.close()"
-        @modal-confirmed="changeRole"
+        @modal-confirmed="modalConfirmed"
     >
-        <template #title>切换您的角色</template>
+        <template #title>{{ modal.title }}</template>
         <template #body>
             <vueSelect
+                v-if="modal.mode === 'role'"
                 v-model="role"
                 :options="roleList"
                 track-by="id"
@@ -71,6 +81,16 @@
                 selected-label="当前"
                 placeholder="可在此键入搜索"
             ></vueSelect>
+            <template v-else>
+                <div class="mb-3">
+                    <span class="form-label">键入密码</span>
+                    <input v-model="p" type="password" class="form-control mb-3" placeholder="键入密码" />
+                </div>
+                <div>
+                    <span class="form-label">再次键入密码</span>
+                    <input v-model="pp" type="password" class="form-control" placeholder="确认密码" />
+                </div>
+            </template>
         </template>
     </paper-modal>
 </template>
@@ -90,6 +110,12 @@ export default {
             username: Auth.getLoggedUser().realName,
             role: null, // role in selector
             roleList: [],
+            p: '',
+            pp: '',
+            modal: {
+                mode: 'role',
+                title: ''
+            }
         }
     },
     created() {
@@ -106,9 +132,16 @@ export default {
         this.roleDisplay = localStorage.getItem('role');
     },
     methods: {
-        ...mapActions({ logoff: "Login/logoff", requestRole: "Navbar/requestUserRoleDetails" }),
-        async openUpRoleModal() {
-            await this.requestUserRoles();
+        ...mapActions({ logoff: "Login/logoff", requestRole: "Navbar/requestUserRoleDetails", requestChangePassword: "Navbar/requestChangePassword" }),
+        async openUpModal(mode) {
+            this.modal.mode = mode;
+            if (mode === 'role') {
+                this.modal.title = '切换您的角色';
+                await this.requestUserRoles();
+            } else {
+                this.p = this.pp = '';
+                this.modal.title = '修改您的密码 (没有密码强度验证，因为不是重点(其实是我懒得搞这个....))';
+            }
             this.$refs.modal.open();
         },
         roleSelectorCustomLabel({ name, description }) {
@@ -120,14 +153,25 @@ export default {
             this.roleList = this.$store.state.Navbar.roleList.length > 1 ? this.$store.state.Navbar.roleList.filter(ele => ele.name !== 'initial') : this.$store.state.Navbar.roleList;
             this.role = this.$store.state.Navbar.role;
         },
-        changeRole() {
-            if (this.role == null || this.role.name === this.$store.state.Navbar.role.name) {
-                this.$store.state.notify("注意，角色并未切换!", 'warning');
+        modalConfirmed() {
+            if (this.modal.mode === 'role') {
+                if (this.role == null || this.role.name === this.$store.state.Navbar.role.name) {
+                    this.$store.state.notify("注意，角色并未切换!", 'warning');
+                } else {
+                    localStorage.setItem('role', this.role.name);
+                    this.roleDisplay = this.role.name;
+                    this.$store.state.notify(`角色已切换至${this.role.name}`, 'success');
+                    this.$router.push("/dashboard");
+                }
             } else {
-                localStorage.setItem('role', this.role.name);
-                this.roleDisplay = this.role.name;
-                this.$store.state.notify(`角色已切换至${this.role.name}`, 'success');
-                this.$router.push("/dashboard");
+                if (this.p !== this.pp) {
+                    this.$store.state.notify('两次密码不一致！');
+                    return;
+                } else {
+                    this.requestChangePassword({
+                        password: this.p
+                    });
+                }
             }
             this.$refs.modal.close();
         }
@@ -169,5 +213,10 @@ nav {
 }
 ul.dropdown-menu {
     border: 0;
+}
+
+.form-label {
+    user-select: none;
+    font-weight: bold;
 }
 </style>

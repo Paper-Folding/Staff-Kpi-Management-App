@@ -1,6 +1,3 @@
-import axios from "axios";
-import jsCookie from "js-cookie";
-
 const state = {
     menuContent: [
         { header: "业绩管理后台", hiddenOnCollapse: true },
@@ -11,7 +8,7 @@ const state = {
                 { title: "角色与权限", icon: "bi-key", href: '/rolemgr', badge: { element: 'i', class: 'bi-question-circle', help: '定义并管理全站角色及所属权限' } },
             ]
         },
-        { title: "竞赛管理", icon: "bi-journal-bookmark-fill", href: '/contest' },
+        { title: "竞赛管理", icon: "bi-journal-bookmark-fill", href: '/contest', badge: { element: 'i', class: 'bi-question-circle', help: '典型示例管理模块: 竞赛与获奖管理' } },
         { title: "登出", icon: "bi-door-open", logoffBtn: true },
     ]
 }

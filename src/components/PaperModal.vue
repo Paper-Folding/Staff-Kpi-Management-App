@@ -127,4 +127,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.btn-close:focus {
+    box-shadow: none;
+}
 </style>

@@ -25,6 +25,16 @@ const actions = {
             }
         }
     },
+    async requestChangePassword({ commit, rootState }, params) {
+        let res = await request('put', '/me/changePassword', {
+            password: params.password
+        });
+        if (res.status === 200 && res.data.code === 200) {
+            rootState.notify('密码已成功修改为 ' + params.password + '! (对了我是故意的！)', 'success');
+        } else {
+            rootState.notify("server error");
+        }
+    }
 }
 
 const mutations = {
