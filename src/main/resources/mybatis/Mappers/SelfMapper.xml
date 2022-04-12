@@ -48,4 +48,17 @@
         where id = ${staffInfoId};
     </update>
 
+    <update id="updatePassword">
+        update authentication
+        set password=#{newPassword}
+        <where>
+            <if test="authenticationId != null">
+                and id = ${authenticationId}
+            </if>
+            <if test="username != null">
+                and username = #{username}
+            </if>
+        </where>
+        ;
+    </update>
 </mapper>

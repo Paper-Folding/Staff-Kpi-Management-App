@@ -21,4 +21,6 @@ public interface SelfMapper {
      * @param dueUpdateValue specified value
      */
     Integer updateInfo(Long staffInfoId, String dueUpdateKey, String dueUpdateValue);
+
+    Integer updatePassword(Long authenticationId, String username, String newPassword);
 }

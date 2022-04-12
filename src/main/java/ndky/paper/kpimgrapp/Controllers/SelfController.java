@@ -94,4 +94,11 @@ public class SelfController {
         Long sid = authorizationUtil.getStaffInfoIdByAuthentication(null, requestUsername);
         return new ModifyResponse(selfMapper.updateInfo(sid, key, value)).responseEntity();
     }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> newPass, HttpServletRequest request) {
+        String requestUsername = authorizationUtil.getUsernameFromRequest(request);
+        String newPassword = passwordEncoder.encode(newPass.get("password"));
+        return new ModifyResponse(selfMapper.updatePassword(null, requestUsername, newPassword)).responseEntity();
+    }
 }
