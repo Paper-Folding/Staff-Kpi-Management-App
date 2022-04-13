@@ -6,7 +6,8 @@
                 <span class="fw-bold" id="name-span">{{ username }}</span>🍜，看上去这里是信息工程学院的员工业绩管理系统🍉
             </h2>
             <div class="col-lg-11 mx-auto">
-                <h1 class="fs-3 mb-4 mt-5">您可以在👈的菜单中找到您所需要的功能选项</h1>
+                <h1 class="fs-3 mb-3 mt-5">您可以在☝的导航栏中找到与您有关的功能选项</h1>
+                <h1 class="fs-3 mb-4">您还可以在👈的菜单中找到您所需要的功能选项</h1>
             </div>
         </div>
     </div>

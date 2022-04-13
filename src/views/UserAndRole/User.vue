@@ -40,6 +40,7 @@
             <outline-button @click="attachIt" color="red" icon="check-lg">确认编辑</outline-button>
         </template>
     </paper-modal>
+    <Staff />
 </template>
 
 <script>
@@ -55,6 +56,7 @@ import Pagination from "../../components/Pagination.vue";
 import VueSelect from "vue-multiselect";
 import { debounce } from "lodash";
 import Auth from '../../utils/Auth';
+import Staff from '../../components/Transaction/Statistics/Staff.vue';
 export default {
     data() {
         return {
@@ -189,7 +191,8 @@ export default {
         PaperTable,
         PaperModal,
         VueSelect,
-        Pagination
+        Pagination,
+        Staff
     }
 }
 </script>

@@ -7,6 +7,7 @@ import Role from './modules/UserAndRole/Role.js';
 import User from './modules/UserAndRole/User.js';
 import Me from './modules/Me.js';
 import Contest from './modules/Contest.js';
+import Statistics from './modules/Statistics.js';
 
 export default createStore({
     state() {
@@ -23,6 +24,7 @@ export default createStore({
         Role,
         User,
         Me,
-        Contest
+        Contest,
+        Statistics
     }
 })

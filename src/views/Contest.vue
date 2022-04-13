@@ -4,7 +4,12 @@
         <div class="d-flex gap-3">
             <outline-button color="green" icon="arrow-up-circle" @click="callAdd">手动添加</outline-button>
             <outline-button icon="arrow-down-circle" color="black" @click="downloadTemplate">下载导入模板</outline-button>
-            <excel-importer text="导入" color="green" v-model="importingTable" @confirm-import="importIt"></excel-importer>
+            <excel-importer
+                text="导入"
+                color="green"
+                v-model="importingTable"
+                @confirm-import="importIt"
+            ></excel-importer>
             <outline-button color="black" icon="arrow-down-circle" @click="exportIt">导出</outline-button>
         </div>
         <search-input v-model="query" placeholder="键入以搜索"></search-input>
@@ -159,6 +164,7 @@
             >确认添加</outline-button>
         </template>
     </paper-modal>
+    <ContestStatistics ref="graph" />
 </template>
 
 <script>
@@ -182,6 +188,8 @@ import Pagination from "../components/Pagination.vue";
 import Maid from '../utils/Maid';
 import { debounce } from "lodash";
 import Auth from '../utils/Auth';
+
+import ContestStatistics from '../components/Transaction/Statistics/Contest.vue';
 export default {
     data() {
         return {
@@ -332,6 +340,7 @@ export default {
                 this.currentStatus = state.NOTHING_LOADED;
             else
                 this.currentStatus = state.NORMAL;
+            this.$refs.graph.reload();
         },
         async callAdd() {
             if (!Maid.permissionMeeted('insert')) {
@@ -433,7 +442,8 @@ export default {
         LabelInput,
         LabelSelect,
         LabelDatePicker,
-        FileUploader
+        FileUploader,
+        ContestStatistics
     }
 }
 </script>

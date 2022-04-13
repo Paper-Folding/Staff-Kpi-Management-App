@@ -67,6 +67,7 @@ export default {
     font-size: 1.15em;
     border-bottom: transparent 2px solid;
     transition: all 0.2s ease;
+    min-width: 50%;
 
     &.showUnderLine {
         border-bottom: rgb(168, 168, 168) 2px solid;
