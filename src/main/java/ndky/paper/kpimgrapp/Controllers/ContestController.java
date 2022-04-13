@@ -231,7 +231,7 @@ public class ContestController {
             return authorizationUtil.getForbiddenResponseEntity(request);
         var oldCertificate = getCertificateFromDataBase(contestId);
         if (oldCertificate != null) {
-            if (!"".equals(oldCertificate.get("store")))
+            if (oldCertificate.get("store") != null && !"".equals(oldCertificate.get("store")))
                 certificateStorage.deleteOneFile(oldCertificate.get("store"));
         }
         String newFileName = Maid.getUniqueString() + Maid.getFilenameExt(cert.getOriginalFilename());
