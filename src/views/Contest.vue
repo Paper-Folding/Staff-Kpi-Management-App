@@ -2,10 +2,10 @@
 <template>
     <div class="mt-3 mb-2 top">
         <div class="d-flex gap-3">
-            <outline-button color="green" @click="callAdd">手动添加</outline-button>
-            <outline-button icon="download" color="blue" @click="downloadTemplate">下载导入模板</outline-button>
-            <excel-importer text="导入竞赛" v-model="importingTable" @confirm-import="importIt"></excel-importer>
-            <outline-button color="green" @click="exportIt">导出</outline-button>
+            <outline-button color="green" icon="arrow-up-circle" @click="callAdd">手动添加</outline-button>
+            <outline-button icon="arrow-down-circle" color="black" @click="downloadTemplate">下载导入模板</outline-button>
+            <excel-importer text="导入" color="green" v-model="importingTable" @confirm-import="importIt"></excel-importer>
+            <outline-button color="black" icon="arrow-down-circle" @click="exportIt">导出</outline-button>
         </div>
         <search-input v-model="query" placeholder="键入以搜索"></search-input>
     </div>

@@ -37,6 +37,7 @@ $red: var(--bs-red);
 $blue: var(--bs-blue);
 $orange: var(--bs-orange);
 $green: var(--bs-green);
+$black: var(--bs-dark);
 
 button {
     --color: 0, 100%; /*the base color*/
@@ -119,6 +120,21 @@ button {
 
         &:focus {
             box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.5);
+        }
+    }
+
+    &.black {
+        color: $black;
+        border-color: $black;
+
+        &:hover {
+            color: #fff;
+            background-color: $black;
+            border-color: $black;
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 0.25rem rgba(37, 37, 37, 0.5);
         }
     }
 

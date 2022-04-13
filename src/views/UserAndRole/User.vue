@@ -2,9 +2,9 @@
 <template>
     <div class="mt-3 mb-2 top">
         <div class="d-flex gap-3">
-            <outline-button color="blue" @click="downloadTemplate">下载导入模板</outline-button>
+            <outline-button color="black" icon="arrow-down-circle" @click="downloadTemplate">下载导入模板</outline-button>
             <excel-importer v-model="importingTable" @confirm-import="importIt"></excel-importer>
-            <outline-button color="green" @click="exportIt">导出</outline-button>
+            <outline-button color="black" icon="arrow-down-circle" @click="exportIt">导出</outline-button>
         </div>
         <search-input v-model="query" placeholder="键入以搜索"></search-input>
     </div>

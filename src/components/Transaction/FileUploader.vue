@@ -79,10 +79,10 @@ export default {
             } else {
                 fileName.value = '';
             }
-        });
+        }, { immediate: true });
         watch(() => props.contestId, (val) => {
             fileLink.value = import.meta.env.VITE_API_URL + '/contest/cert/' + val;
-        })
+        });
         // call select dialog
         const call = () => {
             uploader.value.click();
