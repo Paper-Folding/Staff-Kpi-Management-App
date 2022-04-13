@@ -14,8 +14,8 @@ public interface StatisticsMapper {
     @Select("select level, count(id) as amount from contest group by level;")
     List<Map<String, Integer>> contestLevel();
 
-    @Select("select gender,count(id) from staff_info where disabled='0' group by gender;")
-    List<Map<String, Integer>> staffAge();
+    @Select("select gender,count(id) as amount from staff_info where disabled='0' group by gender;")
+    List<Map<String, Integer>> staffGender();
 
     @Select("select ranges,count(*) as amount from (\n" +
             "select case\n" +
@@ -28,5 +28,5 @@ public interface StatisticsMapper {
             "end\n" +
             "as ranges\n" +
             "from staff_info where disabled='0') as temp GROUP BY ranges;")
-    List<Map<String, Integer>> staffGender();
+    List<Map<String, Integer>> staffAge();
 }
