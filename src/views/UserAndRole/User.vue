@@ -40,7 +40,7 @@
             <outline-button @click="attachIt" color="red" icon="check-lg">确认编辑</outline-button>
         </template>
     </paper-modal>
-    <Staff />
+    <Staff ref="chart" />
 </template>
 
 <script>
@@ -129,6 +129,7 @@ export default {
                 this.currentStatus = state.NOTHING_FOUND;
             else
                 this.currentStatus = state.NORMAL;
+            this.$refs.chart.reload();
         },
         async callDelete(row) {
             if (confirm(`确实要删除${(row.name || ('id为' + row.id + '的'))}用户吗？注意，此操作不可逆！`)) {
@@ -143,6 +144,7 @@ export default {
                     this.currentStatus = state.NOTHING_FOUND;
                 else
                     this.currentStatus = state.NORMAL;
+                this.$refs.chart.reload();
             }
         },
         async exportIt() {

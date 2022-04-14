@@ -87,7 +87,17 @@ export default {
         this.ageChart = shallowRef(new Chart(this.$refs.age, this.ageConfig));
     },
     methods: {
-        ...mapActions({ requestStaffStatistics: "Statistics/requestStaffStatistics" })
+        ...mapActions({ requestStaffStatistics: "Statistics/requestStaffStatistics" }),
+        async reload() {
+            await this.requestStaffStatistics();
+            this.genderChart.data.lebels = this.staff.gender.map(ele => ele.gender);
+            this.genderChart.data.datasets[0].data = this.staff.gender.map(ele => ele.amount);
+            this.genderChart.update();
+
+            this.ageChart.data.labels = this.staff.age.map(ele => ele.ranges);
+            this.ageChart.data.datasets[0].data = this.staff.age.map(ele => ele.amount);
+            this.ageChart.update();
+        }
     },
     computed: {
         ...mapGetters({ staff: "Statistics/getStaff" })
