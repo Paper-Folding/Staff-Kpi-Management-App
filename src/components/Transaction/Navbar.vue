@@ -123,12 +123,12 @@ export default {
     },
     mounted() {
         // explain code below with Chinese: 防串号，如果用户换着号登，必须确保登录后用户所获得的角色是他们所拥有的；另外如果直接把下面的代码放到登录那边，隐藏功能记住用户上次登录的角色就会无效。
-        const curRole = localStorage.getItem('role'), weakRoleList = Auth.getLoggedUser().roles;
-        if (weakRoleList.includes(curRole)) {
-            if (curRole === 'initial' && weakRoleList.length > 1)
-                localStorage.setItem('role', weakRoleList[0] === 'initial' ? weakRoleList[1] : weakRoleList[0]);
-        } else
-            localStorage.setItem('role', weakRoleList.length > 1 ? (weakRoleList[0] === 'initial' ? weakRoleList[1] : weakRoleList[0]) : weakRoleList[0]);
+        // const curRole = localStorage.getItem('role'), weakRoleList = Auth.getLoggedUser().roles;
+        // if (weakRoleList.includes(curRole)) {
+        //     if (curRole === 'initial' && weakRoleList.length > 1)
+        //         localStorage.setItem('role', weakRoleList[0] === 'initial' ? weakRoleList[1] : weakRoleList[0]);
+        // } else
+        //     localStorage.setItem('role', weakRoleList.length > 1 ? (weakRoleList[0] === 'initial' ? weakRoleList[1] : weakRoleList[0]) : weakRoleList[0]);
         this.roleDisplay = localStorage.getItem('role');
     },
     methods: {
