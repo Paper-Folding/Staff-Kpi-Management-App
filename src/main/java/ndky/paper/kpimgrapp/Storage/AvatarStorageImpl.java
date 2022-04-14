@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -74,12 +72,10 @@ public class AvatarStorageImpl implements IStorage {
 
     public Resource loadFileAsDefaultResource() {
         try {
-            Path fallback = ResourceUtils.getFile("classpath:static/images/default-avatar.jpg").toPath();
+            Path fallback = avatarPath.resolve("default-avatar.jpg");
             if (Files.exists(fallback) && Files.isReadable(fallback)) {
                 return new UrlResource(fallback.toUri());
             }
-        } catch (FileNotFoundException e) {
-            throw new StorageException("Default avatar is not found");
         } catch (MalformedURLException ignored) {
         }
         return null;
