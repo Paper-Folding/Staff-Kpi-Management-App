@@ -82,7 +82,7 @@ export default {
         }, { immediate: true });
         watch(() => props.contestId, (val) => {
             fileLink.value = import.meta.env.VITE_API_URL + '/contest/cert/' + val;
-        });
+        }, { immediate: true });
         // call select dialog
         const call = () => {
             uploader.value.click();
@@ -124,6 +124,7 @@ export default {
             restoreInitial();
         }
         const openFile = () => {
+            console.log('filelink', fileLink.value);
             window.open(fileLink.value);
         }
         return {
