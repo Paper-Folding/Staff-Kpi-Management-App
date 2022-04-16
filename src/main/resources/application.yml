@@ -12,6 +12,10 @@ spring:
       validation-timeout: 15000
   jackson:
     default-property-inclusion: non_null
+  servlet:
+    multipart:
+      max-file-size: 10240MB
+      max-request-size: 10240MB
 
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
