@@ -21,7 +21,7 @@
     "vue": "^3.2.33",
     "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.0.14",
-    "vue3-datepicker": "^0.3.2",
+    "vue3-datepicker": "^0.3.3",
     "vuex": "^4.0.2",
     "xlsx": "^0.18.5"
   },
