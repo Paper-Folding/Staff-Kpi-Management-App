@@ -1,4 +1,4 @@
-package ndky.paper.kpimgrapp.Components;
+package ndky.paper.kpimgrapp.Security.RequestFilter;
 
 import ndky.paper.kpimgrapp.Security.Services.UserDetailsServiceImpl;
 import ndky.paper.kpimgrapp.Utils.JwtUtils;

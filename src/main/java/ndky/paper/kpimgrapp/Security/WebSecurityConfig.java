@@ -1,8 +1,8 @@
 package ndky.paper.kpimgrapp.Security;
 
-import ndky.paper.kpimgrapp.Components.AuthenticationTokenFilter;
 import ndky.paper.kpimgrapp.Security.ExceptionHandler.ForbiddenHandler;
 import ndky.paper.kpimgrapp.Security.ExceptionHandler.UnauthorizedHandler;
+import ndky.paper.kpimgrapp.Security.RequestFilter.AuthenticationTokenFilter;
 import ndky.paper.kpimgrapp.Security.Services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
